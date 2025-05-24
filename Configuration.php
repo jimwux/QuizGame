@@ -47,5 +47,13 @@ class Configuration
         return new LobbyController($this->getViewer());
     }
 
+    public function getRegisterController(): RegisterController
+    {
+        return new RegisterController(
+            new UserModel($this->getDatabase()),
+            $this->getViewer()
+        );
+    }
+
 
 }
