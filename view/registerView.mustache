@@ -1,0 +1,102 @@
+<section class="p-3 p-md-4 p-xl-5">
+    <div class="container-fluid">
+        <div class="row g-0 shadow rounded">
+            <!-- Columna bienvenida -->
+            <div class="col-12 col-md-4 bg-platinum d-flex flex-column justify-content-center align-items-center p-4 p-md-5 text-center">
+                <h3 class="mb-4">¡Bienvenido!</h3>
+                <img class="img-fluid rounded mb-4" loading="lazy" src="https://www.calculators.org/graphics/quiz-games.png" alt="Logo" style="max-width: 500px;" />
+                <p class="mb-0 fs-5">¿No tienes cuenta? <a href="#!" class="link-secondary text-decoration-none">Regístrate ahora</a></p>
+            </div>
+
+            <!-- Columna formulario -->
+            <div class="col-12 col-md-8 bg-lotion p-4 p-md-5 scroll-form">
+                <h2 class="h3 mb-3">Registro</h2>
+                <p class="fs-6 fw-normal text-secondary mb-4">Ingresa tus datos para registrarte</p>
+
+                {{#errors}}
+                    <div class="alert alert-danger">
+                        <ul class="list-unstyled mb-0">
+                            {{#.}}
+                                <li>{{.}}</li>
+                            {{/.}}
+                        </ul>
+                    </div>
+                {{/errors}}
+
+                <form id="registerForm" enctype="multipart/form-data" method="POST" action="/QuizGame/register/processRegisterForm">
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <label for="fullName" class="form-label">Nombre completo <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="fullName" name="fullName" required />
+                        </div>
+
+                        <div class="col-md-4">
+                            <label for="birthYear" class="form-label">Año de nacimiento <span class="text-danger">*</span></label>
+                            <select class="form-select" id="birthYear" name="birthYear" required>
+                                <option value="">Seleccione año</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-4">
+                            <label for="gender" class="form-label">Sexo</label>
+                            <select class="form-select" id="gender" name="gender" required>
+                                <option value="">Seleccione una opción</option>
+                                <option value="Masculino">Masculino</option>
+                                <option value="Femenino">Femenino</option>
+                                <option value="Prefiero no cargarlo">Prefiero no cargarlo</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="country" class="form-label">País <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="country" name="country" placeholder="País" required readonly />
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="city" class="form-label">Ciudad (seleccione en el mapa) <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="city" name="city" placeholder="Ciudad" required readonly />
+                        </div>
+
+                        <div class="col-md-12" id="map"></div>
+
+                        <div class="col-md-6">
+                            <label for="email" class="form-label">Correo electrónico <span class="text-danger">*</span></label>
+                            <input type="email" class="form-control" id="email" name="email" required />
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="username" class="form-label">Nombre de usuario <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="username" name="username" required />
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="password" class="form-label">Contraseña <span class="text-danger">*</span></label>
+                            <input type="password" class="form-control" id="password" name="password" required minlength="6" />
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="confirmPassword" class="form-label">Repetir contraseña <span class="text-danger">*</span></label>
+                            <input type="password" class="form-control" id="confirmPassword" name="confirmPassword" required minlength="6" />
+                        </div>
+
+                        <div class="col-12">
+                            <label for="profilePhoto" class="form-label">Foto de perfil</label>
+                            <input class="form-control" type="file" id="profilePhoto" name="profilePhoto" accept="image/*" />
+                        </div>
+
+                        <div class="col-12">
+                            <button type="submit" class="btn btn-primary w-100">Registrarse</button>
+                        </div>
+                    </div>
+                </form>
+                <hr class="mt-4 mb-3" />
+                <p class="text-center text-secondary mb-0">
+                    ¿Ya tenés cuenta? <a href="#!" class="link-primary">Iniciar sesión</a>
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"></script>
+<script src="/QuizGame/public/js/register.js"></script>

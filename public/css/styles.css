@@ -1,0 +1,19 @@
+.bg-platinum {
+    background-color: #e5e4e2;
+}
+.bg-lotion {
+    background-color: #f9f9f9;
+}
+
+.scroll-form {
+    max-height: 80vh;
+    overflow-y: auto;
+    padding-right: 1rem;
+}
+
+#map {
+    height: 250px;
+    min-height: 250px;
+    margin-top: 2em;
+    border-radius: 20px;
+}

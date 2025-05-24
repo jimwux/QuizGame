@@ -13,7 +13,7 @@ class LobbyController extends BaseController
 
     public function show()
     {
-        $this->view->render("lobbyView", []);
+        $this->view->render("lobby", []);
     }
 
 
