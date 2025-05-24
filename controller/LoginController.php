@@ -12,5 +12,23 @@ class LoginController extends BaseController
     }
 
     // Validar formularios, peticiones HTTP, redirecciones y comunicar al modelo
+    public function show(){
+        $this->view->render("login");
+    }
+
+    public function processLogin(){
+        $username = $_POST["username"];
+        $password = $_POST["password"];
+
+        if(empty($username) && empty($password)){
+            $this->view->render("login", ["error", "El Usuario y la contraseña son obligatorios"]);
+            return;
+        }
+
+        $userData = $this->model->login($username, $password);
+
+
+
+    }
 
 }
