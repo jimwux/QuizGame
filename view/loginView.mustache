@@ -1,24 +1,37 @@
-{{! view/loginFormView.mustache }}
-<div class="card p-4 shadow-lg" style="width: 22rem;">
-    <h2 class="text-center mb-3">Iniciar sesión</h2>
+<div class="d-flex justify-content-center align-items-center vh-100 bg-light">
+    <div class="card p-4 shadow-lg border-0" style="max-width: 22rem; width: 100%;">
+        <h2 class="text-center mb-4">Iniciar sesión</h2>
 
-    {{#error}}
-        <p>{{error}}</p>
-    {{/error}}
+        {{#errors}}
+            <div class="alert alert-danger py-2 px-3 mb-3" role="alert">{{.}}</div>
+        {{/errors}}
 
-    <form action="login/processLogin" method="POST">
-        <div class="mb-3">
-            <label for="username" class="form-label">Nombre de usuario</label>
-            <input type="text" class="form-control" id="username" name="username" placeholder="Ingresa tu usuario" required>
-        </div>
-        <div class="mb-3">
-            <label for="password" class="form-label">Contraseña</label>
-            <input type="password" class="form-control" id="password" name="password" placeholder="Ingresa tu contraseña" required>
-        </div>
-        <button type="submit" class="btn btn-primary w-100">Iniciar Sesión</button>
+        <form action="/QuizGame/login/processLogin" method="POST">
+            <div class="mb-3">
+                <label for="username" class="form-label">Nombre de usuario</label>
+                <input
+                        type="text"
+                        class="form-control"
+                        id="username"
+                        name="username"
+                        placeholder="Ingresa tu usuario"
+                >
+            </div>
+            <div class="mb-4">
+                <label for="password" class="form-label">Contraseña</label>
+                <input
+                        type="password"
+                        class="form-control"
+                        id="password"
+                        name="password"
+                        placeholder="Ingresa tu contraseña"
+                >
+            </div>
+            <button type="submit" class="btn btn-primary w-100 mb-2">Iniciar Sesión</button>
+        </form>
+
         <div class="text-center mt-3">
-            <a href="#" class="text-decoration-none">¿Olvidaste tu contraseña?</a>
+            <a href="/QuizGame/register" class="text-decoration-none text-primary">¿No tenés cuenta? Registrate acá</a>
         </div>
-    </form>
+    </div>
 </div>
-
