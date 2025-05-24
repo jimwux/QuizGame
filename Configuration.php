@@ -43,10 +43,17 @@ class Configuration
         return new MustachePresenter("view");
     }
 
-    // METODOS PARA PREGUNTADOS
     public function getLobbyController(): LobbyController
     {
         return new LobbyController($this->getViewer());
+    }
+
+    public function getRegisterController(): RegisterController
+    {
+        return new RegisterController(
+            new UserModel($this->getDatabase()),
+            $this->getViewer()
+        );
     }
 
     public function getLoginController(): LoginController
