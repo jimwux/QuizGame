@@ -11,6 +11,26 @@ class LoginController extends BaseController
         $this->view = $view;
     }
 
-    // Validar formularios, peticiones HTTP, redirecciones y comunicar al modelo
+    public function show()
+    {
+        $this->view->render("login", ["errors" => []]);
+    }
+
+    public function processLogin()
+    {
+        $username = $_POST["username"] ?? null;
+        $password = $_POST["password"] ?? null;
+
+        $validationData = $this->model->validateLogin($username, $password);
+
+        if (!empty($validationData)) {
+            return $this->view->render("login", ["errors" => $validationData]);
+        } else {
+            $this->model->login($username);
+            header("location: /QuizGame/lobby");
+            exit;
+        }
+
+    }
 
 }

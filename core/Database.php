@@ -26,4 +26,10 @@ class Database
     {
         $this->conn->close();
     }
+
+    public function getConnection()
+    {
+        return $this->conn;
+    }
+
 }
