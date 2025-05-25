@@ -47,5 +47,10 @@ class Configuration
         return new LobbyController($this->getViewer());
     }
 
+    public function getProfileController(): ProfileController
+    {
+        return new ProfileController($this->getViewer());
+    }
+
 
 }
