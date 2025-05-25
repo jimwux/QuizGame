@@ -12,6 +12,11 @@ class ProfileController extends BaseController
     }
 
     // Validar formularios, peticiones HTTP, redirecciones y comunicar al modelo
+    public function show()
+    {
+        $data["user"] = $this->model->getUserByUsername("pajaro");
+        $this->view->render("profile", $data);
 
+    }
 
 }
