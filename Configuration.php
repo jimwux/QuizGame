@@ -1,6 +1,7 @@
 <?php
 
-function require_all_php_in_folder($folder) {
+function require_all_php_in_folder($folder)
+{
     foreach (glob(__DIR__ . "/$folder/*.php") as $file) {
         require_once $file;
     }
@@ -53,6 +54,11 @@ class Configuration
             new UserModel($this->getDatabase()),
             $this->getViewer()
         );
+    }
+
+    public function getLoginController(): LoginController
+    {
+        return new LoginController(new UserModel($this->getDatabase()), $this->getViewer());
     }
 
 

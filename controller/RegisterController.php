@@ -13,7 +13,7 @@ class RegisterController extends BaseController
 
     // Validar formularios, peticiones HTTP, redirecciones y comunicar al modelo
 
-    public function showRegisterForm()
+    public function show()
     {
         $this->view->render("register", []);
     }
