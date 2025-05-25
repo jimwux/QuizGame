@@ -13,22 +13,31 @@ class Router
         $this->configuration = $configuration;
     }
 
-    public function go($controllerName, $methodName)
+    public function go($controllerName, $methodName, $param = null)
     {
         $controller = $this->getControllerFrom($controllerName);
-        $this->executeMethodFromController($controller, $methodName);
+        $this->executeMethodFromController($controller, $methodName, $param);
     }
 
     private function getControllerFrom($controllerName)
     {
         $controllerName = 'get' . ucfirst($controllerName) . 'Controller';
         $validController = method_exists($this->configuration, $controllerName) ? $controllerName : $this->defaultController;
-        return call_user_func(array($this->configuration, $validController));
+        return call_user_func([$this->configuration, $validController]);
     }
 
-    private function executeMethodFromController($controller, $method)
+    private function executeMethodFromController($controller, $method, $param = null)
     {
         $validMethod = method_exists($controller, $method) ? $method : $this->defaultMethod;
-        call_user_func(array($controller, $validMethod));
+
+        // Verificamos si el método espera parámetros
+        $ref = new ReflectionMethod($controller, $validMethod);
+        $paramCount = $ref->getNumberOfParameters();
+
+        if ($paramCount > 0) {
+            $controller->$validMethod($param);
+        } else {
+            $controller->$validMethod();
+        }
     }
 }
