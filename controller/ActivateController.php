@@ -28,6 +28,7 @@ class ActivateController
 
         require_once 'libs/Render.php';
         $renderer = new Render();
-        echo $renderer->render('activate.mustache', ['mensaje' => $mensaje]);
+        $renderer->render('activate', ['mensaje' => $mensaje]);
+        
     }
 }

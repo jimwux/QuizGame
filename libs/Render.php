@@ -1,9 +1,14 @@
 <?php
 
+require_once 'vendor/autoload.php'; // solo si usás Composer
+
 class Render {
-    public function __construct() {
-    }
+    
     public function render($template, $data = []) {
-        // lógica para renderizar el template Mustache
+        $mustache = new Mustache_Engine([
+            'loader' => new Mustache_Loader_FilesystemLoader(dirname(__DIR__) . '/view')
+        ]);
+
+        return $mustache->render($template, $data);
     }
 }
