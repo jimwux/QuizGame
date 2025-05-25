@@ -1,6 +1,6 @@
 <body class="w3-light-grey">
 
-<div class="container my-4 bg-white rounded shadow-sm p-4  mt-5">
+<div class="container my-4 bg-white rounded shadow-sm p-4 mt-5">
 
     {{#user}}
         <!-- Datos del perfil -->
@@ -27,7 +27,6 @@
 
     <!-- Partidas jugadas -->
     <h5 class="fw-bold mb-3">Partidas jugadas</h5>
-
     <div class="row">
         <div class="col-md-6">
             {{#partidas}}
@@ -38,30 +37,29 @@
                         <div>Puntaje obtenido: <strong>{{puntaje}} pts</strong></div>
                         <div>Destacado en:
                             <span class="badge text-bg-light border border-1 ms-1">
-                <i class="fa fa-trophy me-1"></i>
-                <span class="text-{{categoria_color}}">{{categoria}}</span>
-              </span>
+                            <i class="fa fa-trophy me-1"></i>
+                            <span class="text-{{categoria_color}}">{{categoria}}</span>
+                        </span>
                         </div>
                     </div>
                 </div>
             {{/partidas}}
         </div>
 
-        <!-- Mapa + ubicación -->
-
+        <!-- Mapa (ubicación) -->
         <div class="col-md-6">
-            <label for="country" class="form-label">País <span class="text-danger">*</span></label>
-            <input type="text" class="form-control" id="country" name="country" placeholder="País" required readonly />
+            <div id="map"
+                 data-ubicacion="{{ciudad}}, {{pais}}"
+                 style="width: 100%; height: 300px; border-radius: 12px; overflow: hidden;">
+            </div>
         </div>
-
-        <div class="col-md-6">
-            <label for="city" class="form-label">Ciudad (seleccione en el mapa) <span class="text-danger">*</span></label>
-            <input type="text" class="form-control" id="city" name="city" placeholder="Ciudad" required readonly />
-        </div>
-
-        <div class="col-md-12" id="map"></div>
     </div>
 
 </div>
-<script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"></script>
-<script src="/QuizGame/public/js/register.js"></script>
+
+<!-- Leaflet CSS y JS -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<!-- Script del mapa -->
+<script src="/QuizGame/public/js/profile.js" defer></script>
