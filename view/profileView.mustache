@@ -4,42 +4,46 @@
 
     {{#user}}
         <!-- Datos del perfil -->
-        <div class="row align-items-center mb-4">
-            <div class="col-md-4">
-                <p class="mb-1 fw-bold">Usuario: {{usuario}}</p>
-                <small>{{año_nacimiento}} - {{sexo}}</small>
+        <div class="row align-items-center mb-4 text-center text-md-start">
+            <div class="col-12 col-md-4 mb-3 mb-md-0">
+                <p class="mb-1 fw-bold fs-5">Usuario: {{usuario}}</p>
+                <small class="fs-6">{{año_nacimiento}} - {{sexo}}</small>
             </div>
-            <div class="col-md-5 text-md-end">
-                <p class="fw-bold mb-0">{{nombre_completo}}</p>
-                <p class="mb-0">{{mail}}</p>
-                <small>{{ciudad}}, {{pais}}</small>
+            <div class="col-12 col-md-5 mb-3 mb-md-0">
+                <p class="fw-bold mb-1 fs-5">{{nombre_completo}}</p>
+                <p class="mb-1 fs-6">{{mail}}</p>
+                <small class="fs-6">{{ciudad}}, {{pais}}</small>
             </div>
-            <div class="col-md-3 text-md-end text-center mt-3 mt-md-0">
+            <!-- Imagen de perfil -->
+            <div class="col-12 col-md-3 d-flex justify-content-center justify-content-md-end">
                 {{#foto_perfil}}
-                    <img src="{{foto_perfil}}" alt="Foto de perfil" class="rounded-circle" style="width: 64px; height: 64px; object-fit: cover;">
+                    <img src="{{foto_perfil}}" alt="Foto de perfil"
+                         class="rounded-circle img-fluid"
+                         style="width: 128px; height: 128px; object-fit: cover;">
                 {{/foto_perfil}}
                 {{^foto_perfil}}
-                    <i class="fa fa-user-circle fa-4x text-secondary"></i>
+                    <i class="fa fa-user-circle text-secondary" style="font-size: 128px;"></i>
                 {{/foto_perfil}}
             </div>
+
         </div>
     {{/user}}
 
     <!-- Partidas jugadas -->
-    <h5 class="fw-bold mb-3">Partidas jugadas</h5>
+    <h5 class="fw-bold mb-3 fs-4 text-center text-md-start">Partidas jugadas</h5>
     <div class="row">
         <div class="col-md-6">
             {{#partidas}}
-                <div class="d-flex align-items-center bg-light rounded p-2 mb-2">
+                <div class="d-flex align-items-center bg-light rounded p-3 mb-3">
                     <i class="fa fa-user-circle fa-2x text-muted me-3"></i>
                     <div class="flex-grow-1">
-                        <div>Preguntas: <strong>{{preguntas}}</strong></div>
-                        <div>Puntaje obtenido: <strong>{{puntaje}} pts</strong></div>
-                        <div>Destacado en:
+                        <div class="fs-6">Preguntas: <strong>{{preguntas}}</strong></div>
+                        <div class="fs-6">Puntaje obtenido: <strong>{{puntaje}} pts</strong></div>
+                        <div class="fs-6">Destacado en:
                             <span class="badge text-bg-light border border-1 ms-1">
-                            <i class="fa fa-trophy me-1"></i>
-                            <span class="text-{{categoria_color}}">{{categoria}}</span>
-                        </span>
+                                <i class="fa fa-trophy me-1"></i>
+                                <span class="text-{{categoria_color}}">{{categoria}}</span>
+                            </span>
                         </div>
                     </div>
                 </div>
@@ -49,8 +53,9 @@
         <!-- Mapa (ubicación) -->
         <div class="col-md-6">
             <div id="map"
-                 data-ubicacion="{{ciudad}}, {{pais}}"
-                 style="width: 100%; height: 300px; border-radius: 12px; overflow: hidden;">
+                 data-lat="{{latitud}}"
+                 data-lng="{{longitud}}"
+                 style="width: 100%; height: 320px; border-radius: 12px; overflow: hidden;">
             </div>
         </div>
     </div>
@@ -58,7 +63,6 @@
 </div>
 
 <!-- Leaflet CSS y JS -->
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
 <!-- Script del mapa -->

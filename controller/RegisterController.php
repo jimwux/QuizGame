@@ -71,6 +71,8 @@ class RegisterController extends BaseController
             'gender' => $_POST['gender'],
             'country' => $_POST['country'],
             'city' => $_POST['city'],
+            'latitude' => $_POST['latitude'],
+            'longitude' => $_POST['longitude'],
             'email' => $_POST['email'],
             'username' => $_POST['username'],
             'password' => $hashedPassword,

@@ -14,7 +14,6 @@ class MustachePresenter{
     }
 
     public function render($contentFile , $data = array() ){
-        session_start();
         if (isset($_SESSION["nombre"])) {
             $data["nombre"] = $_SESSION["nombre"];
         }
