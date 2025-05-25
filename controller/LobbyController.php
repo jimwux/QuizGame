@@ -9,10 +9,13 @@ class LobbyController extends BaseController
         $this->view = $view;
     }
 
-    // Validar formularios, peticiones HTTP, redirecciones y comunicar al modelo
-
     public function show()
     {
+        if (!isset($_SESSION['id'])) {
+            header('Location: /QuizGame/login/show');
+            exit;
+        }
+
         $this->view->render("lobby", []);
     }
 

@@ -17,10 +17,30 @@
 <!-- Navbar -->
 <div class="w3-top">
     <div class="w3-bar w3-black w3-card">
-        <a class="w3-bar-item w3-button w3-padding-large w3-hide-medium w3-hide-large w3-right" href="javascript:void(0)" onclick="myFunction()" title="Toggle Navigation Menu"><i class="fa fa-bars"></i></a>
-        <a href="/login/show" class="w3-bar-item w3-button w3-padding-large w3-hide-small">Iniciar sesión</a>
+
+        <!-- Marca (izquierda) -->
+        <a href="/QuizGame/lobby" class="w3-bar-item w3-button w3-padding-large">QuizGame</a>
+
+        <!-- Botón menú responsive (oculto en pantallas grandes) -->
+        <a class="w3-bar-item w3-button w3-padding-large w3-hide-medium w3-hide-large w3-right" href="javascript:void(0)" onclick="myFunction()" title="Toggle Navigation Menu">
+            <i class="fa fa-bars"></i>
+        </a>
+
+        <!-- Derecha -->
+        <div class="w3-right w3-hide-small">
+            {{#nombre}}
+                <a href="./QuizGame/profile" class="w3-bar-item w3-button w3-padding-large">Hola, {{nombre}}</a>
+                <a href="./QuizGame/logout" class="w3-bar-item w3-button w3-padding-large">Cerrar sesión</a>
+            {{/nombre}}
+
+            {{^nombre}}
+                <a href="./QuizGame/login/show" class="w3-bar-item w3-button w3-padding-large">Iniciar sesión</a>
+            {{/nombre}}
+        </div>
+
     </div>
 </div>
+
 
 <!-- Page content -->
 <div class="w3-content" style="max-width:2000px">
