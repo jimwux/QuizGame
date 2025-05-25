@@ -11,6 +11,7 @@ class LobbyController extends BaseController
 
     public function show()
     {
+        session_start();
         if (!isset($_SESSION['id'])) {
             header('Location: /QuizGame/login/show');
             exit;
