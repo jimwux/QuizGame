@@ -60,7 +60,35 @@ class UserModel
 
         return true;  // Inserción exitosa
     }
+    public function activarUsuarioPorToken(string $token): string {
+        $db = $this->database->getConnection();
+        
+        if (empty($token)) {
+        return 'token_invalido';
+        }
 
+        // Preparar la consulta
+        $stmt = $db->prepare("SELECT id, activo FROM usuarios WHERE token_validacion = ?");
+        $stmt->bind_param("s", $token);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $usuario = $result->fetch_assoc();
+
+        if (!$usuario) {
+            return 'token_invalido';
+        }
+
+        if ((int)$usuario['activo'] === 1) {
+            return 'ya_activado';
+        }
+
+        // Actualizar estado del usuario
+        $update = $db->prepare("UPDATE usuarios SET activo = 1, token_validacion = NULL WHERE id = ?");
+        $update->bind_param("i", $usuario['id']);
+        $update->execute();
+
+        return 'activado';
+    }
     public function getUserById($id)
     {
         $query = $this->database->prepare("SELECT * FROM usuario WHERE id = :id LIMIT 1");

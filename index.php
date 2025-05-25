@@ -7,4 +7,4 @@ $router = $configuration->getRouter();
 $controller = $_GET["controller"] ?? null;
 $method = $_GET["method"] ?? null;
 
-$router->go($controller, $method);
+$router->go($controller, $method, $_GET['token'] ?? null);

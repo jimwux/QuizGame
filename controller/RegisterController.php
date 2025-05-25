@@ -93,5 +93,29 @@ class RegisterController extends BaseController
         ]);
     }
 
+    public function activate()
+    {
+        $token = $_GET['token'] ?? null;
+
+        if (!$token) {
+            $this->view->render("activate", [
+                "message" => "Token no provisto."
+            ]);
+            return;
+        }
+
+        $activationResult = $this->model->activarUsuarioPorToken($token);
+
+        if ($activationResult == 'activado') {
+            $this->view->render("activate", [
+                "message" => "Cuenta activada correctamente."
+            ]);
+        } else {
+            $this->view->render("activate", [
+                "message" => "Lo sentimos. No ha sido posible activar tu cuenta."
+            ]);
+        }
+    }
+
 
 }
