@@ -98,7 +98,7 @@ class RegisterController extends BaseController
         $token = $_GET['token'] ?? null;
 
         if (!$token) {
-            $this->view->render("error", [
+            $this->view->render("activate", [
                 "message" => "Token no provisto."
             ]);
             return;
@@ -106,11 +106,13 @@ class RegisterController extends BaseController
 
         $activationResult = $this->model->activarUsuarioPorToken($token);
 
-        if ($activationResult === true) {
-            $this->view->render("activationSuccess");
+        if ($activationResult == 'activado') {
+            $this->view->render("activate", [
+                "message" => "Cuenta activada correctamente."
+            ]);
         } else {
-            $this->view->render("activationError", [
-                "message" => $activationResult
+            $this->view->render("activate", [
+                "message" => "Lo sentimos. No ha sido posible activar tu cuenta."
             ]);
         }
     }
