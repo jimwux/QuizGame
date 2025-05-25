@@ -17,3 +17,35 @@
     margin-top: 2em;
     border-radius: 20px;
 }
+
+/* Me llegan a tocar los estilos del body se pudre todo */
+body {
+    background: #f8f9fa;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.login-card {
+    width: 100%;
+    max-width: 400px;
+    border: none;
+    border-radius: 1rem;
+    padding: 2rem;
+    background-color: #ffffff;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+.login-title {
+    font-size: 1.75rem;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+    color: #343a40;
+}
+
+.register-link {
+    margin-top: 1rem;
+    display: block;
+    text-align: center;
+}

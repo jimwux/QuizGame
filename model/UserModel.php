@@ -62,5 +62,91 @@ class UserModel
     }
 
 
+    // Lógica de negocio y acceso a la BD (consultas)
+    public function getUserById($id)
+    {
+        $query = $this->database->prepare("SELECT * FROM usuario WHERE id = :id LIMIT 1");
+        $query->bindValue(":id", $id);
+        $query->execute();
+        return $query->fetch();
+    }
+
+    public function getUserByUsername($username)
+    {
+        $query = $this->database->getConnection()->prepare("SELECT * FROM usuarios WHERE usuario = ? LIMIT 1");
+        $query->bind_param("s", $username);
+        $query->execute();
+        return $query->get_result()->fetch_assoc();
+
+//        return $this->database->query("SELECT * FROM usuarios WHERE usuario = $username LIMIT 1")->fetch();
+    }
+
+    public function validateLogin($username, $password): array
+    {
+
+        $errorsInputsEmptys = [];
+
+        if (!$username) {
+            $errorsInputsEmptys[] = "El nombre de usuario es obligatorio";
+        }
+
+        if (!$password) {
+            $errorsInputsEmptys[] = "El password es obligatorio";
+        }
+
+        if (!empty($errorsInputsEmptys)) {
+            return $errorsInputsEmptys;
+        }
+
+        $usuario = $this->getUserByUsername($username);
+
+//        echo "<pre>";
+//        var_dump($usuario);
+//        echo "</pre>";
+//        exit;
+        $errors = [];
+
+//        if (!$usuario) {
+//            $errors[] = "El usuario no existe";
+//            return $errors;
+//        }
+
+        $usernameDB = $usuario['usuario'] ?? [];
+        $passwordHash = $usuario['password'] ?? "";
+        $active = $usuario['activo'] ?? [];
+
+        if (!password_verify($password, $passwordHash) || $usernameDB != $username) {
+            $errors[] = "Credenciales invalidas";
+        }
+
+        if (!$this->verifyAccountActive($active) && !empty($usernameDB)) {
+            $errors[] = "Su cuenta no esta activada";
+            return $errors;
+        }
+
+        return $errors;
+    }
+
+    public function verifyAccountActive($active): bool
+    {
+        $isActive = false;
+        if ($active == 1) {
+            $isActive = true;
+        }
+
+        return $isActive;
+    }
+
+    public function login($username): bool
+    {
+        $usuario = $this->getUserByUsername($username);
+        session_start();
+
+        $_SESSION["id"] = $usuario['id'];
+        $_SESSION["username"] = $usuario['usuario'];
+        $_SESSION["nombre"] = $usuario['nombre_completo'];
+
+        return true;
+    }
 
 }
