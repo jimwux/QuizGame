@@ -61,8 +61,6 @@ class UserModel
         return true;  // Inserción exitosa
     }
 
-
-    // Lógica de negocio y acceso a la BD (consultas)
     public function getUserById($id)
     {
         $query = $this->database->prepare("SELECT * FROM usuario WHERE id = :id LIMIT 1");
@@ -78,7 +76,6 @@ class UserModel
         $query->execute();
         return $query->get_result()->fetch_assoc();
 
-//        return $this->database->query("SELECT * FROM usuarios WHERE usuario = $username LIMIT 1")->fetch();
     }
 
     public function validateLogin($username, $password): array
@@ -100,16 +97,7 @@ class UserModel
 
         $usuario = $this->getUserByUsername($username);
 
-//        echo "<pre>";
-//        var_dump($usuario);
-//        echo "</pre>";
-//        exit;
         $errors = [];
-
-//        if (!$usuario) {
-//            $errors[] = "El usuario no existe";
-//            return $errors;
-//        }
 
         $usernameDB = $usuario['usuario'] ?? [];
         $passwordHash = $usuario['password'] ?? "";

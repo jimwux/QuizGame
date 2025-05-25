@@ -14,8 +14,11 @@ class MustachePresenter{
     }
 
     public function render($contentFile , $data = array() ){
-        echo  $this->generateHtml(  $this->partialsPathLoader . '/' . $contentFile . "View.mustache" , $data);
-    }
+        session_start();
+        if (isset($_SESSION["nombre"])) {
+            $data["nombre"] = $_SESSION["nombre"];
+        }
+        echo $this->generateHtml($this->partialsPathLoader . '/' . $contentFile . "View.mustache", $data);    }
 
     public function generateHtml($contentFile, $data = array()) {
         $contentAsString = file_get_contents(  $this->partialsPathLoader .'/header.mustache');
