@@ -29,14 +29,12 @@
         <!-- Derecha -->
         <div class="w3-right w3-hide-small">
             {{#nombre}}
-                <a href="./QuizGame/profile" class="w3-bar-item w3-button w3-padding-large">Hola, {{nombre}}</a>
-                <a href="index.php?controller=login&method=logout" class="w3-bar-item w3-button w3-padding-large">
-                  Cerrar sesión
-                </a>
+                <a href="/QuizGame/profile" class="w3-bar-item w3-button w3-padding-large">Hola, {{nombre}}</a>
+                <a href="/QuizGame/login/logout" class="w3-bar-item w3-button w3-padding-large">Cerrar sesión</a>
             {{/nombre}}
 
             {{^nombre}}
-                <a href="./QuizGame/login/show" class="w3-bar-item w3-button w3-padding-large">Iniciar sesión</a>
+                <a href="/QuizGame/login" class="w3-bar-item w3-button w3-padding-large">Iniciar sesión</a>
             {{/nombre}}
         </div>
 

@@ -43,6 +43,8 @@ class UserModel
         $sexo = $db->real_escape_string($data['gender']);
         $pais = $db->real_escape_string($data['country']);
         $ciudad = $db->real_escape_string($data['city']);
+        $latitud = $db->real_escape_string($data['latitude']);
+        $longitud = $db->real_escape_string($data['longitude']);
         $mail = $db->real_escape_string($data['email']);
         $usuario = $db->real_escape_string($data['username']);
         $password = $db->real_escape_string($data['password']);
@@ -50,9 +52,9 @@ class UserModel
         $tokenValidacion = $db->real_escape_string($data['token']);
 
         $sql = "INSERT INTO usuarios 
-        (nombre_completo, año_nacimiento, sexo, pais, ciudad, mail, usuario, password, foto_perfil, token_validacion, activo) 
+        (nombre_completo, año_nacimiento, sexo, pais, ciudad, latitud, longitud, mail, usuario, password, foto_perfil, token_validacion, activo) 
         VALUES 
-        ('$nombreCompleto', $anioNacimiento, '$sexo', '$pais', '$ciudad', '$mail', '$usuario', '$password', '$fotoPerfil', '$tokenValidacion', 0)";
+        ('$nombreCompleto', $anioNacimiento, '$sexo', '$pais', '$ciudad', '$latitud', '$longitud', '$mail', '$usuario', '$password', '$fotoPerfil', '$tokenValidacion', 0)";
 
         if (!$db->query($sql)) {
             return $db->error;  // Devuelve mensaje de error

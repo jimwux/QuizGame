@@ -1,0 +1,69 @@
+<div class="container my-4 bg-white rounded shadow-sm p-4 mt-5">
+
+    {{#user}}
+        <!-- Datos del perfil -->
+        <div class="row align-items-center mb-4 text-center text-md-start">
+            <div class="col-12 col-md-4 mb-3 mb-md-0">
+                <p class="mb-1 fw-bold fs-5">Usuario: {{usuario}}</p>
+                <small class="fs-6">{{año_nacimiento}} - {{sexo}}</small>
+            </div>
+            <div class="col-12 col-md-5 mb-3 mb-md-0 text-right">
+                <p class="fw-bold mb-1 fs-5">{{nombre_completo}}</p>
+                <p class="mb-1 fs-6">{{mail}}</p>
+                <small class="fs-6">{{ciudad}}, {{pais}}</small>
+            </div>
+            <!-- Imagen de perfil -->
+            <div class="col-12 col-md-3 d-flex justify-content-center justify-content-md-end">
+                {{#foto_perfil}}
+                    <img src="/QuizGame/public/uploads/{{foto_perfil}}" alt="Foto de perfil"
+                         class="rounded-circle img-fluid"
+                         style="width: 128px; height: 128px; object-fit: cover;">
+                {{/foto_perfil}}
+                {{^foto_perfil}}
+                    <i class="fa fa-user-circle text-secondary" style="font-size: 128px;"></i>
+                {{/foto_perfil}}
+            </div>
+
+        </div>
+    {{/user}}
+
+    <!-- Partidas jugadas -->
+    <h5 class="fw-bold mb-3 fs-4 text-center text-md-start">Partidas jugadas</h5>
+    <div class="row">
+        <div class="col-md-6">
+            {{#partidas}}
+                <div class="d-flex align-items-center bg-light rounded p-3 mb-3">
+                    <i class="fa fa-user-circle fa-2x text-muted me-3"></i>
+                    <div class="flex-grow-1">
+                        <div class="fs-6">Preguntas: <strong>{{preguntas}}</strong></div>
+                        <div class="fs-6">Puntaje obtenido: <strong>{{puntaje}} pts</strong></div>
+                        <div class="fs-6">Destacado en:
+                            <span class="badge text-bg-light border border-1 ms-1">
+                                <i class="fa fa-trophy me-1"></i>
+                                <span class="text-{{categoria_color}}">{{categoria}}</span>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            {{/partidas}}
+        </div>
+
+        <!-- Mapa (ubicación) -->
+        <div class="col-md-6">
+            {{#user}}
+                <div id="map"
+                     data-lat="{{latitud}}"
+                     data-lng="{{longitud}}"
+                     style="width: 100%; height: 320px; border-radius: 12px; overflow: hidden;">
+                </div>
+            {{/user}}
+        </div>
+    </div>
+
+</div>
+
+<!-- Leaflet CSS y JS -->
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<!-- Script del mapa -->
+<script src="/QuizGame/public/js/profile.js" defer></script>

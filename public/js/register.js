@@ -21,6 +21,9 @@ map.on('click', e => {
     if (marker) map.removeLayer(marker);
     marker = L.marker([lat, lng]).addTo(map);
 
+    document.getElementById('latitude').value = lat;
+    document.getElementById('longitude').value = lng;
+
     fetch(`https://us1.locationiq.com/v1/reverse.php?key=pk.7257f3970bb73e804534d21a4e355fd5&lat=${lat}&lon=${lng}&format=json`)
         .then(res => res.json())
         .then(data => {
@@ -93,6 +96,11 @@ function validateForm() {
     // Validar email con regex
     const emailValue = form.elements['email'].value;
     if (!validateEmail(emailValue)) valid = false;
+
+    // Validar que haya ingresado ubicación
+    const lat = form.elements['latitude'].value;
+    const lng = form.elements['longitude'].value;
+    if (!lat || !lng) valid = false;
 
     // Validar contraseñas iguales
     if (form.elements['password'].value !== form.elements['confirmPassword'].value) valid = false;
