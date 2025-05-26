@@ -13,7 +13,7 @@ class LobbyController extends BaseController
     {
         session_start();
         if (!isset($_SESSION['id'])) {
-            header('Location: /QuizGame/login/show');
+            header('Location: /QuizGame/login');
             exit;
         }
 

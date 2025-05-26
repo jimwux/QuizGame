@@ -1,5 +1,3 @@
-<body class="w3-light-grey">
-
 <div class="container my-4 bg-white rounded shadow-sm p-4 mt-5">
 
     {{#user}}
@@ -9,7 +7,7 @@
                 <p class="mb-1 fw-bold fs-5">Usuario: {{usuario}}</p>
                 <small class="fs-6">{{año_nacimiento}} - {{sexo}}</small>
             </div>
-            <div class="col-12 col-md-5 mb-3 mb-md-0">
+            <div class="col-12 col-md-5 mb-3 mb-md-0 text-right">
                 <p class="fw-bold mb-1 fs-5">{{nombre_completo}}</p>
                 <p class="mb-1 fs-6">{{mail}}</p>
                 <small class="fs-6">{{ciudad}}, {{pais}}</small>
@@ -17,7 +15,7 @@
             <!-- Imagen de perfil -->
             <div class="col-12 col-md-3 d-flex justify-content-center justify-content-md-end">
                 {{#foto_perfil}}
-                    <img src="{{foto_perfil}}" alt="Foto de perfil"
+                    <img src="/QuizGame/public/uploads/{{foto_perfil}}" alt="Foto de perfil"
                          class="rounded-circle img-fluid"
                          style="width: 128px; height: 128px; object-fit: cover;">
                 {{/foto_perfil}}
@@ -52,11 +50,13 @@
 
         <!-- Mapa (ubicación) -->
         <div class="col-md-6">
-            <div id="map"
-                 data-lat="{{latitud}}"
-                 data-lng="{{longitud}}"
-                 style="width: 100%; height: 320px; border-radius: 12px; overflow: hidden;">
-            </div>
+            {{#user}}
+                <div id="map"
+                     data-lat="{{latitud}}"
+                     data-lng="{{longitud}}"
+                     style="width: 100%; height: 320px; border-radius: 12px; overflow: hidden;">
+                </div>
+            {{/user}}
         </div>
     </div>
 
