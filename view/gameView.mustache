@@ -1,0 +1,24 @@
+<section>
+    <h1>Partida {{partida.id}}</h1>
+
+    <p>Jugador: {{usuario.nombre}}</p>
+    <p>Puntaje actual: {{partida.puntaje}}</p>
+
+    <h2>Pregunta {{pregunta.id}}</h2>
+    <p>{{pregunta.texto}}</p>
+
+    <form action="/game/response" method="POST">
+        <input type="hidden" name="partidaId" value="{{partida.id}}">
+        <input type="hidden" name="preguntaId" value="{{pregunta.id}}">
+
+        {{#pregunta.opciones}}
+            <button type="submit" name="respuestaUsuario" value="{{key}}">
+                {{texto}}
+            </button><br>
+        {{/pregunta.opciones}}
+    </form>
+
+    {{#mensaje}}
+        <p style="color: red;">{{mensaje}}</p>
+    {{/mensaje}}
+</section>
