@@ -60,9 +60,15 @@ class Configuration
     {
         return new LoginController(new UserModel($this->getDatabase()), $this->getViewer());
     }
+
     public function getProfileController(): ProfileController
     {
         return new ProfileController(new UserModel($this->getDatabase()), $this->getViewer());
+    }
+
+    public function getGameController(): GameController
+    {
+        return new GameController(new GameModel($this->getDatabase()), $this->getViewer());
     }
 
 }
