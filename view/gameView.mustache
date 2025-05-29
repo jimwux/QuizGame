@@ -1,92 +1,101 @@
-{{#datos}}
-    <div class="d-flex flex-column min-vh-100 position-relative pt-reorganized-xxl"
-         style="background-color: {{category.color}};">
+<section>
+    <h1>Partida {{partida.id}}</h1>
 
-        <div class="position-absolute top-0 start-50 translate-middle-x mt-reorganized-clock-xxl"
-             style="padding-top: 60px">
-            <span class="badge bg-dark text-white fs-4 p-3 rounded-pill shadow-lg">05:30</span>
-        </div>
+    <p>Jugador: {{usuario.nombre}}</p>
+    {{#datos}}
+        <div class="d-flex flex-column min-vh-100 position-relative pt-reorganized-xxl"
+             style="background-color: {{category.color}};">
 
-        <div class="container d-flex flex-grow-1 align-items-center justify-content-center py-4">
-            <div class="row w-100 justify-content-center">
-                <div class="col-lg-8 col-md-10">
-                    <div class="card shadow-lg d-flex flex-column rounded-4">
-                        <div class="card-header d-flex justify-content-between align-items-center py-3 bg-transparent border-bottom">
-                            <h5 class="mb-0 fw-bold text-dark fs-6">Quiz Game! 🤓</h5>
-                            <span class="badge fs-5 p-3 rounded-pill fw-bold"
-                                  style="background-color: {{category.color}}; color: white;">
-                                {{category.nombre}}
-                            </span>
+            <div class="position-absolute top-0 start-50 translate-middle-x mt-reorganized-clock-xxl"
+                 style="padding-top: 60px">
+                <span class="badge bg-dark text-white fs-4 p-3 rounded-pill shadow-lg">05:30</span>
+            </div>
+
+            <div class="container d-flex flex-grow-1 align-items-center justify-content-center py-4">
+                <div class="row w-100 justify-content-center">
+                    <div class="col-lg-8 col-md-10">
+                        <div class="card shadow-lg d-flex flex-column rounded-4">
+                            <div class="card-header d-flex justify-content-between align-items-center py-3 bg-transparent border-bottom">
+                                <h5 class="mb-0 fw-bold text-dark fs-6">Quiz Game! 🤓</h5>
+                                <span class="badge fs-5 p-3 rounded-pill fw-bold"
+                                      style="background-color: {{category.color}}; color: white;">
+                                    {{category.nombre}}
+                                </span>
+                            </div>
+
+                            <div class="card-body p-4 p-md-5 d-flex flex-column justify-content-center flex-grow-1">
+                                <form id="question-form" method="POST" action="/QuizGame/game/getNextQuestion">
+                                    <input type="hidden" name="idQuestion" value="{{question.id}}">
+                                    <p class="question-text text-center lead mb-4 fw-bold fs-1"> {{question.texto}}
+                                    </p>
+                                    <div class="row g-3 justify-content-center">
+                                        {{#answers}}
+                                            <div class="col-md-6">
+                                                <button type="submit" name="es_correcta" value="{{es_correcta}}"
+                                                        class="btn btn-outline-primary btn-lg w-100 text-start">
+                                                    {{texto}}
+                                                </button>
+                                            </div>
+                                        {{/answers}}
+                                    </div>
+                                </form>
+                            </div>
                         </div>
+                    </div>
+                </div>
+            </div>
 
-                        <div class="card-body p-4 p-md-5 d-flex flex-column justify-content-center flex-grow-1">
-                            <form id="question-form" method="POST" action="/QuizGame/game/getNextQuestion">
-                                <input type="hidden" name="idQuestion" value="{{question.id}}">
-                                <p class="question-text text-center lead mb-4 fw-bold fs-1"> {{question.texto}}
-                                </p>
-                                <div class="row g-3 justify-content-center">
-                                    {{#answers}}
-                                        <div class="col-md-6">
-                                            <button type="submit" name="es_correcta" value="{{es_correcta}}"
-                                                    class="btn btn-outline-primary btn-lg w-100 text-start">
-                                                {{texto}}
-                                            </button>
-                                        </div>
-                                    {{/answers}}
-                                </div>
-                            </form>
+            <div class="d-lg-none d-flex flex-column align-items-center mb-4 px-3 w-100">
+                <div class="card text-center bg-info text-white shadow-lg mb-3" style="width: 12rem;">
+                    <div class="card-body py-2">
+                        <h6 class="card-subtitle mb-1">Puntaje Actual</h6>
+                        <p class="card-text fs-2 fw-bold">150</p>
+                    </div>
+                </div>
+                <button class="btn btn-danger shadow-sm w-75" data-bs-toggle="modal" data-bs-target="#reportQuestionModal">
+                    Reportar Pregunta <i class="bi bi-flag-fill"></i>
+                </button>
+            </div>
+
+            <div class="position-absolute bottom-0 start-50 translate-middle-x mb-4 d-none d-lg-block">
+                <div class="card text-center bg-info text-white shadow-lg" style="width: 12rem;">
+                    <div class="card-body py-2">
+                        <h6 class="card-subtitle mb-1">Puntaje Actual</h6>
+                        <p class="card-text fs-2 fw-bold">150</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="position-absolute bottom-0 end-0 mb-4 me-4 d-none d-lg-block">
+                <button class="btn btn-danger shadow-sm" data-bs-toggle="modal" data-bs-target="#reportQuestionModal">
+                    Reportar Pregunta <i class="bi bi-flag-fill"></i>
+                </button>
+            </div>
+
+            <div class="modal fade" id="reportQuestionModal" tabindex="-1" aria-labelledby="reportQuestionModalLabel"
+                 aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                        <div class="modal-header bg-danger text-white">
+                            <h5 class="modal-title" id="reportQuestionModalLabel">Reportar Pregunta</h5>
+                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                                    aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <p>¿Estás seguro de que quieres reportar esta pregunta por ser inapropiada o incorrecta?</p>
+                            <textarea class="form-control" rows="3" placeholder="Añade un comentario (opcional)"></textarea>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                            <button type="button" class="btn btn-danger">Enviar Reporte</button>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
+    {{/datos}}
 
-        <div class="d-lg-none d-flex flex-column align-items-center mb-4 px-3 w-100">
-            <div class="card text-center bg-info text-white shadow-lg mb-3" style="width: 12rem;">
-                <div class="card-body py-2">
-                    <h6 class="card-subtitle mb-1">Puntaje Actual</h6>
-                    <p class="card-text fs-2 fw-bold">150</p>
-                </div>
-            </div>
-            <button class="btn btn-danger shadow-sm w-75" data-bs-toggle="modal" data-bs-target="#reportQuestionModal">
-                Reportar Pregunta <i class="bi bi-flag-fill"></i>
-            </button>
-        </div>
-
-        <div class="position-absolute bottom-0 start-50 translate-middle-x mb-4 d-none d-lg-block">
-            <div class="card text-center bg-info text-white shadow-lg" style="width: 12rem;">
-                <div class="card-body py-2">
-                    <h6 class="card-subtitle mb-1">Puntaje Actual</h6>
-                    <p class="card-text fs-2 fw-bold">150</p>
-                </div>
-            </div>
-        </div>
-
-        <div class="position-absolute bottom-0 end-0 mb-4 me-4 d-none d-lg-block">
-            <button class="btn btn-danger shadow-sm" data-bs-toggle="modal" data-bs-target="#reportQuestionModal">
-                Reportar Pregunta <i class="bi bi-flag-fill"></i>
-            </button>
-        </div>
-
-        <div class="modal fade" id="reportQuestionModal" tabindex="-1" aria-labelledby="reportQuestionModalLabel"
-             aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered">
-                <div class="modal-content">
-                    <div class="modal-header bg-danger text-white">
-                        <h5 class="modal-title" id="reportQuestionModalLabel">Reportar Pregunta</h5>
-                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
-                                aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                        <p>¿Estás seguro de que quieres reportar esta pregunta por ser inapropiada o incorrecta?</p>
-                        <textarea class="form-control" rows="3" placeholder="Añade un comentario (opcional)"></textarea>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                        <button type="button" class="btn btn-danger">Enviar Reporte</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-{{/datos}}
+    {{#mensaje}}
+        <p style="color: red;">{{mensaje}}</p>
+    {{/mensaje}}
+</section>

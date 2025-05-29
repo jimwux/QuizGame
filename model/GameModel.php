@@ -2,13 +2,52 @@
 
 class GameModel
 {
-    private $db;
+    private $database;
 
-    public function __construct($db)
+    public function __construct($database)
     {
-        $this->db = $db;
+        $this->database = $database;
     }
 
+    public function createGame(int $usuarioId): ?int
+    {
+        $fecha = date('Y-m-d H:i:s');
+        $usuarioId = (int)$usuarioId;
+
+        $sql = "INSERT INTO partida (id_usuario, fecha, puntaje, finalizada) VALUES ($usuarioId, '$fecha', 0, 0)";
+        $this->database->execute($sql);
+
+        $conn = $this->database->getConnection();
+        return $conn->insert_id ?? null;
+    }
+
+
+    public function getGameById(int $partidaId): ?array
+    {
+        $sql = "SELECT * FROM partida WHERE id = $partidaId LIMIT 1";
+        $result = $this->database->query($sql);
+
+        if (count($result) > 0) {
+            return $result[0];
+        }
+        return null;
+    }
+
+    public function getGamesResultByUser($usuarioId)
+    {
+        $usuarioId = (int)$usuarioId;
+        $sql = "SELECT rp.*, 
+            c.nombre AS nombre_categoria, c.color AS color_categoria
+            FROM resumen_partida rp
+            JOIN categoria c ON rp.id_categoria = c.id
+            WHERE rp.id_usuario = 1
+            ORDER BY fecha_partida DESC
+            LIMIT 4;";
+
+        return $this->database->query($sql);
+    }
+
+    // Este metodo por ahora no se usa
     public function verifyQuestionRepeat($userId, $questionId)  // Verifica si una pregunta ya fue respondida por el usuario
     {
         $query = "SELECT 1 
@@ -16,7 +55,7 @@ class GameModel
                     JOIN partida pa ON pa.id = pp.id_partida
                     WHERE pa.id_usuario = ?
                     AND pp.id_pregunta = ? LIMIT 1";
-        $stmt = $this->db->getConnection()->prepare($query);
+        $stmt = $this->database->getConnection()->prepare($query);
         $stmt->bind_param("ii", $userId, $questionId);
         $stmt->execute();
         $result = $stmt->get_result();
@@ -28,7 +67,7 @@ class GameModel
     public function getNumberOfRowsInPregunta() // Obtiene la CANTIDAD de preguntas que hay en la BD
     {
         $numberOfQuestions = "SELECT COUNT(*) AS total FROM pregunta";
-        $queryPrepare = $this->db->getConnection()->prepare($numberOfQuestions);
+        $queryPrepare = $this->database->getConnection()->prepare($numberOfQuestions);
         $queryPrepare->execute();
         $result = $queryPrepare->get_result()->fetch_assoc();
         $queryPrepare->close();
@@ -45,7 +84,7 @@ class GameModel
         $numberRandom = rand(0, $cantidad - 1);
 
         $query = "SELECT * FROM pregunta LIMIT 1 OFFSET ?";
-        $stmt = $this->db->getConnection()->prepare($query);
+        $stmt = $this->database->getConnection()->prepare($query);
         $stmt->bind_param("i", $numberRandom);
         $stmt->execute();
         $result = $stmt->get_result();
@@ -54,8 +93,8 @@ class GameModel
         return $question;
     }
 
-    public function getUserCorrectRatio($userId)
-    { // Retorna el valor de dificultad por usuario
+    public function getUserCorrectRatio($userId)  // Retorna el valor de dificultad por usuario
+    {
         $query = "SELECT
                 SUM(CASE WHEN es_correcta = 1 THEN 1 ELSE 0 END) AS respuestas_correctas,
                 COUNT(*) AS total_respuestas
@@ -63,13 +102,13 @@ class GameModel
                 pregunta_usuario
               WHERE
                 id_usuario = ?";
-        $stmt = $this->db->getConnection()->prepare($query);
+        $stmt = $this->database->getConnection()->prepare($query);
         $stmt->bind_param("i", $userId);
         $stmt->execute();
         $result = $stmt->get_result()->fetch_assoc();
         $stmt->close();
 
-        // Condicional para saber si es usuario nuevo o boludo y se equivoco en todas, le ponemos dificultad media
+        // Condicional para saber si es usuario nuevo (o boludo y se equivoco en todas), le ponemos dificultad media
         if ($result['total_respuestas'] == 0) {
             return 0.5;
         }
@@ -77,7 +116,7 @@ class GameModel
     }
 
 
-    public function getQuestionForUser($userId) // Nombre más descriptivo
+    public function getQuestionForUser($userId) // Obtiene una pregunta que no fue respondida por el usuario
     {
 
         $userRatio = $this->getUserCorrectRatio($userId);
@@ -117,55 +156,14 @@ class GameModel
                 ORDER BY RAND()
                 LIMIT 1";
 
-        $stmt = $this->db->getConnection()->prepare($query);
+        $stmt = $this->database->getConnection()->prepare($query);
         $stmt->bind_param("is", $userId, $defaultDifficulty);
         $stmt->execute();
         $result = $stmt->get_result();
         $question = $result->fetch_assoc();
         $stmt->close();
 
-        /* Consultas para ver que tan boludo es el usuario */
-        // 1ro: Cuento que tantas preguntas correctas tiene el usuario
-//        $query = "SELECT COUNT(*) AS respuestas_correctas
-//                    FROM pregunta_usuario
-//                    WHERE id_usuario = ? AND es_correcta = ?";
-//        $stmt = $this->db->getConnection()->prepare($query);
-//        $stmt->bind_param("ii", $userId, 1);
-//        $stmt->execute();
-//        $result = $stmt->get_result()->fetch_assoc();
-//
-//        // 2do: Cuento que tantas preguntas incorrectas tiene el usuario
-//        $query2 = "SELECT COUNT(*) AS respuestas_incorrectas
-//                    FROM pregunta_usuario
-//                    WHERE id_usuario = ? AND es_correcta = ?";
-//        $stmt2 = $this->db->getConnection()->prepare($query2);
-//        $stmt2->bind_param("ii", $userId, 0);
-//        $stmt2->execute();
-//        $result2 = $stmt2->get_result()->fetch_assoc();
-
-        // 3ro Calculo la dificultad que tiene el usuario de responder las preguntas
-
-
-
-            // 1ro: Busco en la bd una pregunta donde el usuario NO haya respondido
-//        $query = "SELECT p.*
-//                  FROM pregunta p
-//                  WHERE p.id NOT IN (
-//                      SELECT pu.id_pregunta
-//                      FROM pregunta_usuario pu
-//                      WHERE pu.id_usuario = ?
-//                  )
-//                  ORDER BY RAND()
-//                  LIMIT 1";
-//
-//        $stmt = $this->db->getConnection()->prepare($query);
-//        $stmt->bind_param("i", $userId);
-//        $stmt->execute();
-//        $result = $stmt->get_result();
-//        $question = $result->fetch_assoc();
-//        $stmt->close();
-
-        // Si ya respondio todas las preguntas
+        // Ya respondio todas las preguntas
         if (!$question) {
             return null;
         }
@@ -182,10 +180,10 @@ class GameModel
         return $infoQuestionComplete; // Retorna pregunta, opciones y categoria
     }
 
-    public function getCategory($idCategory)
+    public function getCategory($idCategory) // Obtiene la informacion de una categoria especifica
     {
         $query = "SELECT * FROM categoria WHERE id = ?";
-        $stmt = $this->db->getConnection()->prepare($query);
+        $stmt = $this->database->getConnection()->prepare($query);
         $stmt->bind_param("i", $idCategory);
         $stmt->execute();
         $result = $stmt->get_result();
@@ -194,10 +192,10 @@ class GameModel
         return $category;
     }
 
-    public function getAnswers($idQuestion)
+    public function getAnswers($idQuestion) // Obtiene las respuestas de una pregunta
     {
         $query = "SELECT * FROM respuesta WHERE id_pregunta = ?";
-        $stmt = $this->db->getConnection()->prepare($query);
+        $stmt = $this->database->getConnection()->prepare($query);
         $stmt->bind_param("i", $idQuestion);
         $stmt->execute();
         $result = $stmt->get_result();
@@ -213,38 +211,38 @@ class GameModel
 
     }
 
-    public function verifyQuestionCorrect($infoAnswer, $userId)
+    public function verifyQuestionCorrect($infoAnswer, $userId) // Verifica y retorna una nueva pregunta
     {
 
         $idQuestion = $infoAnswer["idQuestion"];
         $esCorrecta = $infoAnswer["es_correcta"];
 
-        // 1ro: Actualizar la BD -> aumentar la cantidad de veces vista + 1 en la pregunta
+        // 1ro: Actualizar la BD -> aumentar la cantidad de veces VISTA + 1 en la pregunta para futuras estadisticas
         $query = "UPDATE pregunta SET veces_mostrada = veces_mostrada + 1 WHERE id = $idQuestion";
-        $stmt = $this->db->getConnection()->prepare($query);
+        $stmt = $this->database->getConnection()->prepare($query);
         $stmt->execute();
         $stmt->close();
 
         // 2do: Para obtener el id de la respuesta hago una consulta
         $query3 = "SELECT * FROM respuesta WHERE id_pregunta = ?";
-        $stmt3 = $this->db->getConnection()->prepare($query3);
+        $stmt3 = $this->database->getConnection()->prepare($query3);
         $stmt3->bind_param("i", $idQuestion);
         $stmt3->execute();
         $result = $stmt3->get_result()->fetch_assoc();
 
         $idAnswer = $result["id"];
 
-        // 3ro: Guardar la pregunta que ya respondio
+        // 3ro: Guardar la pregunta que ya respondio asi no se repita a futuro
         $query4 = "INSERT INTO pregunta_usuario (id_usuario, id_pregunta, id_respuesta, es_correcta) VALUES (?, ? ,? ,? )";
-        $stmt4 = $this->db->getConnection()->prepare($query4);
+        $stmt4 = $this->database->getConnection()->prepare($query4);
         $stmt4->bind_param("iiii", $userId, $idQuestion, $idAnswer, $esCorrecta);
         $stmt4->execute();
         $stmt4->close();
 
         if ($esCorrecta == 1) {
-            // 4to: Actualizar la DB -> aumentar la cantidad de veces correctamente respondida + 1
+            // 4to: Actualizar la DB -> aumentar la cantidad de veces CORRECTAMENTE respondida + 1
             $query2 = "UPDATE pregunta SET veces_respondida_correctamente = veces_respondida_correctamente + 1 WHERE id = $idQuestion";
-            $stmt2 = $this->db->getConnection()->prepare($query2);
+            $stmt2 = $this->database->getConnection()->prepare($query2);
             $stmt2->execute();
             $stmt2->close();
 
@@ -252,26 +250,10 @@ class GameModel
             return $this->getQuestionForUser($userId);
         }
 
+        // Aca se puede retornar un mensaje de que la respuesta que elijio esta mal
         return null;
 
 
     }
 
 }
-
-
-
-// FLUJO PARA JUGAR
-
-/*
- *  Usuario presiona boton "Comenzar partida"
- *  Antes de mostrar la pregunta se debe verificar que la pregunta que se va a mostrar no la haya hecho el usuario
- *  En caso de que no la haya contestado previamente, se muestra la pregunta
- *      Caso contrario, si ya respondio todas las preguntas llevar a lobby
- *  Elige la respuesta
- *      Se verifica que la respuesta sea correcta
- *  Si la respuesta es correcta se le suma un punto y se vuelve a verificar la proxima pregunta
- *      Caso contrario, partida terminada y se manda al lobby
- *  En caso de que no la haya contestado previamente, se muestra la pregunta
- *      Caso contrario, si ya respondio todas las preguntas llevar a lobby
- */

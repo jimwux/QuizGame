@@ -2,23 +2,29 @@
 
 class LobbyController extends BaseController
 {
+    private $model;
     private $view;
 
-    public function __construct($view)
+    public function __construct($model, $view)
     {
+        $this->model = $model;
         $this->view = $view;
     }
-
     public function show()
     {
-        session_start();
-        if (!isset($_SESSION['id'])) {
-            header('Location: /QuizGame/login');
-            exit;
-        }
+        $this->validateSession();
 
-        $this->view->render("lobby", []);
+        $usuarioId = $_SESSION['id'];
+        $partidas = $this->model->getGamesResultByUser($usuarioId);
+
+
+        $data = [
+            'partidas' => $partidas,
+        ];
+
+        $this->view->render('lobby', $data);
     }
+
 
 
 }
