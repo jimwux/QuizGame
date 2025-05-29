@@ -142,3 +142,13 @@ CREATE TABLE estadistica_respuestas_usuario (
                                                 nivel_calculado INT DEFAULT NULL,
                                                 FOREIGN KEY (id_usuario) REFERENCES usuarios(id)
 );
+
+-- Tabla respuesta
+DROP TABLE IF EXISTS pregunta_usuario;
+CREATE TABLE pregunta_usuario (
+                          id INT(11) PRIMARY KEY AUTO_INCREMENT,
+                          id_usuario INT(11) NOT NULL,
+                          id_pregunta INT(11) NOT NULL,
+                          id_respuesta INT(11) NOT NULL,
+                          es_correcta INT(11) NOT NULL
+);
