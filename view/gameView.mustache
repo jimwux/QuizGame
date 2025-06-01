@@ -1,24 +1,40 @@
 <section>
     <h1>Partida {{partida.id}}</h1>
+    <div class="progreso">
+        <p>Pregunta <span id="pregunta-numero-actual">{{pregunta_numero_actual}}</span></p>
+        <p>Puntaje: <span id="puntaje-acumulado">{{puntaje_acumulado}}</span></p>
+    </div>
 
-    <p>Jugador: {{usuario.nombre}}</p>
-    <p>Puntaje actual: {{partida.puntaje}}</p>
+    <div id="mensaje-feedback" class="alert" style="display:none;"></div>
 
-    <h2>Pregunta {{pregunta.id}}</h2>
-    <p>{{pregunta.texto}}</p>
+    <section id="game-container">
+        <h2 id="pregunta-texto">{{pregunta.texto}}</h2>
+        
+        {{#pregunta.imagen}}
+            <img id="pregunta-imagen" src="{{pregunta.imagen}}" alt="Imagen de la pregunta" style="max-width: 100%; height: auto;">
+        {{/pregunta.imagen}}
+        {{^pregunta.imagen}}
+            <img id="pregunta-imagen" src="" alt="Imagen de la pregunta" style="display: none; max-width: 100%; height: auto;">
+        {{/pregunta.imagen}}
 
-    <form action="/game/response" method="POST">
-        <input type="hidden" name="partidaId" value="{{partida.id}}">
-        <input type="hidden" name="preguntaId" value="{{pregunta.id}}">
+        <form id="game-form" action="index.php?controller=game&method=responderAjax" method="POST">
+            <input type="hidden" name="partidaId" value="{{partida.id}}" id="input-partida-id">
+            <input type="hidden" name="preguntaId" value="{{pregunta.id}}" id="input-pregunta-id">
 
-        {{#pregunta.opciones}}
-            <button type="submit" name="respuestaUsuario" value="{{key}}">
-                {{texto}}
-            </button><br>
-        {{/pregunta.opciones}}
-    </form>
+            <div id="opciones-pregunta">
+                {{#pregunta.opciones}}
+                    <button type="submit" name="respuestaUsuario" value="{{key}}">
+                        {{texto}}
+                    </button><br>
+                {{/pregunta.opciones}}
+            </div>
+        </form>
+    </section>
 
     {{#mensaje}}
         <p style="color: red;">{{mensaje}}</p>
     {{/mensaje}}
+
 </section>
+
+<script src="/QuizGame/public/js/game.js" defer></script>

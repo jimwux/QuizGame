@@ -158,7 +158,7 @@ class UserModel
     public function login($username): bool
     {
         $usuario = $this->getUserByUsername($username);
-        session_start();
+
 
         $_SESSION["id"] = $usuario['id'];
         $_SESSION["username"] = $usuario['usuario'];
@@ -166,5 +166,41 @@ class UserModel
 
         return true;
     }
+
+
+
+#----------------------------------------------------------------------------------------
+
+    public function obtenerPreguntasNoRespondidas($usuario_id) {
+        $db = $this->database->getConnection();
+
+        $stmt = $db->prepare("
+            SELECT * FROM preguntas 
+            WHERE id NOT IN (
+                SELECT pregunta_id FROM preguntas_vistas WHERE usuario_id = ?
+            )
+        ");
+        $stmt->bind_param("i", $usuario_id);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        return $result->fetch_all(MYSQLI_ASSOC);
+    }
+
+    public function markQuestionAsSeen(int $usuarioId, int $preguntaId): void {
+        $sql = "
+            INSERT INTO pregunta_vista (id_usuario, id_pregunta)
+            VALUES ($usuarioId, $preguntaId)
+            ON DUPLICATE KEY UPDATE fecha_vista = CURRENT_TIMESTAMP;
+        ";
+        $this->database->execute($sql);
+    }
+#----------------------------------------------------------------------------------------
+
+/*
+$preguntas = UserModel::obtenerPreguntasNoRespondidas($usuario_id);
+
+$userModel = new UserModel($db); // donde $db es tu objeto Database
+$preguntas = $userModel->obtenerPreguntasNoRespondidas($usuario_id);
+*/
 
 }

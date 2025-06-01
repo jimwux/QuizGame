@@ -13,7 +13,6 @@ class ProfileController extends BaseController
     // Validar formularios, peticiones HTTP, redirecciones y comunicar al modelo
     public function show()
     {
-        session_start();
         if(!isset($_SESSION['username'])){
             $this->view->render("login");
             print_r($_SESSION);

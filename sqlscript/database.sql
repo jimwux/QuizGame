@@ -24,9 +24,9 @@ CREATE TABLE usuarios (
 -- Tabla categoria
 DROP TABLE IF EXISTS categoria;
 CREATE TABLE categoria (
-                           id INT AUTO_INCREMENT PRIMARY KEY,
-                           nombre VARCHAR(100) NOT NULL,
-                           color VARCHAR(7) NOT NULL -- formato #RRGGBB
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nombre VARCHAR(100) NOT NULL UNIQUE,
+    color VARCHAR(7) NOT NULL -- formato #RRGGBB
 );
 
 -- Tabla dificultad
@@ -50,14 +50,26 @@ CREATE TABLE pregunta (
                           FOREIGN KEY (id_creador) REFERENCES usuarios(id)
 );
 
+-- Tabla para las preguntas vistas
+CREATE TABLE pregunta_vista (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    id_usuario INT NOT NULL,
+    id_pregunta INT NOT NULL,
+    fecha_vista DATETIME DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE (id_usuario, id_pregunta), -- Asegura que una pregunta solo se registre una vez por usuario
+    FOREIGN KEY (id_usuario) REFERENCES usuarios(id),
+    FOREIGN KEY (id_pregunta) REFERENCES pregunta(id)
+);
+
 -- Tabla respuesta
 DROP TABLE IF EXISTS respuesta;
 CREATE TABLE respuesta (
-                           id INT AUTO_INCREMENT PRIMARY KEY,
-                           id_pregunta INT NOT NULL,
-                           texto VARCHAR(255) NOT NULL,
-                           es_correcta BOOLEAN NOT NULL,
-                           FOREIGN KEY (id_pregunta) REFERENCES pregunta(id)
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    id_pregunta INT NOT NULL,
+    texto VARCHAR(255) NOT NULL,
+    es_correcta BOOLEAN NOT NULL,
+    letra CHAR(1) NOT NULL, -- Nueva columna para 'a', 'b', 'c', 'd'
+    FOREIGN KEY (id_pregunta) REFERENCES pregunta(id)
 );
 
 -- Tabla partida (simplificada, sin tipo)
@@ -142,3 +154,4 @@ CREATE TABLE estadistica_respuestas_usuario (
                                                 nivel_calculado INT DEFAULT NULL,
                                                 FOREIGN KEY (id_usuario) REFERENCES usuarios(id)
 );
+
