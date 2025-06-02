@@ -141,12 +141,8 @@ class GameController extends BaseController
             $puntaje = $this->model->getScore($partidaId);
             $this->model->saveGame($partidaId, $puntaje);//si no me equivoco guarda sobre la carpeta partida
             $this->model->guardarResumenPartida($partidaId,$userId);
-            $datosPartida = $this->model->getGameById($partidaId);
-            $data =  [
-                'partida' => $datosPartida,
-                'puntaje' => $puntaje,
-                'usuario' => $_SESSION['username'],
-            ];
+            $data["game"] = $this->model->getResumenPartida($partidaId,$userId);
+
             $this->view->render('finPartida',$data);
         }
 

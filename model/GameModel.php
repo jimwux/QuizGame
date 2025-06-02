@@ -356,5 +356,12 @@ class GameModel
 
         $this->database->execute($sql);
     }
+    public function getResumenPartida(
+        int $idPartida,
+        int $idUsuario,
+    ){
+        $sql = "SELECT * FROM resumen_partida WHERE id_partida = $idPartida AND id_usuario = $idUsuario LIMIT 1";
+        return $res = $this->database->query($sql);
 
+    }
 }

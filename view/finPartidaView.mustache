@@ -6,22 +6,37 @@
         color: #f9f9f9;
     }
     .stadistics{
+        color: #f9f9f9;
         display: grid;
+        justify-content: center;
         margin: 0 10em 0 10em;
-        align-items: center;
-
+        text-align: center;
         button{
             font-size: large;
             background-color: #f9f9f9;
         }
     }
+    .stadistics div{
+    }
 }</style>
 <h1 class="w3-clr-white"->Partida perdida</h1>
+{{#game}}
 <div class="stadistics">
-{{#data}}
-    hola {{username}}
-    {{partida}}
-{{/data}}
-    <!-- <a href="/QuizGame/lobby"> -->
+            <div>
+                <h3>
+                   Cantidad de respuestas correctas:
+                    {{cantidad_correctas}}
+                </h3>
+            </div>
+            <div>
+        <h3>
+            Puntaje total:
+            {{puntaje}}
+        </h3>
+            </div>
+
+    <a href="/QuizGame/lobby" class="w3-bar-item w3-button w3-padding-large ">Volver al inicio</a>
+
 
 </div>
+        {{/game}}
