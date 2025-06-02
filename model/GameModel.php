@@ -244,6 +244,9 @@ class GameModel
         $idQuestion = $infoAnswer["idQuestion"];
         $esCorrecta = $infoAnswer["es_correcta"];
 
+        if ($esCorrecta === "timeout") {
+            return null;
+        }
         // 1. Aumentar veces mostrada
         $query = "UPDATE pregunta SET veces_mostrada = veces_mostrada + 1 WHERE id = $idQuestion";
         $stmt = $this->database->getConnection()->prepare($query);
@@ -358,10 +361,8 @@ class GameModel
     }
     public function getResumenPartida(
         int $idPartida,
-        int $idUsuario,
+        int $idUsuario
     ){
         $sql = "SELECT * FROM resumen_partida WHERE id_partida = $idPartida AND id_usuario = $idUsuario LIMIT 1";
-        return $res = $this->database->query($sql);
-
-    }
+        return $res = $this->database->query($sql);}
 }
