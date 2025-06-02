@@ -27,16 +27,13 @@ class LoginController extends BaseController
             return $this->view->render("login", ["errors" => $validationData]);
         } else {
             $this->model->login($username);
-            header("location: /QuizGame/lobby");
-            exit;
+            $this->redirectTo('lobby');
         }
 
     }
 
     public function logout(): void {
-//        session_start();
         session_destroy();
-        header('Location: /QuizGame/login');
-        exit();
+        $this->redirectTo('login');
     }
 }

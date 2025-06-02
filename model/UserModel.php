@@ -162,15 +162,25 @@ class UserModel
     {
         $usuario = $this->getUserByUsername($username);
 
-//        if (session_status() === PHP_SESSION_NONE) {
-//            session_start();
-//        }
-
         $_SESSION["id"] = $usuario['id'];
         $_SESSION["username"] = $usuario['usuario'];
         $_SESSION["nombre"] = $usuario['nombre_completo'];
 
         return true;
+    }
+
+    public function getGamesResultByUser($usuarioId)
+    {
+        $usuarioId = (int)$usuarioId;
+        $sql = "SELECT rp.*, 
+                c.nombre AS nombre_categoria, c.color AS color_categoria
+                FROM resumen_partida rp
+                LEFT JOIN categoria c ON rp.id_categoria = c.id
+                WHERE rp.id_usuario = $usuarioId
+                ORDER BY fecha_partida DESC
+                LIMIT 4";
+
+        return $this->database->query($sql);
     }
 
 }

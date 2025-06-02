@@ -33,20 +33,6 @@ class GameModel
         return null;
     }
 
-    public function getGamesResultByUser($usuarioId)
-    {
-        $usuarioId = (int)$usuarioId;
-        $sql = "SELECT rp.*, 
-                c.nombre AS nombre_categoria, c.color AS color_categoria
-                FROM resumen_partida rp
-                LEFT JOIN categoria c ON rp.id_categoria = c.id
-                WHERE rp.id_usuario = $usuarioId
-                ORDER BY fecha_partida DESC
-                LIMIT 4";
-
-        return $this->database->query($sql);
-    }
-
     // Este metodo por ahora no se usa
     public function verifyQuestionRepeat($userId, $questionId)  // Verifica si una pregunta ya fue respondida por el usuario
     {

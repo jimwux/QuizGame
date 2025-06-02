@@ -17,16 +17,9 @@ class LobbyController extends BaseController
         $usuarioId = $_SESSION['id'];
         $partidas = $this->model->getGamesResultByUser($usuarioId);
 
-
         $data = [
             'partidas' => $partidas,
         ];
-        
-        //para verificar que se esta pasando en el array
-        //echo '<pre>';
-        //print_r($partidas);
-        //echo '</pre>';
-
 
         $this->view->render('lobby', $data);
     }

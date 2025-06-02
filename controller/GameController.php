@@ -12,11 +12,7 @@ class GameController extends BaseController
     }
 
     public function createGame() { // GUARDA EN LA TABLA partida LOS DATOS DE LA PARTIDA
-//        session_start();
-        if (!isset($_SESSION['id'])) {
-            header("Location: login");
-            exit;
-        }
+        $this->validateSession();
 
         $usuarioId = $_SESSION['id'];
         $partidaId = $this->model->createGame($usuarioId);
@@ -75,54 +71,6 @@ class GameController extends BaseController
         ];
 
         $this->view->render('game', $datosParaVista);
-    }
-
-
-    public function response () { 
-
-        if (!isset($_SESSION['usuario']['id'])) {
-            header('Location: /login');
-            exit;
-        }
-
-        $usuarioId = $_SESSION['usuario']['id'];
-        $partidaId = $_POST['partidaId'] ?? null;
-        $preguntaId = $_POST['preguntaId'] ?? null;
-        $respuestaUsuario = $_POST['respuestaUsuario'] ?? null;
-
-        if (!$partidaId || !$preguntaId || !$respuestaUsuario) {
-            // Podés manejar error aquí
-            header("Location: show?id=$partidaId");
-            exit;
-        }
-
-        $datosPartida = $this->model->getGameById($partidaId);
-
-        if (!$datosPartida || $datosPartida['usuario_id'] != $usuarioId) {
-            header('Location: /login');
-            exit;
-        }
-
-        // Validar respuesta
-        $esCorrecta = $this->model->validateAnswer($preguntaId, $respuestaUsuario);
-
-        // Guardar respuesta
-        $this->model->saveAnswer($partidaId, $preguntaId, $respuestaUsuario, $esCorrecta);
-        
-        $puntaje = $this->model->getScore($partidaId);
-        $this->model->saveGame($partidaId, $puntaje);
-
-        if (!$esCorrecta) {
-            // Fin de la partida
-            
-            header("Location: /gameResult?id=$partidaId");
-            exit;
-        }
-        
-
-        // Si fue correcta, mostrar siguiente pregunta
-        header("Location: show?id=$partidaId");
-        exit;
     }
 
     public function getNextQuestion() // ESTE METODO SE LLAMA CUANDO EL USUARIO SELECCIONA UNA OPCION DE LA PREGUNTA
