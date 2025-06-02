@@ -45,7 +45,7 @@ class Configuration
 
     public function getLobbyController(): LobbyController
     {
-        return new LobbyController(new GameModel($this->getDatabase()), $this->getViewer());
+        return new LobbyController(new UserModel($this->getDatabase()), $this->getViewer());
     }
 
     public function getRegisterController(): RegisterController
@@ -57,6 +57,7 @@ class Configuration
     {
         return new LoginController(new UserModel($this->getDatabase()), $this->getViewer());
     }
+
     public function getProfileController(): ProfileController
     {
         return new ProfileController(new UserModel($this->getDatabase()), $this->getViewer());

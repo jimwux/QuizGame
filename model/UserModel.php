@@ -62,11 +62,13 @@ class UserModel
 
         return true;  // Inserción exitosa
     }
-    public function activarUsuarioPorToken(string $token): string {
+
+    public function activarUsuarioPorToken(string $token): string
+    {
         $db = $this->database->getConnection();
-        
+
         if (empty($token)) {
-        return 'token_invalido';
+            return 'token_invalido';
         }
 
         // Preparar la consulta
@@ -91,6 +93,7 @@ class UserModel
 
         return 'activado';
     }
+
     public function getUserById($id)
     {
         $query = $this->database->prepare("SELECT * FROM usuario WHERE id = :id LIMIT 1");
@@ -158,13 +161,26 @@ class UserModel
     public function login($username): bool
     {
         $usuario = $this->getUserByUsername($username);
-        session_start();
 
         $_SESSION["id"] = $usuario['id'];
         $_SESSION["username"] = $usuario['usuario'];
         $_SESSION["nombre"] = $usuario['nombre_completo'];
 
         return true;
+    }
+
+    public function getGamesResultByUser($usuarioId)
+    {
+        $usuarioId = (int)$usuarioId;
+        $sql = "SELECT rp.*, 
+                c.nombre AS nombre_categoria, c.color AS color_categoria
+                FROM resumen_partida rp
+                LEFT JOIN categoria c ON rp.id_categoria = c.id
+                WHERE rp.id_usuario = $usuarioId
+                ORDER BY fecha_partida DESC
+                LIMIT 4";
+
+        return $this->database->query($sql);
     }
 
 }
