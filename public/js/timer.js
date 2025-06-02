@@ -1,4 +1,4 @@
-let timer = 30; // segundos
+let timer = 29; // segundos
 const timerBadge = document.getElementById('timer');
 
 const countdown = setInterval(() => {
