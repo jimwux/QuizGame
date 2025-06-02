@@ -34,7 +34,7 @@ class LoginController extends BaseController
     }
 
     public function logout(): void {
-        session_start();
+//        session_start();
         session_destroy();
         header('Location: /QuizGame/login');
         exit();

@@ -162,9 +162,9 @@ class UserModel
     {
         $usuario = $this->getUserByUsername($username);
 
-        if (session_status() === PHP_SESSION_NONE) {
-            session_start();
-        }
+//        if (session_status() === PHP_SESSION_NONE) {
+//            session_start();
+//        }
 
         $_SESSION["id"] = $usuario['id'];
         $_SESSION["username"] = $usuario['usuario'];

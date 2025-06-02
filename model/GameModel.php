@@ -118,18 +118,17 @@ class GameModel
 
     public function getQuestionForUser($userId) // Obtiene una pregunta que no fue respondida por el usuario
     {
-
         $userRatio = $this->getUserCorrectRatio($userId);
         $defaultDifficulty = "Media";
 
-        // 1ro: Vamos a verificar la dificultad de la pregunta que se debe mostrar al usuario
         if ($userRatio > 0.7) {
             $defaultDifficulty = "Dificil";
         } elseif ($userRatio < 0.3) {
             $defaultDifficulty = "Facil";
         }
 
-        $query = "SELECT 
+        // Query para obtener una pregunta que coincida con al dificultad del usuario
+        $query = "SELECT
                     p.*,
                     CASE
                         WHEN p.veces_mostrada = 0 THEN 'Media'
@@ -137,8 +136,8 @@ class GameModel
                         WHEN (p.veces_respondida_correctamente * 1.0 / p.veces_mostrada) < 0.3 THEN 'Dificil'
                         ELSE 'Media'
                     END AS dificultad_global
-                  FROM 
-                      pregunta p 
+                  FROM
+                      pregunta p
                     WHERE
                         p.id NOT IN (
                             SELECT pu.id_pregunta
@@ -146,13 +145,13 @@ class GameModel
                             WHERE pu.id_usuario = ?
                         )
                     AND (
-                        CASE 
+                        CASE
                             WHEN p.veces_mostrada = 0 THEN 'Media'
                             WHEN (p.veces_respondida_correctamente * 1.0 / p.veces_mostrada) > 0.7 THEN 'Facil'
                             WHEN (p.veces_respondida_correctamente * 1.0 / p.veces_mostrada) < 0.3 THEN 'Dificil'
                         ELSE 'Media'
                         END
-                    ) = ? 
+                    ) = ?
                 ORDER BY RAND()
                 LIMIT 1";
 
@@ -163,7 +162,36 @@ class GameModel
         $question = $result->fetch_assoc();
         $stmt->close();
 
-        // Ya respondio todas las preguntas
+        // En caso de que no se encuentre una pregunta acorde a LA DIFICULTAD del usuario se busca una pregunta que NO haya respondido
+        if (!$question) {
+            $query = "SELECT
+                        p.*,
+                        CASE
+                            WHEN p.veces_mostrada = 0 THEN 'Media'
+                            WHEN (p.veces_respondida_correctamente * 1.0 / p.veces_mostrada) > 0.7 THEN 'Facil'
+                            WHEN (p.veces_respondida_correctamente * 1.0 / p.veces_mostrada) < 0.3 THEN 'Dificil'
+                            ELSE 'Media'
+                        END AS dificultad_global
+                      FROM
+                          pregunta p
+                        WHERE
+                            p.id NOT IN (
+                                SELECT pu.id_pregunta
+                                FROM pregunta_usuario pu
+                                WHERE pu.id_usuario = ?
+                            )
+                    ORDER BY RAND()
+                    LIMIT 1";
+
+            $stmt = $this->database->getConnection()->prepare($query);
+            $stmt->bind_param("i", $userId);
+            $stmt->execute();
+            $result = $stmt->get_result();
+            $question = $result->fetch_assoc();
+            $stmt->close();
+        }
+
+        // Si el usuario respondio todas las preguntas deberia retornar un mensaje que se acabaron las preguntas
         if (!$question) {
             return null;
         }
@@ -177,7 +205,7 @@ class GameModel
 
         $infoQuestionComplete = ["question" => $question, "answers" => $answers, "category" => $infoCategory];
 
-        return $infoQuestionComplete; // Retorna pregunta, opciones y categoria
+        return $infoQuestionComplete;
     }
 
     public function getCategory($idCategory) // Obtiene la informacion de una categoria especifica

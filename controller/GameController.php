@@ -12,7 +12,7 @@ class GameController extends BaseController
     }
 
     public function createGame() { // GUARDA EN LA TABLA partida LOS DATOS DE LA PARTIDA
-        session_start();
+//        session_start();
         if (!isset($_SESSION['id'])) {
             header("Location: login");
             exit;
@@ -77,7 +77,7 @@ class GameController extends BaseController
 
     // AMOLDAR A LA NECESIDAD, ES DE EJEMPLO
     public function response () { // POR EL MOMENTO ESTE METODO NO SE USA
-        session_start();
+//        session_start();
 
         if (!isset($_SESSION['usuario']['id'])) {
             header('Location: /login');
@@ -125,9 +125,9 @@ class GameController extends BaseController
     public function getNextQuestion() // ESTE METODO SE LLAMA CUANDO EL USUARIO SELECCIONA UNA OPCION DE LA PREGUNTA
     {
 
-        if (session_status() == PHP_SESSION_NONE) {
-            session_start();
-        }
+//        if (session_status() == PHP_SESSION_NONE) {
+//            session_start();
+//        }
 
         $userId = $_SESSION["id"] ?? null;
 
