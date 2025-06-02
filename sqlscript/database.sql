@@ -159,6 +159,22 @@ CREATE TABLE pregunta_usuario (
     -- Usar esta query en caso de que no funque: ALTER TABLE nombreTabla AUTO_INCREMENT = 1;
 -- Agregar primero por lo menos 10 INSERTS de Usuarios sin incluir el de ustedes
 
+-- Usuarios
+INSERT INTO usuarios (
+    nombre_completo, año_nacimiento, sexo, pais, ciudad, mail, usuario, password,
+    foto_perfil, activo, token_validacion, latitud, longitud
+) VALUES
+      ('Valentina Gómez', 1995, 'F', 'Argentina', 'Rosario', 'valen.gomez@gmail.com', 'valeng', 'pass1234', 'valen.jpg', 1, 'tk1abc', -32.9587, -60.6939),
+      ('Lucas Pereira', 1990, 'M', 'Uruguay', 'Montevideo', 'lucas.pereira@gmail.com', 'lucasp', 'pass5678', 'lucas.jpg', 1, 'tk2def', -34.9011, -56.1645),
+      ('Martina López', 1988, 'F', 'Chile', 'Santiago', 'marti.lopez@gmail.com', 'martinal', 'pass4321', 'martina.jpg', 1, 'tk3ghi', -33.4489, -70.6693),
+      ('Joaquín Torres', 1997, 'M', 'Argentina', 'Córdoba', 'joaquin.t@gmail.com', 'joatorres', 'securepass', 'joaquin.jpg', 1, 'tk4jkl', -31.4201, -64.1888),
+      ('Camila Rivas', 1992, 'F', 'Paraguay', 'Asunción', 'camirivas@gmail.com', 'camir', 'camipass', 'camila.jpg', 1, 'tk5mno', -25.2637, -57.5759),
+      ('Diego Fernández', 1985, 'M', 'España', 'Madrid', 'diego.fernandez@gmail.com', 'diegof', 'clave123', 'diego.jpg', 1, 'tk6pqr', 40.4168, -3.7038),
+      ('Lucía Méndez', 2000, 'F', 'México', 'Guadalajara', 'lucia.m@gmail.com', 'luciam', 'passlucia', 'lucia.jpg', 1, 'tk7stu', 20.6597, -103.3496),
+      ('Andrés Molina', 1993, 'M', 'Colombia', 'Bogotá', 'andres.molina@gmail.com', 'andmol', 'molina123', 'andres.jpg', 1, 'tk8vwx', 4.7110, -74.0721),
+      ('Florencia Soto', 1996, 'F', 'Argentina', 'Mendoza', 'flor.soto@gmail.com', 'flors', 'florpass', 'florencia.jpg', 1, 'tk9yz1', -32.8895, -68.8458),
+      ('Tomás Herrera', 1989, 'M', 'Perú', 'Lima', 'tomas.h@gmail.com', 'tomh', 'tompass', 'tomas.jpg', 1, 'tk10zab', -12.0464, -77.0428);
+
 -- Categoria
 INSERT INTO categoria (nombre, color) VALUES
                                           ('Deporte', '#FF8C00'), -- Naranja para deporte
