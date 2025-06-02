@@ -1,7 +1,5 @@
 <section>
-    <h1>Partida {{partida.id}}</h1>
-
-    <p>Jugador: {{usuario.nombre}}</p>
+    <p>Jugador: {{usuario.nombre}}| Partida: {{partida.id}}</p>
     {{#datos}}
         <div class="d-flex flex-column min-vh-100 position-relative pt-reorganized-xxl"
              style="background-color: {{category.color}};">
@@ -49,7 +47,7 @@
                 <div class="card text-center bg-info text-white shadow-lg mb-3" style="width: 12rem;">
                     <div class="card-body py-2">
                         <h6 class="card-subtitle mb-1">Puntaje Actual</h6>
-                        <p class="card-text fs-2 fw-bold">150</p>
+                        <p class="card-text fs-2 fw-bold">{{puntaje}}</p>
                     </div>
                 </div>
                 <button class="btn btn-danger shadow-sm w-75" data-bs-toggle="modal" data-bs-target="#reportQuestionModal">
@@ -61,7 +59,7 @@
                 <div class="card text-center bg-info text-white shadow-lg" style="width: 12rem;">
                     <div class="card-body py-2">
                         <h6 class="card-subtitle mb-1">Puntaje Actual</h6>
-                        <p class="card-text fs-2 fw-bold">150</p>
+                        <p class="card-text fs-2 fw-bold">{{puntaje}}</p>
                     </div>
                 </div>
             </div>

@@ -22,6 +22,16 @@ class GameController extends BaseController
         $partidaId = $this->model->createGame($usuarioId);
 
         if ($partidaId) {
+        
+            // Reiniciar estado de la partida en sesión al crear una nueva
+            SesionController::reiniciarPartida();
+            SesionController::guardarEstadoPartida([
+                'partida_id' => $partidaId,
+                'pregunta_actual_idx' => 0, // Índice de la pregunta actual (0-based)
+                'respuestas_dadas' => [],
+                'puntaje_acumulado' => 0,
+                'juego_terminado' => false
+            ]);
             $this->show($partidaId);
         } else {
             $this->view->render("lobby", ["errors" => "Error al crear la partida"]);
@@ -31,6 +41,7 @@ class GameController extends BaseController
     public function show($partidaId) {
         $usuarioId = $_SESSION['id'];
         $datosPartida = $this->model->getGameById($partidaId);
+        $estadoPartida = SesionController::obtenerEstadoPartida();
 
         if (!$datosPartida || (int)$datosPartida['id_usuario'] !== (int)$usuarioId) {
             $this->view->render('lobby', ['mensaje' => 'Partida no encontrada o acceso denegado']);
@@ -39,12 +50,14 @@ class GameController extends BaseController
 
         // Obtener pregunta
         $pregunta = $this->model->getQuestionForUser($usuarioId);
+        $puntaje = $this->model->getScore($partidaId);
 
         if (!$pregunta) {
             // No quedan preguntas, ya respondio todas, fin de la partida
             // Mostrar detalles de la partida en finPartidaView.mustache (crearlo)
-            $puntaje = $this->model->calcScore($partidaId);
             $this->model->saveGame($partidaId, $puntaje);
+            
+            $this->model->guardarResumenPartida($partidaId,$usuarioId);
 
             $this->view->render('finPartida', [
                 'partida' => $datosPartida,
@@ -53,31 +66,19 @@ class GameController extends BaseController
             ]);
             return;
         }
+        $datosParaVista = [
+            'partida' => $datosPartida,
+            'usuario' => ['id' => $_SESSION['id'], 'nombre' => $_SESSION['username']],
+            'pregunta_numero_actual' => $estadoPartida['pregunta_actual_idx'],
+            'puntaje' => $puntaje,
+            'datos' => $pregunta
+        ];
 
-        // Preparar opciones para Mustache
-//        $opciones = [
-//            ['key' => 'a', 'texto' => $pregunta['opcion_a']],
-//            ['key' => 'b', 'texto' => $pregunta['opcion_b']],
-//            ['key' => 'c', 'texto' => $pregunta['opcion_c']],
-//            ['key' => 'd', 'texto' => $pregunta['opcion_d']],
-//        ];
-//
-//        $datosParaVista = [
-//            'partida' => $datosPartida,
-//            'pregunta' => [
-//                'id' => $pregunta['id'],
-//                'texto' => $pregunta['texto'],
-//                'opciones' => $opciones,
-//            ],
-//            'usuario' => $_SESSION['usuario'],
-//        ];
-
-        $this->view->render("game", ["datos" => $pregunta]);
+        $this->view->render('game', $datosParaVista);
     }
 
-    // AMOLDAR A LA NECESIDAD, ES DE EJEMPLO
-    public function response () { // POR EL MOMENTO ESTE METODO NO SE USA
-//        session_start();
+
+    public function response () { 
 
         if (!isset($_SESSION['usuario']['id'])) {
             header('Location: /login');
@@ -107,15 +108,17 @@ class GameController extends BaseController
 
         // Guardar respuesta
         $this->model->saveAnswer($partidaId, $preguntaId, $respuestaUsuario, $esCorrecta);
+        
+        $puntaje = $this->model->getScore($partidaId);
+        $this->model->saveGame($partidaId, $puntaje);
 
         if (!$esCorrecta) {
             // Fin de la partida
-            $puntaje = $this->model->calcScore($partidaId);
-            $this->model->saveGame($partidaId, $puntaje);
-
+            
             header("Location: /gameResult?id=$partidaId");
             exit;
         }
+        
 
         // Si fue correcta, mostrar siguiente pregunta
         header("Location: show?id=$partidaId");
@@ -125,19 +128,19 @@ class GameController extends BaseController
     public function getNextQuestion() // ESTE METODO SE LLAMA CUANDO EL USUARIO SELECCIONA UNA OPCION DE LA PREGUNTA
     {
 
-//        if (session_status() == PHP_SESSION_NONE) {
-//            session_start();
-//        }
-
+        $estadoPartida = SesionController::obtenerEstadoPartida();
+        $partidaId = $estadoPartida['partida_id'] ?? null;
         $userId = $_SESSION["id"] ?? null;
 
-        $verificarRespuesta = $this->model->verifyQuestionCorrect($_POST, $userId);
+        $verificarRespuesta = $this->model->verifyQuestionCorrect($_POST, $userId ,$partidaId);
 
         if ($verificarRespuesta) {
-
-            $this->view->render("game", ["datos" => $verificarRespuesta]);
+            $this->show($partidaId);
         } else {
-//            $this->view->render("lobby", ["errores" => "Respuesta incorrecta"]);
+            // Fin de la partida
+            $puntaje = $this->model->getScore($partidaId);
+            $this->model->saveGame($partidaId, $puntaje);//si no me equivoco guarda sobre la carpeta partida
+            $this->model->guardarResumenPartida($partidaId,$userId);
             header("location: /QuizGame/lobby");
         }
 

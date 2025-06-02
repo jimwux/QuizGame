@@ -37,12 +37,12 @@ class GameModel
     {
         $usuarioId = (int)$usuarioId;
         $sql = "SELECT rp.*, 
-            c.nombre AS nombre_categoria, c.color AS color_categoria
-            FROM resumen_partida rp
-            JOIN categoria c ON rp.id_categoria = c.id
-            WHERE rp.id_usuario = 1
-            ORDER BY fecha_partida DESC
-            LIMIT 4;";
+                c.nombre AS nombre_categoria, c.color AS color_categoria
+                FROM resumen_partida rp
+                LEFT JOIN categoria c ON rp.id_categoria = c.id
+                WHERE rp.id_usuario = $usuarioId
+                ORDER BY fecha_partida DESC
+                LIMIT 4";
 
         return $this->database->query($sql);
     }
@@ -239,49 +239,122 @@ class GameModel
 
     }
 
-    public function verifyQuestionCorrect($infoAnswer, $userId) // Verifica y retorna una nueva pregunta
+    public function verifyQuestionCorrect($infoAnswer, $userId, $partidaId)
     {
-
         $idQuestion = $infoAnswer["idQuestion"];
         $esCorrecta = $infoAnswer["es_correcta"];
 
-        // 1ro: Actualizar la BD -> aumentar la cantidad de veces VISTA + 1 en la pregunta para futuras estadisticas
+        // 1. Aumentar veces mostrada
         $query = "UPDATE pregunta SET veces_mostrada = veces_mostrada + 1 WHERE id = $idQuestion";
         $stmt = $this->database->getConnection()->prepare($query);
         $stmt->execute();
         $stmt->close();
 
-        // 2do: Para obtener el id de la respuesta hago una consulta
+        // 2. Obtener id de la respuesta (¿por qué no usar la que el usuario seleccionó?)
         $query3 = "SELECT * FROM respuesta WHERE id_pregunta = ?";
         $stmt3 = $this->database->getConnection()->prepare($query3);
         $stmt3->bind_param("i", $idQuestion);
         $stmt3->execute();
         $result = $stmt3->get_result()->fetch_assoc();
+        $stmt3->close();
 
         $idAnswer = $result["id"];
 
-        // 3ro: Guardar la pregunta que ya respondio asi no se repita a futuro
-        $query4 = "INSERT INTO pregunta_usuario (id_usuario, id_pregunta, id_respuesta, es_correcta) VALUES (?, ? ,? ,? )";
+        // 3. Registrar que el usuario respondió esta pregunta
+        $query4 = "INSERT INTO pregunta_usuario (id_usuario, id_pregunta, id_respuesta, es_correcta) VALUES (?, ?, ?, ?)";
         $stmt4 = $this->database->getConnection()->prepare($query4);
         $stmt4->bind_param("iiii", $userId, $idQuestion, $idAnswer, $esCorrecta);
         $stmt4->execute();
         $stmt4->close();
 
         if ($esCorrecta == 1) {
-            // 4to: Actualizar la DB -> aumentar la cantidad de veces CORRECTAMENTE respondida + 1
+            // 4. Aumentar respuestas correctas
             $query2 = "UPDATE pregunta SET veces_respondida_correctamente = veces_respondida_correctamente + 1 WHERE id = $idQuestion";
             $stmt2 = $this->database->getConnection()->prepare($query2);
             $stmt2->execute();
             $stmt2->close();
 
-            // 5to: Como respondio correctamente la pregunta le debemos devolver otra que no se haya repetido previamente
+            // 5. Actualizar puntaje en la partida
+            $query5 = "UPDATE partida SET puntaje = puntaje + 1 WHERE id = ?";
+            $stmt5 = $this->database->getConnection()->prepare($query5);
+            $stmt5->bind_param("i", $partidaId);
+            $stmt5->execute();
+            $stmt5->close();
+            
             return $this->getQuestionForUser($userId);
         }
 
-        // Aca se puede retornar un mensaje de que la respuesta que elijio esta mal
+        // (opcional) retornar nueva pregunta
         return null;
+    }
 
+    public function getScore($partidaIdEntrada)
+    {
+        $partidaId = intval($partidaIdEntrada);
 
+        $sql = "SELECT puntaje FROM partida WHERE id = $partidaId LIMIT 1";
+        $res = $this->database->query($sql);
+
+        if (count($res) > 0) {
+            return (int)$res[0]['puntaje'];
+        }
+
+        return 0; // Si no existe la partida, devuelve 0 o lo que consideres
+    }
+
+    public function saveGame( $partidaIdEntrada, int $puntaje): void { // guarda el puntaje y el id de la partida
+        $partidaId = intval($partidaIdEntrada);
+
+        $sql = "
+            UPDATE partida 
+            SET puntaje = $puntaje, finalizada = 1 
+            WHERE id = $partidaId
+        ";
+        $this->database->execute($sql);
+    }
+
+    public function guardarResumenPartida(
+        int $idPartida,
+        int $idUsuario,
+    ): void {
+        $cantidadCorrectas = $this->getScore($idPartida);
+        $cantidadIntentos = 1;
+
+        $idCategoria = null;
+        $idDificultad = null;
+        $puntaje = $this->getScore($idPartida);
+        $tiempoPromedioRespuesta = null;
+
+        // Asegurarse de que los nulls vayan como NULL en SQL (sin comillas)
+        $idCategoriaSQL = is_null($idCategoria) ? "NULL" : $idCategoria;
+        $idDificultadSQL = is_null($idDificultad) ? "NULL" : $idDificultad;
+        $tiempoPromedioRespuestaSQL = is_null($tiempoPromedioRespuesta) ? "NULL" : $tiempoPromedioRespuesta;
+
+        $sql = "
+            INSERT INTO resumen_partida (
+                id_partida,
+                id_usuario,
+                cantidad_correctas,
+                cantidad_intentos,
+                id_categoria,
+                id_dificultad,
+                puntaje,
+                tiempo_promedio_respuesta,
+                fecha_partida
+            ) VALUES (
+                $idPartida,
+                $idUsuario,
+                $cantidadCorrectas,
+                $cantidadIntentos,
+                $idCategoriaSQL,
+                $idDificultadSQL,
+                $puntaje,
+                $tiempoPromedioRespuestaSQL,
+                NOW()
+            )
+        ";
+
+        $this->database->execute($sql);
     }
 
 }

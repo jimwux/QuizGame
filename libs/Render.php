@@ -12,3 +12,7 @@ class Render {
         return $mustache->render($template, $data);
     }
 }
+
+
+
+

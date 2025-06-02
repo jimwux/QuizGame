@@ -21,6 +21,12 @@ class LobbyController extends BaseController
         $data = [
             'partidas' => $partidas,
         ];
+        
+        //para verificar que se esta pasando en el array
+        //echo '<pre>';
+        //print_r($partidas);
+        //echo '</pre>';
+
 
         $this->view->render('lobby', $data);
     }
