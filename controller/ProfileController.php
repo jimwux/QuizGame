@@ -14,7 +14,8 @@ class ProfileController extends BaseController
     public function show()
     {
         $this->validateSession();
-        $data["user"] = $this->model->getUserByUsername(($_SESSION['username']));
+        $data["user"] = $this->model->getUserByUsername((!empty($_GET['username']) ? $_GET['username'] : $_SESSION["username"]));
+    //  $data["user"] = $this->model->getUserByUsername(($_SESSION['username']));
         $data["partidas"] = $this->model->getGamesResultByUser($_SESSION['id']);
         $this->view->render("profile", $data);
     }
