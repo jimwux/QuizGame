@@ -1,0 +1,20 @@
+<style>
+    .error-tittle{
+        text-align: center;
+        margin-top: 2em;
+    }
+    .error-message{
+        margin-top: 1em;
+        text-align: center;
+        font-style: italic;
+    }
+</style>
+{{#error}}
+
+<h1 class="error-tittle">
+    {{tituloMensajeError}}
+</h1>
+<h5 class="error-message">
+    {{mensajeError}}
+</h5>
+{{/error}}

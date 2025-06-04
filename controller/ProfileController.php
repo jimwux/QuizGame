@@ -15,9 +15,16 @@ class ProfileController extends BaseController
     {
         $this->validateSession();
         $data["user"] = $this->model->getUserByUsername((!empty($_GET['username']) ? $_GET['username'] : $_SESSION["username"]));
-    //  $data["user"] = $this->model->getUserByUsername(($_SESSION['username']));
-        $data["partidas"] = $this->model->getGamesResultByUser($_SESSION['id']);
-        $this->view->render("profile", $data);
+        if($data["user"]){
+            $data["partidas"] = $this->model->getGamesResultByUser($_SESSION['id']);
+            $this->view->render("profile", $data);
+
+        }else{
+            $error['error'] = ['tituloMensajeError' => 'El perfil solicitado no existe.', 'mensajeError' => 'El perfil que busca no existe o ha sido borrado.'];
+            $this->view->render("error", $error);
+        }
+
+
     }
 
 }
