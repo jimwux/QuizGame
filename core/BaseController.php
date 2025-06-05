@@ -13,6 +13,10 @@ class BaseController
         header("Location: " . BASE_PATH . $url);
         exit();
     }
+    protected function  showError($view, $tituloError, $mensajeError){
+        $error['error'] = ['tituloMensajeError' => $tituloError, 'mensajeError' => $mensajeError];
+        $view->render("error", $error);
+    }
 
     public function validateSession() {
         if (!isset($_SESSION['id'])) {

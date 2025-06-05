@@ -21,12 +21,9 @@ class ProfileController extends BaseController
             $this->view->render("profile", $data);
 
         }else{
-            $this->showError('El perfil solicitado no existe.', 'El perfil que busca no existe o ha sido borrado.');
+            $this->showError($this->view,'El perfil solicitado no existe.', 'El perfil que busca no existe o ha sido borrado.');
             }}
 
-    public function showError($tituloError, $mensajeError){
-        $error['error'] = ['tituloMensajeError' => $tituloError, 'mensajeError' => $mensajeError];
-        $this->view->render("error", $error);
-    }
+
 
 }
