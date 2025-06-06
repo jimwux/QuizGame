@@ -101,86 +101,209 @@ class GameModel
         return ($result['respuestas_correctas'] * 1.0) / $result['total_respuestas'];
     }
 
+    // 1ro: Si es un usuario nuevo mostrar las primeras 10 preguntas de nivel medio
+    // 2do: Si la pregunta se mostro menos de 10 veces es de nivel medio por default
+    // 3ro: La dficultad de la pregunta se saca  veces_mostrada / veces_respondida_correctamente
+    // 4to: Retornar una pregunta
+    // 5to: En caso de que la pregunta que se retorno previamente a ese usuario, volver a obtener otra pregunta que nunca le toco
+    // 6to: Si el usuario ya respondio todas las preguntas mandar al lobby
 
-    public function getQuestionForUser($userId) // Obtiene una pregunta que no fue respondida por el usuario
+    public function verificarSiEsUnUsuarioNuevo($userId)
     {
-        $userRatio = $this->getUserCorrectRatio($userId);
-        $defaultDifficulty = "Media";
+        // Si tiene menos de 10 preguntas respondidas es un usuario nuevo
+        $query = "SELECT COUNT(pu.id_usuario) as totalRespondidas FROM pregunta_usuario pu WHERE pu.id_usuario = ?";
+        $stmt = $this->database->getConnection()->prepare($query);
+        $stmt->bind_param("i", $userId);
+        $stmt->execute();
+        $result = $stmt->get_result()->fetch_assoc();
+        $stmt->close();
+        return $result['totalRespondidas'];
+    }
 
-        if ($userRatio > 0.7) {
-            $defaultDifficulty = "Dificil";
-        } elseif ($userRatio < 0.3) {
-            $defaultDifficulty = "Facil";
+    public function verificarSiEsUnaPreguntaNueva($idPregunta)
+    {
+        $query = "SELECT veces_mostrada FROM pregunta WHERE id = ?";
+        $stmt = $this->database->getConnection()->prepare($query);
+        $stmt->bind_param("i", $idPregunta);
+        $stmt->execute();
+        $result = $stmt->get_result()->fetch_assoc();
+        $stmt->close();
+        return $result;
+    }
+
+    public function obtenerUnaPreguntaAleatoria()
+    {
+        $query = "SELECT * FROM pregunta ORDER BY RAND() LIMIT 1";
+        $stmt = $this->database->getConnection()->prepare($query);
+
+        // Verifica si la preparación fue exitosa
+        if ($stmt === false) {
+            // Manejar el error de preparación, por ejemplo:
+            error_log("Error al preparar la consulta en obtenerUnaPreguntaAleatoria: " . $this->database->getConnection()->error);
+            return null;
         }
 
-        // Query para obtener una pregunta que coincida con al dificultad del usuario
-        $query = "SELECT
-                    p.*,
-                    CASE
-                        WHEN p.veces_mostrada = 0 THEN 'Media'
-                        WHEN (p.veces_respondida_correctamente * 1.0 / p.veces_mostrada) > 0.7 THEN 'Facil'
-                        WHEN (p.veces_respondida_correctamente * 1.0 / p.veces_mostrada) < 0.3 THEN 'Dificil'
-                        ELSE 'Media'
-                    END AS dificultad_global
-                  FROM
-                      pregunta p
-                    WHERE
-                        p.id NOT IN (
-                            SELECT pu.id_pregunta
-                            FROM pregunta_usuario pu
-                            WHERE pu.id_usuario = ?
-                        )
-                    AND (
-                        CASE
-                            WHEN p.veces_mostrada = 0 THEN 'Media'
-                            WHEN (p.veces_respondida_correctamente * 1.0 / p.veces_mostrada) > 0.7 THEN 'Facil'
-                            WHEN (p.veces_respondida_correctamente * 1.0 / p.veces_mostrada) < 0.3 THEN 'Dificil'
-                        ELSE 'Media'
-                        END
-                    ) = ?
-                ORDER BY RAND()
-                LIMIT 1";
+        $stmt->execute(); // Ejecuta la consulta
 
+        // Verifica si la ejecución fue exitosa
+        if ($stmt->errno) { // $stmt->errno es 0 si no hay error
+            error_log("Error al ejecutar la consulta en obtenerUnaPreguntaAleatoria: " . $stmt->error);
+            $stmt->close();
+            return null;
+        }
+
+        $result = $stmt->get_result(); // Ahora $stmt es un objeto mysqli_stmt, puedes llamar a get_result()
+        $question = $result->fetch_assoc();
+        $stmt->close();
+
+        return $question; // Asegúrate de retornar la pregunta
+    }
+
+    public function verificarQueNoSeaUnaPreguntaRespondidaPorElUsuarioPreviamente($idPregunta, $idUsuario)
+    {
+
+        $query = "SELECT * FROM pregunta_usuario pu 
+         JOIN pregunta p ON p.id = pu.id_pregunta  WHERE id_usuario = ? AND p.id = ?";
         $stmt = $this->database->getConnection()->prepare($query);
-        $stmt->bind_param("is", $userId, $defaultDifficulty);
+        $stmt->bind_param("ii", $idUsuario, $idPregunta);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $fueRespondida = $result->fetch_assoc() != null;
+        $stmt->close();
+        return $fueRespondida;
+    }
+
+    public function calcularDificultadPregunta($idPregunta)
+    {
+        $query = "SELECT veces_mostrada, veces_respondida_correctamente FROM pregunta WHERE id = ?";
+        $stmt = $this->database->getConnection()->prepare($query);
+        $stmt->bind_param("i", $idPregunta);
+        $stmt->execute();
+        $result = $stmt->get_result()->fetch_assoc();
+        $stmt->close();
+
+        $dificultad = "media";
+        if ($result['veces_mostrada'] > 10) {
+            $promedio = $result['veces_respondida_correctamente'] / $result['veces_mostrada'];
+
+            if ($promedio > 0.7) {
+                $dificultad = "facil";
+            } else if ($promedio < 0.3) {
+                $dificultad = "dificil";
+            }
+        }
+
+        return $dificultad;
+    }
+
+    public function calcularDificultadUsuario($idUsuario)
+    {
+        $query = "SELECT COUNT(*) as totalRespondidas, SUM(CASE WHEN es_correcta = 1 THEN 1 ELSE 0 END) AS totalCorrectas FROM pregunta_usuario WHERE id_usuario = ?";
+        $stmt = $this->database->getConnection()->prepare($query);
+        $stmt->bind_param("i", $idUsuario);
+        $stmt->execute();
+        $result = $stmt->get_result()->fetch_assoc();
+        $stmt->close();
+
+        // Condicion para que no divida por cero y lanze error
+        if($result["totalRespondidas"] == 0){
+            return "media";;
+        }
+
+        $promedio = $result['totalCorrectas'] / $result['totalRespondidas'];
+        $dificultad = "media";
+        if ($promedio > 0.7) {
+            $dificultad = "dificil";
+        } else if ($promedio < 0.3) {
+            $dificultad = "facil";
+        }
+
+        return $dificultad;
+    }
+
+    public function obtenerPreguntaNoRepetira($userId){
+        $query = "
+            SELECT p.*
+            FROM pregunta p
+            WHERE p.id NOT IN (
+                SELECT pu.id_pregunta
+                FROM pregunta_usuario pu
+                WHERE pu.id_usuario = ?
+            )
+            ORDER BY RAND()
+            LIMIT 1
+        ";
+        $stmt = $this->database->getConnection()->prepare($query);
+        $stmt->bind_param("i", $userId);
         $stmt->execute();
         $result = $stmt->get_result();
         $question = $result->fetch_assoc();
         $stmt->close();
+        return $question;
+    }
 
-        // En caso de que no se encuentre una pregunta acorde a LA DIFICULTAD del usuario se busca una pregunta que NO haya respondido
-        if (!$question) {
-            $query = "SELECT
-                        p.*,
-                        CASE
-                            WHEN p.veces_mostrada = 0 THEN 'Media'
-                            WHEN (p.veces_respondida_correctamente * 1.0 / p.veces_mostrada) > 0.7 THEN 'Facil'
-                            WHEN (p.veces_respondida_correctamente * 1.0 / p.veces_mostrada) < 0.3 THEN 'Dificil'
-                            ELSE 'Media'
-                        END AS dificultad_global
-                      FROM
-                          pregunta p
-                        WHERE
-                            p.id NOT IN (
-                                SELECT pu.id_pregunta
-                                FROM pregunta_usuario pu
-                                WHERE pu.id_usuario = ?
-                            )
-                    ORDER BY RAND()
-                    LIMIT 1";
+    public function incrementarVecesMostradas($idPregunta){
+        $query = "UPDATE pregunta SET veces_mostrada = veces_mostrada + 1 WHERE id = ?";
+        $stmt = $this->database->getConnection()->prepare($query);
+        $stmt->bind_param("i", $idPregunta);
+        $stmt->execute();
+        $stmt->close();
+    }
 
-            $stmt = $this->database->getConnection()->prepare($query);
-            $stmt->bind_param("i", $userId);
-            $stmt->execute();
-            $result = $stmt->get_result();
-            $question = $result->fetch_assoc();
-            $stmt->close();
+
+    public function getQuestionForUser($userId) // Obtiene una pregunta que no fue respondida por el usuario
+    {
+        $cantidadPreguntasRespondidas = $this->verificarSiEsUnUsuarioNuevo($userId);
+
+        $totalRespuestasUsuario = $this->verificarSiEsUnUsuarioNuevo($userId); // Usamos tu método ajustado
+        $esUsuarioNuevo = $totalRespuestasUsuario < 10;
+        $dificultadDeseadaUsuario = "media"; // Default para usuarios nuevos
+
+        if (!$esUsuarioNuevo) {
+            $dificultadDeseadaUsuario = $this->calcularDificultadUsuario($userId);
         }
 
-        // Si el usuario respondio todas las preguntas deberia retornar un mensaje que se acabaron las preguntas
-        if (!$question) {
-            return null;
+        $question = null;
+        $maxAttempts = 50;
+        $attempts = 0;
+
+        do {
+            $question = $this->obtenerUnaPreguntaAleatoria(); // Tu método
+            if (!$question) {
+                return null;
+            }
+
+            $idPregunta = $question['id'];
+            $vecesMostrada = $this->verificarSiEsUnaPreguntaNueva($idPregunta)['veces_mostrada'] ?? 0; // Tu método
+            $yaRespondida = $this->verificarQueNoSeaUnaPreguntaRespondidaPorElUsuarioPreviamente($idPregunta, $userId); // Tu método ajustado
+
+            $dificultadPreguntaActual = "media";
+            if ($vecesMostrada >= 10) {
+                $dificultadPreguntaActual = $this->calcularDificultadPregunta($idPregunta); // Tu método
+            }
+
+            $cumpleDificultad = ($esUsuarioNuevo && $dificultadPreguntaActual == "media") ||
+                (!$esUsuarioNuevo && $dificultadPreguntaActual == $dificultadDeseadaUsuario);
+
+
+            $attempts++;
+        } while (($yaRespondida || !$cumpleDificultad) && $attempts < $maxAttempts);
+
+
+        // Si después de los intentos, no encontramos una pregunta que cumpla la dificultad y que no haya sido respondida
+        if ($question === null || $yaRespondida || !$cumpleDificultad) {
+            // Último intento: Buscar cualquier pregunta NO RESPONDIDA, sin importar la dificultad
+            $question = $this->obtenerPreguntaNoRepetira($userId); // Necesitarías este método nuevo, o ajustar el tuyo
+            if (!$question) {
+                return null; // El usuario respondió todas las preguntas
+            }
+            // Incrementar veces_mostrada para esta pregunta, ya que será la que se retorne
+            $this->incrementarVecesMostradas($question['id']); // <--- ESTA ES LA LÍNEA 304
+        } else {
+            // Incrementar veces_mostrada para esta pregunta, ya que será la que se retorne
+            $this->incrementarVecesMostradas($question['id']);
         }
+
 
         $idCategoria = $question["id_categoria"];
         $infoCategory = $this->getCategory($idCategoria);
@@ -269,7 +392,7 @@ class GameModel
             $stmt5->bind_param("i", $partidaId);
             $stmt5->execute();
             $stmt5->close();
-            
+
             return $this->getQuestionForUser($userId);
         }
 
@@ -291,7 +414,8 @@ class GameModel
         return 0; // Si no existe la partida, devuelve 0 o lo que consideres
     }
 
-    public function saveGame( $partidaIdEntrada, int $puntaje): void { // guarda el puntaje y el id de la partida
+    public function saveGame($partidaIdEntrada, int $puntaje): void
+    { // guarda el puntaje y el id de la partida
         $partidaId = intval($partidaIdEntrada);
 
         $sql = "
@@ -304,8 +428,9 @@ class GameModel
 
     public function guardarResumenPartida(
         int $idPartida,
-        int $idUsuario,
-    ): void {
+        int $idUsuario
+    ): void
+    {
         $cantidadCorrectas = $this->getScore($idPartida);
         $cantidadIntentos = 1;
 
@@ -345,10 +470,13 @@ class GameModel
 
         $this->database->execute($sql);
     }
+
     public function getResumenPartida(
         int $idPartida,
         int $idUsuario
-    ){
+    )
+    {
         $sql = "SELECT * FROM resumen_partida WHERE id_partida = $idPartida AND id_usuario = $idUsuario LIMIT 1";
-        return $res = $this->database->query($sql);}
+        return $res = $this->database->query($sql);
+    }
 }
