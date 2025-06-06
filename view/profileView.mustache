@@ -16,6 +16,9 @@
             </div>
             <!-- Imagen de perfil -->
             <div class="col-12 col-md-3 d-flex justify-content-center justify-content-md-end">
+                {{#qr_imagen}}
+                    <img src='/QuizGame/public/qrs/qr_{{usuario}}.png' alt='QR de {{usuario}}'>
+                {{/qr_imagen}}
                 {{#foto_perfil}}
                     <img src="/QuizGame/public/uploads/{{foto_perfil}}" alt="Foto de perfil"
                          class="rounded-circle img-fluid"
