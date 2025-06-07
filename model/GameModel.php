@@ -18,19 +18,51 @@ class GameModel
         $this->database->execute($sql);
 
         $conn = $this->database->getConnection();
+        $idPartida = $conn->insert_id;
+        $_SESSION['partidaId'] = $idPartida;
         return $conn->insert_id ?? null;
     }
 
 
-    public function getGameById(int $partidaId): ?array
+    public function getGameById(int $partidaId, $pregunta): ?array
     {
         $sql = "SELECT * FROM partida WHERE id = $partidaId LIMIT 1";
         $result = $this->database->query($sql);
+
+        $idPregunta = $pregunta["question"]["id"];
+        $idRespuesta = null;
+
+        foreach ($pregunta["answers"] as $answer) {
+            if ($answer["es_correcta"] == 1) {
+                $idRespuesta = $answer["id"];
+                break;
+            }
+        }
+
+        $sql2 = "INSERT INTO partida_pregunta (id_partida, id_pregunta, id_respuesta, respondida_correctamente, orden_pregunta) VALUES (?,?,? ,null, null)";
+        $stmt2 = $this->database->getConnection()->prepare($sql2);
+        $stmt2->bind_param("iii", $partidaId, $idPregunta, $idRespuesta);
+        $stmt2->execute();
 
         if (count($result) > 0) {
             return $result[0];
         }
         return null;
+    }
+
+    public function obtenerUltimaPregunta($usuarioId)
+    {
+        $query = "SELECT p.* FROM pregunta p
+                    JOIN partida_pregunta pp ON pp.id_pregunta = p.id
+                    JOIN partida pa ON pa.id = pp.id_pregunta 
+                    WHERE pa.id_usuario = ? AND pp.respondida_correctamente IS NULL
+                    ORDER BY pp.id DESC LIMIT 2";
+        $stmt = $this->database->getConnection()->prepare($query);
+        $stmt->bind_param("i", $usuarioId);
+        $stmt->execute();
+        $result = $stmt->get_result()->fetch_all();
+
+        return $result[1];
     }
 
     // Este metodo por ahora no se usa
@@ -206,7 +238,7 @@ class GameModel
         $stmt->close();
 
         // Condicion para que no divida por cero y lanze error
-        if($result["totalRespondidas"] == 0){
+        if ($result["totalRespondidas"] == 0) {
             return "media";;
         }
 
@@ -221,7 +253,8 @@ class GameModel
         return $dificultad;
     }
 
-    public function obtenerPreguntaNoRepetira($userId){
+    public function obtenerPreguntaNoRepetira($userId)
+    {
         $query = "
             SELECT p.*
             FROM pregunta p
@@ -242,7 +275,8 @@ class GameModel
         return $question;
     }
 
-    public function incrementarVecesMostradas($idPregunta){
+    public function incrementarVecesMostradas($idPregunta)
+    {
         $query = "UPDATE pregunta SET veces_mostrada = veces_mostrada + 1 WHERE id = ?";
         $stmt = $this->database->getConnection()->prepare($query);
         $stmt->bind_param("i", $idPregunta);
@@ -348,14 +382,45 @@ class GameModel
 
     }
 
+    public function verificarSiSeRecargoLaPagina($partidaId)
+    {
+        $sql2 = "SELECT pp.respondida_correctamente
+                FROM partida_pregunta pp
+                JOIN pregunta p ON p.id = pp.id_pregunta
+                WHERE pp.id_partida = ? ORDER BY pp.id DESC LIMIT 1";
+//        $sql2 = "UPDATE partida_pregunta pp
+//                JOIN partida p ON p.id = pp.id_partida
+//                 SET (respondida_correctamente) VALUES ($esCorrecta)
+//                 WHERE id = $idPartida AND pp.respondida_correctamente IS NULL";
+        $stmt2 = $this->database->getConnection()->prepare($sql2);
+        $stmt2->bind_param("i", $partidaId);
+        $stmt2->execute();
+        $resultado = $stmt2->get_result();
+        if ($resultado->num_rows > 0) {
+            return $resultado->fetch_assoc()["respondida_correctamente"]; // Devuelve el valor
+        } else {
+            return null; // Si no encuentra resultados
+        }
+    }
+
     public function verifyQuestionCorrect($infoAnswer, $userId, $partidaId)
     {
         $idQuestion = $infoAnswer["idQuestion"];
         $esCorrecta = $infoAnswer["es_correcta"];
+        $idPartida = SesionController::obtenerEstadoPartida();
 
         if ($esCorrecta === "timeout") {
             return null;
         }
+
+        $sql2 = "UPDATE partida_pregunta pp
+                JOIN partida p ON p.id = pp.id_partida
+                 SET (respondida_correctamente) VALUES ($esCorrecta)
+                 WHERE pp.id_partida = $idPartida AND pp.respondida_correctamente IS NULL";
+        $stmt2 = $this->database->getConnection()->prepare($sql2);
+        $stmt2->bind_param("i", $partidaId);
+        $stmt2->execute();
+
         // 1. Aumentar veces mostrada
         $query = "UPDATE pregunta SET veces_mostrada = veces_mostrada + 1 WHERE id = $idQuestion";
         $stmt = $this->database->getConnection()->prepare($query);
