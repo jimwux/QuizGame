@@ -1,7 +1,7 @@
 <?php
 
 if (!defined('BASE_PATH')) {
-    $config = parse_ini_file(__DIR__ . '/../configuration/config.ini', true); // Asegurate de que la ruta esté bien
+    $config = parse_ini_file(__DIR__ . '/../configuration/config.ini', true);
     define('BASE_PATH', $config['app']['base_path']);
 }
 
