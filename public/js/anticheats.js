@@ -9,28 +9,6 @@ window.addEventListener('load', () => {
             console.log("Tipo de navegación: Recarga de página");
             // Lógica específica para recarga
             window.location.href = "/QuizGame/game/getNextQuestion?badRequest=1"
-            /*
-            fetch("http://localhost/QuizGame/game/getNextQuestion", {
-                method: 'POST', // Especifica el método POST
-                headers: {
-                    'Content-Type': 'application/json' // Indica al servidor que estamos enviando JSON
-                },
-                body: JSON.stringify({ myValue: 1 })
-            }).then(response => {
-                // Verifica si la solicitud fue exitosa
-                if (!response.ok) {
-                    throw new Error('La respuesta de red no fue correcta ' + response.statusText);
-                }
-                return response.json(); // Parsea la respuesta JSON del servidor
-            })
-                .then(data => {
-                    console.log('Respuesta del servidor:', data);
-                    // Puedes manejar la respuesta del servidor aquí, por ejemplo, actualizar la interfaz de usuario
-                })
-                .catch(error => {
-                    console.error('Hubo un problema con la operación fetch:', error);
-                });
-            */
         } else if (entry.type === "back_forward") {
             console.log("Tipo de navegación: Botón de atrás/adelante");
             // Lógica específica para navegación de historial

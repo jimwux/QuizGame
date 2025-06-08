@@ -53,18 +53,10 @@ class GameController extends BaseController
         $usuarioId = $_SESSION['id'];
 
         // Obtener pregunta
-        $pregunta = $this->model->getQuestionForUser($usuarioId);
+        $pregunta = $this->model->getQuestionForUser($usuarioId, $partidaId);
         $puntaje = $this->model->getScore($partidaId);
         $idPregunta = $pregunta["question"]["id"];
 
-        $vriable = $this->model->verificarSiSeRecargoLaPagina($partidaId);
-
-        if($vriable != null){
-            echo "esta mal";
-        } else{
-        echo "esta bien";}
-
-        exit;
         $datosPartida = $this->model->getGameById($partidaId, $pregunta);
         $estadoPartida = SesionController::obtenerEstadoPartida();
 
@@ -106,7 +98,7 @@ class GameController extends BaseController
     }
 
 
-    public function getNextQuestion() // ESTE METODO SE LLAMA CUANDO EL USUARIO SELECCIONA UNA OPCION DE LA PREGUNTA
+    public function getNextQuestion()
     {
         $valor = $_GET["badRequest"];
 
@@ -131,23 +123,20 @@ class GameController extends BaseController
         } else {
             // Fin de la partida
             $puntaje = $this->model->getScore($partidaId);
-            $this->model->saveGame($partidaId, $puntaje);//si no me equivoco guarda sobre la carpeta partida
+            $this->model->saveGame($partidaId, $puntaje); //si no me equivoco guarda sobre la carpeta partida
             $this->model->guardarResumenPartida($partidaId, $partidaId);
             $data["game"] = $this->model->getResumenPartida($partidaId, $partidaId);
 
             $this->view->render('finPartida', $data);
         }
-
     }
-
-
 }
 
 /*
- * Tabla:
- *      PARTIDA_PREGUNTA
- *                      -> Si en el campo respondida_correctamente es NULL: (recargo la pagina o fue hacia atras o hacia adelante)
- *                      -> Caso que sea null se debe retornar la misma pregunta hasta que responda
- *                      -> El tiempo debera seguir corriendo en la misma partida (No empezar otra vez en 30s) (Tiempo guardado en session)
- *
- */
+* Tabla:
+*      PARTIDA_PREGUNTA
+*                      -> Si en el campo respondida_correctamente es NULL: (recargo la pagina o fue hacia atras o hacia adelante)
+*                      -> Caso que sea null se debe retornar la misma pregunta hasta que responda
+*                      -> El tiempo debera seguir corriendo en la misma partida (No empezar otra vez en 30s) (Tiempo guardado en session)
+*
+*/
