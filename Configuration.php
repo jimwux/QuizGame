@@ -67,5 +67,9 @@ class Configuration
     {
         return new GameController(new GameModel($this->getDatabase()),$this->getViewer());
     }
+    public function getRankingController(): RankingController
+    {
+        return new RankingController(new RankingModel($this->getDatabase()),$this->getViewer());
+    }
 
 }
