@@ -28,6 +28,7 @@ class Mailer
         $config = $this->loadConfig();
 
         $this->mail->isSMTP();
+        $this->mail->CharSet = 'UTF-8';
         $this->mail->Host = $config['host'];
         $this->mail->SMTPAuth = true;
         $this->mail->Username = $config['username'];
