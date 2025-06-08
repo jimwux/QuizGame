@@ -4,11 +4,13 @@ class RegisterController extends BaseController
 {
     private $model;
     private $view;
+    private $mailer;
 
-    public function __construct($model, $view)
+    public function __construct($model, $view, $mailer)
     {
         $this->model = $model;
         $this->view = $view;
+        $this->mailer = $mailer;
     }
 
     // Validar formularios, peticiones HTTP, redirecciones y comunicar al modelo
@@ -88,10 +90,19 @@ class RegisterController extends BaseController
             return;
         }
 
-        // Mostrar vista con link de activación
+        $sendEmailResult = $this->mailer->enviarCorreoActivacion($_POST['email'], $_POST['username'], $token);
+
+        if ($sendEmailResult !== true) {
+            $errors[] = $sendEmailResult;
+            $this->view->render("register", [
+                'errors' => $errors,
+            ]);
+            return;
+        }
+
         $this->view->render("registerSuccess", [
             'username' => $_POST['username'],
-            'token' => $token
+            'email' => $_POST['email']
         ]);
     }
 
