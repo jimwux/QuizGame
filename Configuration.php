@@ -50,7 +50,7 @@ class Configuration
 
     public function getRegisterController(): RegisterController
     {
-        return new RegisterController(new UserModel($this->getDatabase()), $this->getViewer());
+        return new RegisterController(new UserModel($this->getDatabase()), $this->getViewer(), new Mailer());
     }
 
     public function getLoginController(): LoginController
@@ -66,6 +66,10 @@ class Configuration
     public function getGameController(): GameController
     {
         return new GameController(new GameModel($this->getDatabase()),$this->getViewer());
+    }
+    public function getRankingController(): RankingController
+    {
+        return new RankingController(new RankingModel($this->getDatabase()),$this->getViewer());
     }
 
 }
