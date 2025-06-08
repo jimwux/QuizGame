@@ -1,6 +1,6 @@
 <?php
 
-#Crear función para obtener todos los usuarios con su puntaje total, ordenados de mayor a menor.
+
 class RankingModel
 {
         private $database;
@@ -9,6 +9,8 @@ class RankingModel
     {
         $this->database = $database;
     }
+    
+    #Obtener todos los usuarios con su puntaje total, ordenados de mayor a menor.
     public function obtenerRankingUsuariosTotal() {
         
         $db = $this->database->getConnection();
