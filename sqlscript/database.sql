@@ -74,16 +74,20 @@ CREATE TABLE partida (
 -- Tabla partida_pregunta
 DROP TABLE IF EXISTS partida_pregunta;
 CREATE TABLE partida_pregunta (
-                                  id INT AUTO_INCREMENT PRIMARY KEY,
-                                  id_partida INT NOT NULL,
-                                  id_pregunta INT NOT NULL,
-                                  id_respuesta INT,
-                                  respondida_correctamente BOOLEAN,
-                                  orden_pregunta INT,
-                                  FOREIGN KEY (id_partida) REFERENCES partida(id),
-                                  FOREIGN KEY (id_pregunta) REFERENCES pregunta(id),
-                                  FOREIGN KEY (id_respuesta) REFERENCES respuesta(id)
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    id_partida INT NOT NULL,
+    id_pregunta INT NOT NULL,
+    id_respuesta INT,
+    respondida_correctamente BOOLEAN,
+    estado_pregunta ENUM('mostrada', 'respondida', 'actual') DEFAULT NULL,
+    orden_pregunta INT,
+    tiempo_inicio_pregunta DATETIME DEFAULT CURRENT_TIMESTAMP, -- ¡NUEVA COLUMNA!
+    FOREIGN KEY (id_partida) REFERENCES partida(id),
+    FOREIGN KEY (id_pregunta) REFERENCES pregunta(id),
+    FOREIGN KEY (id_respuesta) REFERENCES respuesta(id),
+    UNIQUE KEY (id_partida, id_pregunta)
 );
+
 
 -- Tabla reporte_pregunta
 DROP TABLE IF EXISTS reporte_pregunta;
