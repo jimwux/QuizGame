@@ -50,7 +50,7 @@ class Configuration
 
     public function getRegisterController(): RegisterController
     {
-        return new RegisterController(new UserModel($this->getDatabase()), $this->getViewer());
+        return new RegisterController(new UserModel($this->getDatabase()), $this->getViewer(), new Mailer());
     }
 
     public function getLoginController(): LoginController
