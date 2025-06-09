@@ -225,6 +225,8 @@ class GameModel
 
     }
 
+
+
     public function verifyQuestionCorrect($infoAnswer, $userId, $partidaId)
     {
         $idQuestion = $infoAnswer["idQuestion"];
@@ -233,13 +235,29 @@ class GameModel
         if ($esCorrecta === "timeout") {
             return null;
         }
+
+        // Verificar si ya respondió esta pregunta en esta partida
+        $checkQuery = "SELECT COUNT(*) as total FROM pregunta_usuario 
+                    WHERE id_usuario = ? AND id_pregunta = ?";
+        $checkStmt = $this->database->getConnection()->prepare($checkQuery);
+        $checkStmt->bind_param("ii", $userId, $idQuestion);
+        $checkStmt->execute();
+        $checkResult = $checkStmt->get_result()->fetch_assoc();
+        $checkStmt->close();
+
+        if ($checkResult["total"] > 0) {
+            //  Ya respondió esta pregunta → no volver a sumar puntos ni registrar
+            return $this->getQuestionForUser($userId);
+        }
+
         // 1. Aumentar veces mostrada
-        $query = "UPDATE pregunta SET veces_mostrada = veces_mostrada + 1 WHERE id = $idQuestion";
+        $query = "UPDATE pregunta SET veces_mostrada = veces_mostrada + 1 WHERE id = ?";
         $stmt = $this->database->getConnection()->prepare($query);
+        $stmt->bind_param("i", $idQuestion);
         $stmt->execute();
         $stmt->close();
 
-        // 2. Obtener id de la respuesta (¿por qué no usar la que el usuario seleccionó?)
+        // 2. Obtener una respuesta de la pregunta (esto podrías mejorar después)
         $query3 = "SELECT * FROM respuesta WHERE id_pregunta = ?";
         $stmt3 = $this->database->getConnection()->prepare($query3);
         $stmt3->bind_param("i", $idQuestion);
@@ -249,31 +267,31 @@ class GameModel
 
         $idAnswer = $result["id"];
 
-        // 3. Registrar que el usuario respondió esta pregunta
-        $query4 = "INSERT INTO pregunta_usuario (id_usuario, id_pregunta, id_respuesta, es_correcta) VALUES (?, ?, ?, ?)";
+        // 3. Registrar que respondió esta pregunta
+        $query4 = "INSERT INTO pregunta_usuario (id_usuario, id_pregunta, id_respuesta, es_correcta) 
+                VALUES (?, ?, ?, ?)";
         $stmt4 = $this->database->getConnection()->prepare($query4);
         $stmt4->bind_param("iiii", $userId, $idQuestion, $idAnswer, $esCorrecta);
         $stmt4->execute();
         $stmt4->close();
 
+        // 4. Si respondió bien, sumar puntos
         if ($esCorrecta == 1) {
-            // 4. Aumentar respuestas correctas
-            $query2 = "UPDATE pregunta SET veces_respondida_correctamente = veces_respondida_correctamente + 1 WHERE id = $idQuestion";
+            $query2 = "UPDATE pregunta SET veces_respondida_correctamente = veces_respondida_correctamente + 1 WHERE id = ?";
             $stmt2 = $this->database->getConnection()->prepare($query2);
+            $stmt2->bind_param("i", $idQuestion);
             $stmt2->execute();
             $stmt2->close();
 
-            // 5. Actualizar puntaje en la partida
             $query5 = "UPDATE partida SET puntaje = puntaje + 1 WHERE id = ?";
             $stmt5 = $this->database->getConnection()->prepare($query5);
             $stmt5->bind_param("i", $partidaId);
             $stmt5->execute();
             $stmt5->close();
-            
+
             return $this->getQuestionForUser($userId);
         }
 
-        // (opcional) retornar nueva pregunta
         return null;
     }
 

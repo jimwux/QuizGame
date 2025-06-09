@@ -79,9 +79,9 @@ class GameController extends BaseController
         $estadoPartida = SesionController::obtenerEstadoPartida();
         $partidaId = $estadoPartida['partida_id'] ?? null;
         $userId = $_SESSION["id"] ?? null;
-
+        
         $verificarRespuesta = $this->model->verifyQuestionCorrect($_POST, $userId ,$partidaId);
-
+        
         if ($verificarRespuesta) {
             $this->show($partidaId);
         } else {
