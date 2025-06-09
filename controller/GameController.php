@@ -28,9 +28,7 @@ class GameController extends BaseController
                 'puntaje_acumulado' => 0,
                 'juego_terminado' => false
             ]);
-            header("Location: /QuizGame/game/show");
-            exit();
-            //$this->show($partidaId); -> Este metodo es muy culiao, este hacia que me rompiera todo el codigo
+            $this->show($partidaId);
         } else {
             $this->view->render("lobby", ["errors" => "Error al crear la partida"]);
         }

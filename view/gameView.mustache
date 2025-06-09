@@ -6,7 +6,7 @@
 
             <div class="position-absolute top-0 start-50 translate-middle-x mt-reorganized-clock-xxl"
                  style="padding-top: 60px">
-                <span class="badge bg-dark text-white fs-4 p-3 rounded-pill shadow-lg" id="timer">00:{{tiempoRestante}}</span>
+                <span class="badge bg-dark text-white fs-4 p-3 rounded-pill shadow-lg" id="timer">00:30</span>
             </div>
 
             <div class="container d-flex flex-grow-1 align-items-center justify-content-center py-4">
@@ -97,15 +97,4 @@
         <p style="color: red;">{{mensaje}}</p>
     {{/mensaje}}
     <script src="/QuizGame/public/js/timer.js"></script>
-    <script>
-        // ¡NUEVO SCRIPT PARA PASAR EL TIEMPO RESTANTE!
-        const initialTime = {{tiempoRestante}}; // Pasa el valor del backend al JS
-        document.addEventListener('DOMContentLoaded', () => {
-            if (initialTime !== undefined && initialTime !== null) {
-                // Actualizar la variable 'timer' en timer.js si ya existe
-                // O si timer.js se carga después, pasarla como una variable global
-                window.initialTimerValue = initialTime; // Variable global para timer.js
-            }
-        });
-    </script>
 </section>

@@ -1,4 +1,3 @@
----
 <?php
 
 class SesionController
@@ -24,8 +23,7 @@ class SesionController
             'pregunta_actual_id' => null,
             'respuestas_dadas' => [],
             'puntaje_acumulado' => 0,
-            'juego_terminado' => false,
-            'tiempo_inicio_pregunta' => null // ¡NUEVA CLAVE EN LA SESIÓN!
+            'juego_terminado' => false
         ];
     }
 
