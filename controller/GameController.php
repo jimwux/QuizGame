@@ -48,6 +48,24 @@ class GameController extends BaseController
         $pregunta = $this->model->getQuestionForUser($usuarioId);
         $puntaje = $this->model->getScore($partidaId);
 
+//        echo "<pre>";
+//        var_dump($pregunta);
+//        echo "</pre>";
+//
+//        exit;
+        $verificarPreguntaNoRespondida = $this->model->verificarPreguntaNoRespondida($partidaId, $usuarioId);
+        if($verificarPreguntaNoRespondida != null) {
+            $datosFiltrados = [
+                "answers" => $pregunta["answers"],
+                "category" => $pregunta["category"],
+            ];
+            $pregunta = [
+                "question" => $verificarPreguntaNoRespondida,
+                "answers" => $pregunta["answers"],
+                "category" => $pregunta["category"],
+            ];
+        }
+
         if (!$pregunta) {
             // No quedan preguntas, ya respondio todas, fin de la partida
             // Mostrar detalles de la partida en finPartidaView.mustache (crearlo)

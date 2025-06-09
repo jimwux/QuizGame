@@ -18,7 +18,51 @@ class GameModel
         $this->database->execute($sql);
 
         $conn = $this->database->getConnection();
-        return $conn->insert_id ?? null;
+        $partidaId = $conn->insert_id;
+
+        $idPregunta = $_SESSION["idPregunta"];
+
+        $sql2 = "INSERT INTO partida_pregunta (id_partida, id_pregunta, estado_pregunta) VALUES (?, ?, 'actual')";
+        $stmt2 = $this->database->getConnection()->prepare($sql2);
+        $stmt2->bind_param('ii', $partidaId, $idPregunta);
+        $stmt2->execute();
+        $stmt2->close();
+
+        return $partidaId ?? null;
+    }
+
+    public function verificarPreguntaNoRespondida($partidaId, $usuarioId)
+    {
+        $idPregunta = $_SESSION['idPregunta'];
+        $query = "SELECT pp.estado_pregunta
+                FROM partida_pregunta pp
+                JOIN partida p ON p.id = pp.id_partida
+                JOIN usuarios u ON u.id = p.id_usuario
+                WHERE u.id = ? AND pp.id_partida = ?";
+        $stmt = $this->database->getConnection()->prepare($query);
+        $stmt->bind_param('ii', $usuarioId, $partidaId);
+        $stmt->execute();
+        $result = $stmt->get_result()->fetch_assoc();
+        $stmt->close();
+
+        if ($result != null && $result["estado_pregunta"] === "actual") {
+
+            return $this->buscarPreguntaPorId($idPregunta);
+        } else {
+            return null;
+        }
+
+    }
+
+    public function buscarPreguntaPorId($id)
+    {
+        $query = "SELECT * FROM pregunta WHERE id = ? LIMIT 1";
+        $stmt = $this->database->getConnection()->prepare($query);
+        $stmt->bind_param('i', $id);
+        $stmt->execute();
+        $result = $stmt->get_result()->fetch_assoc();
+        $stmt->close();
+        return $result;
     }
 
 
@@ -206,7 +250,7 @@ class GameModel
         $stmt->close();
 
         // Condicion para que no divida por cero y lanze error
-        if($result["totalRespondidas"] == 0){
+        if ($result["totalRespondidas"] == 0) {
             return "media";;
         }
 
@@ -221,7 +265,8 @@ class GameModel
         return $dificultad;
     }
 
-    public function obtenerPreguntaNoRepetira($userId){
+    public function obtenerPreguntaNoRepetira($userId)
+    {
         $query = "
             SELECT p.*
             FROM pregunta p
@@ -242,7 +287,8 @@ class GameModel
         return $question;
     }
 
-    public function incrementarVecesMostradas($idPregunta){
+    public function incrementarVecesMostradas($idPregunta)
+    {
         $query = "UPDATE pregunta SET veces_mostrada = veces_mostrada + 1 WHERE id = ?";
         $stmt = $this->database->getConnection()->prepare($query);
         $stmt->bind_param("i", $idPregunta);
@@ -304,6 +350,8 @@ class GameModel
             $this->incrementarVecesMostradas($question['id']);
         }
 
+        // Lo pongo temporalmente en la sesion
+        $_SESSION['idPregunta'] = $idPregunta;
 
         $idCategoria = $question["id_categoria"];
         $infoCategory = $this->getCategory($idCategoria);
@@ -356,6 +404,13 @@ class GameModel
         if ($esCorrecta === "timeout") {
             return null;
         }
+
+        $sql = "INSERT INTO partida_pregunta (id_partida, id_pregunta, respondida_correctamente, estado_pregunta) VALUES (?, ?, ?, 'respondida')";
+        $stmt = $this->database->getConnection()->prepare($sql);
+        $stmt->bind_param("iii", $partidaId, $idQuestion, $esCorrecta);
+        $stmt->execute();
+        $stmt->close();
+
         // 1. Aumentar veces mostrada
         $query = "UPDATE pregunta SET veces_mostrada = veces_mostrada + 1 WHERE id = $idQuestion";
         $stmt = $this->database->getConnection()->prepare($query);
