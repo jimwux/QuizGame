@@ -165,6 +165,7 @@ class UserModel
         $_SESSION["id"] = $usuario['id'];
         $_SESSION["username"] = $usuario['usuario'];
         $_SESSION["nombre"] = $usuario['nombre_completo'];
+        $_SESSION["usuario_rol"] = $usuario["rol"];
 
         return true;
     }

@@ -1,42 +1,24 @@
-<style>body{
- background-color: crimson;
-    h1{
-        margin-top: 2em;
-        text-align: center;
-        color: #f9f9f9;
-    }
-    .stadistics{
-        color: #f9f9f9;
-        display: grid;
-        justify-content: center;
-        margin: 0 10em 0 10em;
-        text-align: center;
-        button{
-            font-size: large;
-            background-color: #f9f9f9;
-        }
-    }
-    .stadistics div{
-    }
-}</style>
-<h1 class="w3-clr-white"->Partida perdida</h1>
-{{#game}}
-<div class="stadistics">
-            <div>
-                <h3>
-                   Cantidad de respuestas correctas:
-                    {{cantidad_correctas}}
-                </h3>
-            </div>
-            <div>
-        <h3>
-            Puntaje total:
-            {{puntaje}}
-        </h3>
+<section>
+    <h1 class="text-center text-white mt-5">¡Tiempo agotado! La partida ha terminado.</h1>
+
+    {{#partida}}
+        <div class="container mt-4">
+            <div class="row justify-content-center">
+
+                <div class="col-md-6 mt-4 mt-md-0">
+                    <div class="card bg-dark text-white shadow-sm">
+                        <div class="card-body text-center">
+                            <h3 class="card-title mb-3">Puntaje total:</h3>
+                            <p class="lead">{{puntaje}}</p>
+                        </div>
+                    </div>
+                </div>
             </div>
 
-    <a href="/QuizGame/lobby" class="w3-bar-item w3-button w3-padding-large ">Volver al inicio</a>
-
-
-</div>
-        {{/game}}
+            <!-- Botón Volver al inicio -->
+            <div class="d-flex justify-content-center mt-5">
+                <a href="/QuizGame/lobby" class="btn btn-danger btn-lg px-5 py-3">Volver al inicio</a>
+            </div>
+        </div>
+    {{/partida}}
+</section>

@@ -1,5 +1,4 @@
 <section>
-    <p>Jugador: {{usuario.nombre}}| Partida: {{partida.id}}</p>
     {{#datos}}
         <div class="d-flex flex-column min-vh-100 position-relative pt-reorganized-xxl"
              style="background-color: {{category.color}};">
@@ -22,14 +21,14 @@
                             </div>
 
                             <div class="card-body p-4 p-md-5 d-flex flex-column justify-content-center flex-grow-1">
-                                <form id="question-form" method="POST" action="/QuizGame/game/getNextQuestion">
+                                <form id="question-form" method="POST" action="/QuizGame/game/responderPregunta">
                                     <input type="hidden" name="idQuestion" value="{{question.id}}">
                                     <p class="question-text text-center lead mb-4 fw-bold fs-1"> {{question.texto}}
                                     </p>
                                     <div class="row g-3 justify-content-center">
                                         {{#answers}}
                                             <div class="col-md-6">
-                                                <button type="submit" name="es_correcta" value="{{es_correcta}}"
+                                                <button type="submit" name="respuesta" value="{{id}}"
                                                         class="btn btn-outline-primary btn-lg w-100 text-start">
                                                     {{texto}}
                                                 </button>
@@ -96,5 +95,9 @@
     {{#mensaje}}
         <p style="color: red;">{{mensaje}}</p>
     {{/mensaje}}
+
+    <script>
+        window.initialTimerValue = {{tiempo_restante}}; // Valor pasado desde PHP
+    </script>
     <script src="/QuizGame/public/js/timer.js"></script>
 </section>

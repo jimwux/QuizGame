@@ -18,10 +18,5 @@ class BaseController
         $view->render("error", $error);
     }
 
-    public function validateSession() {
-        if (!isset($_SESSION['id'])) {
-            $this->redirectTo('login');
-        }
-    }
 
 }

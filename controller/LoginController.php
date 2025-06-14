@@ -33,6 +33,7 @@ class LoginController extends BaseController
     }
 
     public function logout(): void {
+        $_SESSION = [];
         session_destroy();
         $this->redirectTo('login');
     }

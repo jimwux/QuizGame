@@ -9,346 +9,250 @@ class GameModel
         $this->database = $database;
     }
 
-    public function createGame(int $usuarioId): ?int
+    /**
+     * Guarda la partida en la BD.
+     */
+    public function crearPartida($usuarioId)
     {
-        $fecha = date('Y-m-d H:i:s');
-        $usuarioId = (int)$usuarioId;
+        $sql = "INSERT INTO partida (id_usuario, fecha) VALUES (?, NOW())";
+        $this->database->execute($sql, [$usuarioId]);
+        return $this->database->getConnection()->insert_id;
+    }
 
-        $sql = "INSERT INTO partida (id_usuario, fecha, puntaje, finalizada) VALUES ($usuarioId, '$fecha', 0, 0)";
-        $this->database->execute($sql);
+    /**
+     * Actualiza los datos de la partida en la BD al finalizarla.
+     */
+    public function guardarPartidaFinalizada($partidaId, $puntaje): void
+    {
+        $sql = "UPDATE partida SET finalizada = 1, puntaje = ? WHERE id = ?";
+        $this->database->execute($sql, [$puntaje, $partidaId]);
+    }
 
-        $conn = $this->database->getConnection();
-        return $conn->insert_id ?? null;
+    public function registrarRespuestaEnPartida(int $partidaId, int $preguntaId, int $respuestaId, bool $esCorrecta): void
+    {
+        $sql = "INSERT INTO partida_pregunta (id_partida, id_pregunta, id_respuesta, respondida_correctamente, estado_pregunta)
+            VALUES (?, ?, ?, ?, 'respondida')
+            ON DUPLICATE KEY UPDATE
+                id_respuesta = VALUES(id_respuesta),
+                respondida_correctamente = VALUES(respondida_correctamente),
+                estado_pregunta = 'respondida'";
+        $this->database->execute($sql, [$partidaId, $preguntaId, $respuestaId, $esCorrecta ? 1 : 0]);
+    }
+
+    /**
+     * Guarda el registro de ResumenPartida
+     */
+    public function guardarResumenPartida($partidaId, $usuarioId, $puntaje)
+    {
+        // 1. Obtener la cantidad de intentos y respuestas correctas para esta partida
+        $sqlStats = "SELECT 
+                    COUNT(*) as cantidad_intentos,
+                    SUM(respondida_correctamente) as cantidad_correctas
+                 FROM partida_pregunta
+                 WHERE id_partida = ?";
+        $stats = $this->database->query($sqlStats, [$partidaId])[0];
+
+        // 2. Obtener la categoría con más preguntas respondidas
+        $sqlCategoria = "SELECT p.id_categoria, COUNT(*) as cantidad
+                     FROM partida_pregunta pp
+                     INNER JOIN pregunta p ON pp.id_pregunta = p.id
+                     WHERE pp.id_partida = ?
+                     GROUP BY p.id_categoria
+                     ORDER BY cantidad DESC
+                     LIMIT 1";
+        $categoria = $this->database->query($sqlCategoria, [$partidaId])[0]['id_categoria'] ?? null;
+
+        // 3. Insertar en resumen_partida
+        $sql = "INSERT INTO resumen_partida 
+            (id_partida, id_usuario, cantidad_correctas, cantidad_intentos, id_categoria, puntaje, tiempo_promedio_respuesta, fecha_partida)
+            VALUES (?, ?, ?, ?, ?, ?, NULL, NOW())
+            ON DUPLICATE KEY UPDATE
+                cantidad_correctas = VALUES(cantidad_correctas),
+                cantidad_intentos = VALUES(cantidad_intentos),
+                id_categoria = VALUES(id_categoria),
+                puntaje = VALUES(puntaje),
+                tiempo_promedio_respuesta = VALUES(tiempo_promedio_respuesta),
+                fecha_partida = VALUES(fecha_partida)";
+        $this->database->execute($sql, [
+            $partidaId,
+            $usuarioId,
+            $stats['cantidad_correctas'] ?? 0,
+            $stats['cantidad_intentos'] ?? 0,
+            $categoria,
+            $puntaje
+        ]);
     }
 
 
-    public function getGameById(int $partidaId): ?array
+    /**
+     * Obtiene las categorías de la BD
+     */
+    public function obtenerCategoriasDisponibles()
     {
-        $sql = "SELECT * FROM partida WHERE id = $partidaId LIMIT 1";
-        $result = $this->database->query($sql);
-
-        if (count($result) > 0) {
-            return $result[0];
-        }
-        return null;
+        $sql = "SELECT * FROM categoria";
+        return $this->database->query($sql);
     }
 
-    // Este metodo por ahora no se usa
-    public function verifyQuestionRepeat($userId, $questionId)  // Verifica si una pregunta ya fue respondida por el usuario
+    /**
+     * Obtiene una categoría a partir de su ID
+     */
+    public function obtenerCategoriaPorId($categoriaId)
     {
-        $query = "SELECT 1 
-                    FROM partida_pregunta pp
-                    JOIN partida pa ON pa.id = pp.id_partida
-                    WHERE pa.id_usuario = ?
-                    AND pp.id_pregunta = ? LIMIT 1";
-        $stmt = $this->database->getConnection()->prepare($query);
-        $stmt->bind_param("ii", $userId, $questionId);
-        $stmt->execute();
-        $result = $stmt->get_result();
-        $isRepeated = $result->fetch_assoc() != null;
-        $stmt->close();
-        return $isRepeated;
+        $sql = "SELECT id, nombre, color FROM categoria WHERE id = ?";
+        return $this->database->queryOne($sql, [$categoriaId]);
     }
 
-    public function getNumberOfRowsInPregunta() // Obtiene la CANTIDAD de preguntas que hay en la BD
+    /**
+     * Obtiene una pregunta a partir de su ID
+     */
+    public function obtenerPreguntaPorId($id)
     {
-        $numberOfQuestions = "SELECT COUNT(*) AS total FROM pregunta";
-        $queryPrepare = $this->database->getConnection()->prepare($numberOfQuestions);
-        $queryPrepare->execute();
-        $result = $queryPrepare->get_result()->fetch_assoc();
-        $queryPrepare->close();
-        return $result ? (int)$result['total'] : 0;
+        $sql = "SELECT * FROM pregunta WHERE id = ?";
+        $pregunta = $this->database->query($sql, [$id]);
+        return $pregunta[0] ?? null;
     }
 
-    public function getRandomQuestionFromAll() // Obtiene una pregunta random (no se usa por ahora)
+    /**
+     * Obtiene las opciones de una pregunta
+     */
+    public function obtenerOpcionesRespuesta($preguntaId)
     {
-        $cantidad = $this->getNumberOfRowsInPregunta();
-        if ($cantidad == 0) {
-            return null;
-        }
-
-        $numberRandom = rand(0, $cantidad - 1);
-
-        $query = "SELECT * FROM pregunta LIMIT 1 OFFSET ?";
-        $stmt = $this->database->getConnection()->prepare($query);
-        $stmt->bind_param("i", $numberRandom);
-        $stmt->execute();
-        $result = $stmt->get_result();
-        $question = $result->fetch_assoc();
-        $stmt->close();
-        return $question;
-    }
-
-    public function getUserCorrectRatio($userId)  // Retorna el valor de dificultad por usuario
-    {
-        $query = "SELECT
-                SUM(CASE WHEN es_correcta = 1 THEN 1 ELSE 0 END) AS respuestas_correctas,
-                COUNT(*) AS total_respuestas
-              FROM
-                pregunta_usuario
-              WHERE
-                id_usuario = ?";
-        $stmt = $this->database->getConnection()->prepare($query);
-        $stmt->bind_param("i", $userId);
-        $stmt->execute();
-        $result = $stmt->get_result()->fetch_assoc();
-        $stmt->close();
-
-        // Condicional para saber si es usuario nuevo (o boludo y se equivoco en todas), le ponemos dificultad media
-        if ($result['total_respuestas'] == 0) {
-            return 0.5;
-        }
-        return ($result['respuestas_correctas'] * 1.0) / $result['total_respuestas'];
+        $sql = "SELECT id, texto FROM respuesta WHERE id_pregunta = ?";
+        return $this->database->query($sql, [$preguntaId]);
     }
 
 
-    public function getQuestionForUser($userId) // Obtiene una pregunta que no fue respondida por el usuario
+    /**
+     * Obtiene una pregunta para un usuario segun su categoría y dificultad
+     */
+    public function obtenerPreguntaParaUsuario($usuarioId, $partidaId, $categoriaId)
     {
-        $userRatio = $this->getUserCorrectRatio($userId);
-        $defaultDifficulty = "Media";
+        // 1. Obtener estadísticas del usuario: total de preguntas respondidas y cuántas fueron correctas
+        $estadisticasUsuario = $this->database->query(
+            "SELECT COUNT(*) as total, SUM(es_correcta) as correctas FROM pregunta_usuario WHERE id_usuario = ?",
+            [$usuarioId]
+        )[0] ?? ['total' => 0, 'correctas' => 0];
 
-        if ($userRatio > 0.7) {
-            $defaultDifficulty = "Dificil";
-        } elseif ($userRatio < 0.3) {
-            $defaultDifficulty = "Facil";
-        }
+        $totalRespondidas = (int) $estadisticasUsuario['total'];
+        $correctas = (int) $estadisticasUsuario['correctas'];
 
-        // Query para obtener una pregunta que coincida con al dificultad del usuario
-        $query = "SELECT
-                    p.*,
-                    CASE
-                        WHEN p.veces_mostrada = 0 THEN 'Media'
-                        WHEN (p.veces_respondida_correctamente * 1.0 / p.veces_mostrada) > 0.7 THEN 'Facil'
-                        WHEN (p.veces_respondida_correctamente * 1.0 / p.veces_mostrada) < 0.3 THEN 'Dificil'
-                        ELSE 'Media'
-                    END AS dificultad_global
-                  FROM
-                      pregunta p
-                    WHERE
-                        p.id NOT IN (
-                            SELECT pu.id_pregunta
-                            FROM pregunta_usuario pu
-                            WHERE pu.id_usuario = ?
-                        )
-                    AND (
-                        CASE
-                            WHEN p.veces_mostrada = 0 THEN 'Media'
-                            WHEN (p.veces_respondida_correctamente * 1.0 / p.veces_mostrada) > 0.7 THEN 'Facil'
-                            WHEN (p.veces_respondida_correctamente * 1.0 / p.veces_mostrada) < 0.3 THEN 'Dificil'
-                        ELSE 'Media'
-                        END
-                    ) = ?
-                ORDER BY RAND()
-                LIMIT 1";
-
-        $stmt = $this->database->getConnection()->prepare($query);
-        $stmt->bind_param("is", $userId, $defaultDifficulty);
-        $stmt->execute();
-        $result = $stmt->get_result();
-        $question = $result->fetch_assoc();
-        $stmt->close();
-
-        // En caso de que no se encuentre una pregunta acorde a LA DIFICULTAD del usuario se busca una pregunta que NO haya respondido
-        if (!$question) {
-            $query = "SELECT
-                        p.*,
-                        CASE
-                            WHEN p.veces_mostrada = 0 THEN 'Media'
-                            WHEN (p.veces_respondida_correctamente * 1.0 / p.veces_mostrada) > 0.7 THEN 'Facil'
-                            WHEN (p.veces_respondida_correctamente * 1.0 / p.veces_mostrada) < 0.3 THEN 'Dificil'
-                            ELSE 'Media'
-                        END AS dificultad_global
-                      FROM
-                          pregunta p
-                        WHERE
-                            p.id NOT IN (
-                                SELECT pu.id_pregunta
-                                FROM pregunta_usuario pu
-                                WHERE pu.id_usuario = ?
-                            )
-                    ORDER BY RAND()
-                    LIMIT 1";
-
-            $stmt = $this->database->getConnection()->prepare($query);
-            $stmt->bind_param("i", $userId);
-            $stmt->execute();
-            $result = $stmt->get_result();
-            $question = $result->fetch_assoc();
-            $stmt->close();
+        // 2. Calcular dificultad según el desempeño del usuario
+        // - Si respondió menos de 10 preguntas: media
+        // - Si el porcentaje de aciertos es >= 70%: difícil
+        // - Si el porcentaje de aciertos es <= 30%: fácil
+        // - En otro caso: media
+        if ($totalRespondidas < 10) {
+            $dificultadId = 2; // media
+        } else {
+            $porcentaje = $correctas / $totalRespondidas;
+            if ($porcentaje >= 0.7) {
+                $dificultadId = 3; // dificil
+            } elseif ($porcentaje <= 0.3) {
+                $dificultadId = 1; // facil
+            } else {
+                $dificultadId = 2; // media
+            }
         }
 
-        // Si el usuario respondio todas las preguntas deberia retornar un mensaje que se acabaron las preguntas
-        if (!$question) {
-            return null;
+        // 3. Intentar obtener una pregunta de la categoría, con esa dificultad, que el usuario no haya respondido aún
+        $pregunta = $this->database->query(
+            "SELECT p.* FROM pregunta p
+             WHERE p.id_categoria = ?
+               AND p.id NOT IN (
+                   SELECT id_pregunta FROM pregunta_usuario WHERE id_usuario = ?
+               )
+               AND p.id_dificultad = ?
+             ORDER BY RAND() LIMIT 1",
+            [$categoriaId, $usuarioId, $dificultadId]
+        );
+
+        // 4. Si no encuentra ninguna con esa dificultad, intenta con cualquier dificultad
+        if (empty($pregunta)) {
+            $pregunta = $this->database->query(
+                "SELECT p.* FROM pregunta p
+                 WHERE p.id_categoria = ?
+                   AND p.id NOT IN (
+                       SELECT id_pregunta FROM pregunta_usuario WHERE id_usuario = ?
+                   )
+                 ORDER BY RAND() LIMIT 1",
+                [$categoriaId, $usuarioId]
+            );
         }
 
-        $idCategoria = $question["id_categoria"];
-        $infoCategory = $this->getCategory($idCategoria);
-
-        $idQuestion = $question["id"];
-        $answers = $this->getAnswers($idQuestion);
-
-
-        $infoQuestionComplete = ["question" => $question, "answers" => $answers, "category" => $infoCategory];
-
-        return $infoQuestionComplete;
+        // 5. Devuelve la primera (o null si no hay disponibles)
+        return $pregunta[0] ?? null;
     }
 
-    public function getCategory($idCategory) // Obtiene la informacion de una categoria especifica
+    /**
+     * Obtiene una pregunta para un usuario segun su categoría y dificultad
+     */
+    public function validarRespuesta($preguntaId, $respuestaId): bool
     {
-        $query = "SELECT * FROM categoria WHERE id = ?";
-        $stmt = $this->database->getConnection()->prepare($query);
-        $stmt->bind_param("i", $idCategory);
-        $stmt->execute();
-        $result = $stmt->get_result();
-        $category = $result->fetch_assoc();
-        $stmt->close();
-        return $category;
+        $sql = "SELECT es_correcta FROM respuesta WHERE id_pregunta = ? AND id = ?";
+        $resultado = $this->database->query($sql, [$preguntaId, $respuestaId]);
+        return !empty($resultado) && $resultado[0]['es_correcta'] == 1;
     }
 
-    public function getAnswers($idQuestion) // Obtiene las respuestas de una pregunta
+    public function obtenerRespuestaCorrecta($preguntaId)
     {
-        $query = "SELECT * FROM respuesta WHERE id_pregunta = ?";
-        $stmt = $this->database->getConnection()->prepare($query);
-        $stmt->bind_param("i", $idQuestion);
-        $stmt->execute();
-        $result = $stmt->get_result();
-
-        $answers = [];
-
-        while ($row = $result->fetch_assoc()) {
-            $answers[] = $row;
-        }
-
-        $stmt->close();
-        return $answers;
-
+        $sql = "SELECT * FROM respuesta WHERE id_pregunta = ? AND es_correcta = 1";
+        $resultado = $this->database->query($sql, [$preguntaId]);
+        return $resultado[0] ?? null;
     }
 
-    public function verifyQuestionCorrect($infoAnswer, $userId, $partidaId)
+    public function marcarPreguntaComoRespondidaPorUsuario($usuarioId, $preguntaId, $respuestaId, $esCorrecta): void
     {
-        $idQuestion = $infoAnswer["idQuestion"];
-        $esCorrecta = $infoAnswer["es_correcta"];
+        // 1. Registrar que el usuario respondió la pregunta
+        $sql = "INSERT INTO pregunta_usuario (id_usuario, id_pregunta, id_respuesta, es_correcta)
+                VALUES (?, ?, ?, ?)";
+        $this->database->execute($sql, [$usuarioId, $preguntaId, $respuestaId, $esCorrecta]);
 
-        if ($esCorrecta === "timeout") {
-            return null;
-        }
-        // 1. Aumentar veces mostrada
-        $query = "UPDATE pregunta SET veces_mostrada = veces_mostrada + 1 WHERE id = $idQuestion";
-        $stmt = $this->database->getConnection()->prepare($query);
-        $stmt->execute();
-        $stmt->close();
+        // 2. Actualizar métricas de la pregunta
+        $this->database->execute(
+            "UPDATE pregunta
+             SET veces_mostrada = veces_mostrada + 1,
+                 veces_respondida_correctamente = veces_respondida_correctamente + ?
+             WHERE id = ?",
+            [$esCorrecta ? 1 : 0, $preguntaId]
+        );
 
-        // 2. Obtener id de la respuesta (¿por qué no usar la que el usuario seleccionó?)
-        $query3 = "SELECT * FROM respuesta WHERE id_pregunta = ?";
-        $stmt3 = $this->database->getConnection()->prepare($query3);
-        $stmt3->bind_param("i", $idQuestion);
-        $stmt3->execute();
-        $result = $stmt3->get_result()->fetch_assoc();
-        $stmt3->close();
-
-        $idAnswer = $result["id"];
-
-        // 3. Registrar que el usuario respondió esta pregunta
-        $query4 = "INSERT INTO pregunta_usuario (id_usuario, id_pregunta, id_respuesta, es_correcta) VALUES (?, ?, ?, ?)";
-        $stmt4 = $this->database->getConnection()->prepare($query4);
-        $stmt4->bind_param("iiii", $userId, $idQuestion, $idAnswer, $esCorrecta);
-        $stmt4->execute();
-        $stmt4->close();
-
-        if ($esCorrecta == 1) {
-            // 4. Aumentar respuestas correctas
-            $query2 = "UPDATE pregunta SET veces_respondida_correctamente = veces_respondida_correctamente + 1 WHERE id = $idQuestion";
-            $stmt2 = $this->database->getConnection()->prepare($query2);
-            $stmt2->execute();
-            $stmt2->close();
-
-            // 5. Actualizar puntaje en la partida
-            $query5 = "UPDATE partida SET puntaje = puntaje + 1 WHERE id = ?";
-            $stmt5 = $this->database->getConnection()->prepare($query5);
-            $stmt5->bind_param("i", $partidaId);
-            $stmt5->execute();
-            $stmt5->close();
-            
-            return $this->getQuestionForUser($userId);
-        }
-
-        // (opcional) retornar nueva pregunta
-        return null;
+        // 3. Recalcular y actualizar dificultad solo si se ha mostrado al menos 10 veces
+        $this->database->execute(
+            "UPDATE pregunta
+             SET id_dificultad = CASE
+                 WHEN veces_mostrada < 10 THEN id_dificultad
+                 WHEN veces_respondida_correctamente / veces_mostrada >= 0.7 THEN 1
+                 WHEN veces_respondida_correctamente / veces_mostrada < 0.3 THEN 3
+                 ELSE 2
+             END
+             WHERE id = ?",
+            [$preguntaId]
+        );
     }
-
-    public function getScore($partidaIdEntrada)
+    public function usuarioRespondioTodas($usuarioId, $categoriaId): bool
     {
-        $partidaId = intval($partidaIdEntrada);
+        $total = $this->database->query(
+            "SELECT COUNT(*) as total FROM pregunta WHERE id_categoria = ?",
+            [$categoriaId]
+        )[0]['total'] ?? 0;
 
-        $sql = "SELECT puntaje FROM partida WHERE id = $partidaId LIMIT 1";
-        $res = $this->database->query($sql);
+        $respondidas = $this->database->query(
+            "SELECT COUNT(*) as respondidas FROM pregunta_usuario
+             INNER JOIN pregunta ON pregunta.id = pregunta_usuario.id_pregunta
+             WHERE pregunta_usuario.id_usuario = ? AND pregunta.id_categoria = ?",
+            [$usuarioId, $categoriaId]
+        )[0]['respondidas'] ?? 0;
 
-        if (count($res) > 0) {
-            return (int)$res[0]['puntaje'];
-        }
-
-        return 0; // Si no existe la partida, devuelve 0 o lo que consideres
+        return $respondidas >= $total && $total > 0;
     }
 
-    public function saveGame( $partidaIdEntrada, int $puntaje): void { // guarda el puntaje y el id de la partida
-        $partidaId = intval($partidaIdEntrada);
-
-        $sql = "
-            UPDATE partida 
-            SET puntaje = $puntaje, finalizada = 1 
-            WHERE id = $partidaId
-        ";
-        $this->database->execute($sql);
+    public function resetearPreguntasRespondidas($usuarioId, $categoriaId): void
+    {
+        $sql = "DELETE pu FROM pregunta_usuario pu
+                INNER JOIN pregunta p ON p.id = pu.id_pregunta
+                WHERE pu.id_usuario = ? AND p.id_categoria = ?";
+        $this->database->execute($sql, [$usuarioId, $categoriaId]);
     }
 
-    public function guardarResumenPartida(
-        int $idPartida,
-        int $idUsuario,
-    ): void {
-        $cantidadCorrectas = $this->getScore($idPartida);
-        $cantidadIntentos = 1;
 
-        $idCategoria = null;
-        $idDificultad = null;
-        $puntaje = $this->getScore($idPartida);
-        $tiempoPromedioRespuesta = null;
-
-        // Asegurarse de que los nulls vayan como NULL en SQL (sin comillas)
-        $idCategoriaSQL = is_null($idCategoria) ? "NULL" : $idCategoria;
-        $idDificultadSQL = is_null($idDificultad) ? "NULL" : $idDificultad;
-        $tiempoPromedioRespuestaSQL = is_null($tiempoPromedioRespuesta) ? "NULL" : $tiempoPromedioRespuesta;
-
-        $sql = "
-            INSERT INTO resumen_partida (
-                id_partida,
-                id_usuario,
-                cantidad_correctas,
-                cantidad_intentos,
-                id_categoria,
-                id_dificultad,
-                puntaje,
-                tiempo_promedio_respuesta,
-                fecha_partida
-            ) VALUES (
-                $idPartida,
-                $idUsuario,
-                $cantidadCorrectas,
-                $cantidadIntentos,
-                $idCategoriaSQL,
-                $idDificultadSQL,
-                $puntaje,
-                $tiempoPromedioRespuestaSQL,
-                NOW()
-            )
-        ";
-
-        $this->database->execute($sql);
-    }
-    public function getResumenPartida(
-        int $idPartida,
-        int $idUsuario
-    ){
-        $sql = "SELECT * FROM resumen_partida WHERE id_partida = $idPartida AND id_usuario = $idUsuario LIMIT 1";
-        return $res = $this->database->query($sql);}
 }

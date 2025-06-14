@@ -1,0 +1,66 @@
+<section>
+    <div class="d-flex flex-column min-vh-100 position-relative pt-reorganized-xxl"
+         style="background-color: {{category.color}};">
+
+        <div class="container d-flex flex-grow-1 align-items-center justify-content-center py-4">
+            <div class="row w-100 justify-content-center">
+                <div class="col-lg-8 col-md-10">
+                    <div class="card shadow-lg d-flex flex-column rounded-4">
+                        <div class="card-header d-flex justify-content-between align-items-center py-3 bg-transparent border-bottom">
+                            <h5 class="mb-0 fw-bold text-dark fs-6">Resultado de tu respuesta 🎯</h5>
+                            <span class="badge fs-5 p-3 rounded-pill fw-bold"
+                                  style="background-color: {{category.color}}; color: white;">
+                                {{category.nombre}}
+                            </span>
+                        </div>
+
+                        <div class="card-body p-4 p-md-5 d-flex flex-column justify-content-center flex-grow-1">
+                            <p class="question-text text-center lead mb-4 fw-bold fs-1">
+                                {{question.texto}}
+                            </p>
+
+                            <div class="row g-3 justify-content-center">
+                                {{#answers}}
+                                    <div class="col-md-6">
+                                        <button
+                                                type="button"
+                                                class="btn btn-lg w-100 text-start
+                                                {{#esSeleccionadaYCorrecta}}btn-success{{/esSeleccionadaYCorrecta}}
+                                                    {{#esSeleccionadaYIncorrecta}}btn-danger{{/esSeleccionadaYIncorrecta}}
+                                                    {{#esCorrectaNoSeleccionada}}btn-success{{/esCorrectaNoSeleccionada}}
+                                                    {{^esSeleccionadaYCorrecta}}{{^esSeleccionadaYIncorrecta}}{{^esCorrectaNoSeleccionada}}btn-outline-primary{{/esCorrectaNoSeleccionada}}{{/esSeleccionadaYIncorrecta}}{{/esSeleccionadaYCorrecta}}"
+                                                disabled
+                                        >
+                                            {{texto}}
+                                        </button>
+                                    </div>
+                                {{/answers}}
+                            </div>
+
+                            <p class="mt-4 text-center fs-5">
+                                {{#correcta}}✅ ¡Respuesta correcta!{{/correcta}}
+                                {{^correcta}}❌ Respuesta incorrecta.{{/correcta}}
+                            </p>
+
+                            <p class="text-center fs-6">Puntaje actual: <strong>{{puntaje}}</strong></p>
+
+                            {{#partidaFinalizada}}
+                                <form method="GET" action="/QuizGame/lobby">
+                                    <button type="submit" class="btn btn-danger mt-4">Volver al lobby</button>
+                                </form>
+                            {{/partidaFinalizada}}
+
+                            {{^partidaFinalizada}}
+                                <form method="POST" action="/QuizGame/game/seleccionarCategoria">
+                                    <button type="submit" class="btn btn-primary mt-4">Siguiente pregunta</button>
+                                </form>
+                            {{/partidaFinalizada}}
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</section>

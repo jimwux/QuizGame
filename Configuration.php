@@ -72,4 +72,9 @@ class Configuration
         return new RankingController(new RankingModel($this->getDatabase()),$this->getViewer());
     }
 
+    public function getQuestionController(): QuestionController
+    {
+        return new QuestionController(new QuestionModel($this->getDatabase()),$this->getViewer());
+    }
+
 }
