@@ -48,6 +48,16 @@
                     </div>
                 </div>
             {{/partidas}}
+
+            {{#errors}}More actions
+                <div class="alert alert-danger">
+                    <ul class="list-unstyled mb-0">
+                        {{#.}}
+                            <li>{{.}}</li>
+                        {{/.}}
+                    </ul>
+                </div>
+            {{/errors}}
        </section>
 
         <!-- Botones -->
@@ -72,7 +82,7 @@
                     </a>
                 </div>
                 <div class="col-12 d-flex">
-                    <a href="/QuizGame/game/createGame"
+                    <a href="/QuizGame/game/iniciarPartida"
                             class="btn btn-warning d-flex flex-column justify-content-center align-items-center gap-2 w-100 fw-bold fs-4"
                             style="height: 180px;"
                     >

@@ -14,7 +14,6 @@ class ProfileController extends BaseController
     // Validar formularios, peticiones HTTP, redirecciones y comunicar al modelo
     public function show()
     {
-        $this->validateSession();
         $nombreUsuario = $this->getUsuarioPorVista();
         $data["user"] = $this->model->getUserByUsername($nombreUsuario);
         if($data["user"]){

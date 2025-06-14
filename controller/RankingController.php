@@ -14,8 +14,6 @@ class RankingController extends BaseController
 
     public function show()
     {
-        $this->validateSession();
-
         $ranking = $this->model->obtenerRankingUsuariosTotal();
 
         # Se añaden las posiciones manualmente, aunque deberia estar en la vista creo xd

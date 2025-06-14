@@ -12,8 +12,6 @@ class LobbyController extends BaseController
     }
     public function show()
     {
-        $this->validateSession();
-
         $usuarioId = $_SESSION['id'];
         $partidas = $this->model->getGamesResultByUser($usuarioId);
 

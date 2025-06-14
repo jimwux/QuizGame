@@ -1,6 +1,6 @@
 <?php
 
-class SesionController
+class SessionController
 {
     public static function iniciarSesion()
     {
@@ -23,7 +23,8 @@ class SesionController
             'pregunta_actual_id' => null,
             'respuestas_dadas' => [],
             'puntaje_acumulado' => 0,
-            'juego_terminado' => false
+            'juego_terminado' => false,
+            'categoria_actual' => null
         ];
     }
 
@@ -35,10 +36,20 @@ class SesionController
         }
     }
 
-    public static function reiniciarPartida()
+    public static function limpiarDatosPartida()
     {
         self::iniciarSesion();
         unset($_SESSION['estado_partida']);
+    }
+
+    public static function incrementarPuntaje($puntajeIncremento)
+    {
+        self::iniciarSesion();
+        if (!isset($_SESSION['estado_partida']['puntaje'])) {
+            $_SESSION['estado_partida']['puntaje'] = 0;
+        }
+        // Sumar el puntaje incrementado
+        $_SESSION['estado_partida']['puntaje'] += $puntajeIncremento;
     }
 
     // Puedes añadir más métodos para la sesión de usuario

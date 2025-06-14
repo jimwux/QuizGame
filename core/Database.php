@@ -10,17 +10,47 @@ class Database
         $this->conn = new Mysqli($servername, $username, $password, $dbname) or die("Error de conexion " . mysqli_connect_error());
     }
 
-    public function query($sql)
+    public function query($sql, $params = [])
     {
-        $result = $this->conn->query($sql);
+        $stmt = $this->conn->prepare($sql);
+        if (!$stmt) {
+            throw new Exception("Error al preparar SQL: " . $this->conn->error . "\nSQL: $sql");
+        }
 
+        if ($params) {
+            $types = str_repeat('s', count($params));
+            $stmt->bind_param($types, ...$params);
+        }
+        $stmt->execute();
+        $result = $stmt->get_result();
         return $result->fetch_all(MYSQLI_ASSOC);
     }
 
-    public function execute($sql)
+    public function queryOne($sql, $params = [])
     {
-        $this->conn->query($sql);
+        $result = $this->query($sql, $params);
+        return $result[0] ?? null;
     }
+
+    public function execute($sql, $params = [])
+    {
+        $stmt = $this->conn->prepare($sql);
+        if (!$stmt) {
+            die("Error preparando: " . $this->conn->error);
+        }
+
+        if ($params) {
+            $types = str_repeat('s', count($params));
+            $stmt->bind_param($types, ...$params);
+        }
+
+        if (!$stmt->execute()) {
+            die("Error ejecutando: " . $stmt->error);
+        }
+
+        $stmt->close();
+    }
+
 
     function __destruct()
     {

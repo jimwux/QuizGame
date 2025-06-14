@@ -18,7 +18,8 @@ CREATE TABLE usuarios (
     activo TINYINT(1) DEFAULT 0,
     token_validacion VARCHAR(255),
     latitud DECIMAL(10,6),
-    longitud DECIMAL(10,6)
+    longitud DECIMAL(10,6),
+    rol VARCHAR(50) NOT NULL DEFAULT 'jugador'
 );
 
 -- Tabla categoria
@@ -46,8 +47,10 @@ CREATE TABLE pregunta (
     estado ENUM('activa', 'inactiva', 'pendiente') DEFAULT 'pendiente',
     veces_mostrada INT DEFAULT 0,
     veces_respondida_correctamente INT DEFAULT 0,
+    id_dificultad INT NOT NULL DEFAULT 2, -- ← dificultad media por defecto
     FOREIGN KEY (id_categoria) REFERENCES categoria(id),
-    FOREIGN KEY (id_creador) REFERENCES usuarios(id)
+    FOREIGN KEY (id_creador) REFERENCES usuarios(id),
+    FOREIGN KEY (id_dificultad) REFERENCES dificultad(id)
 );
 
 -- Tabla respuesta
@@ -122,28 +125,26 @@ CREATE TABLE resumen_partida (
     cantidad_correctas INT NOT NULL DEFAULT 0,
     cantidad_intentos INT NOT NULL DEFAULT 0,
     id_categoria INT DEFAULT NULL,
-    id_dificultad INT DEFAULT NULL,
     puntaje INT NOT NULL DEFAULT 0,
     tiempo_promedio_respuesta FLOAT DEFAULT NULL,
     fecha_partida DATETIME NOT NULL,
     FOREIGN KEY (id_partida) REFERENCES partida(id),
     FOREIGN KEY (id_usuario) REFERENCES usuarios(id),
-    FOREIGN KEY (id_categoria) REFERENCES categoria(id),
-    FOREIGN KEY (id_dificultad) REFERENCES dificultad(id)
+    FOREIGN KEY (id_categoria) REFERENCES categoria(id)
 );
 
--- Tabla estadistica_respuestas_usuario
-DROP TABLE IF EXISTS estadistica_respuestas_usuario;
-CREATE TABLE estadistica_respuestas_usuario (
-                                                id_usuario INT PRIMARY KEY,
-                                                total_partidas_jugadas INT NOT NULL DEFAULT 0,
-                                                total_intentos INT NOT NULL DEFAULT 0,
-                                                total_correctas INT NOT NULL DEFAULT 0,
-                                                porcentaje_general FLOAT DEFAULT 0,
-                                                tiempo_promedio_respuesta FLOAT DEFAULT NULL,
-                                                nivel_calculado INT DEFAULT NULL,
-                                                FOREIGN KEY (id_usuario) REFERENCES usuarios(id)
-);
+-- -- Tabla estadistica_respuestas_usuario
+-- DROP TABLE IF EXISTS estadistica_respuestas_usuario;
+-- CREATE TABLE estadistica_respuestas_usuario (
+--                                                 id_usuario INT PRIMARY KEY,
+--                                                 total_partidas_jugadas INT NOT NULL DEFAULT 0,
+--                                                 total_intentos INT NOT NULL DEFAULT 0,
+--                                                 total_correctas INT NOT NULL DEFAULT 0,
+--                                                 porcentaje_general FLOAT DEFAULT 0,
+--                                                 tiempo_promedio_respuesta FLOAT DEFAULT NULL,
+--                                                 nivel_calculado INT DEFAULT NULL,
+--                                                 FOREIGN KEY (id_usuario) REFERENCES usuarios(id)
+-- );
 
 -- Tabla pregunta_usuario
 DROP TABLE IF EXISTS pregunta_usuario;
@@ -155,8 +156,7 @@ CREATE TABLE pregunta_usuario (
     es_correcta BOOLEAN NOT NULL,
     FOREIGN KEY (id_usuario) REFERENCES usuarios(id),
     FOREIGN KEY (id_pregunta) REFERENCES pregunta(id),
-    FOREIGN KEY (id_respuesta) REFERENCES respuesta(id),
-    UNIQUE KEY (id_usuario, id_pregunta) -- AGREGAR ESTA LÍNEA para evitar duplicados si un usuario responde la misma pregunta en diferentes partidas o recargas.
+    FOREIGN KEY (id_respuesta) REFERENCES respuesta(id)
 );
 
 
@@ -168,6 +168,12 @@ CREATE TABLE pregunta_usuario (
 -- TODO: Todas las tablas tienen que empezar con id 1 SI O SI, sino no anda
     -- Usar esta query en caso de que no funque: ALTER TABLE nombreTabla AUTO_INCREMENT = 1;
 -- Agregar primero por lo menos 10 INSERTS de Usuarios sin incluir el de ustedes
+
+-- Dificultades
+INSERT INTO dificultad (id, descripcion) VALUES
+                                             (1, 'fácil'),
+                                             (2, 'media'),
+                                             (3, 'difícil');
 
 -- Usuarios
 INSERT INTO usuarios (
