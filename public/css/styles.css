@@ -17,3 +17,77 @@
     margin-top: 2em;
     border-radius: 20px;
 }
+
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: #f0f2f5; /* Fondo gris muy claro */
+}
+.card {
+    border: none;
+    border-radius: 1rem; /* Bordes más redondeados */
+    box-shadow: 0 0.75rem 1.5rem rgba(0, 0, 0, 0.05); /* Sombra suave y difusa */
+}
+.card-header {
+    background-color: #ffffff; /* Fondo blanco para el encabezado */
+    border-bottom: 1px solid #e0e0e0; /* Separador sutil */
+    padding: 1.5rem 2rem;
+    border-radius: 1rem 1rem 0 0 !important;
+}
+.list-group-item {
+    background-color: #ffffff;
+    border: none;
+    border-bottom: 1px solid #f0f0f0; /* Líneas divisorias muy finas */
+    padding: 1.5rem 2rem;
+    transition: background-color 0.2s ease;
+}
+.list-group-item:last-child {
+    border-bottom: none;
+}
+.list-group-item:hover {
+    background-color: #fcfcfc; /* Fondo ligeramente más oscuro al pasar el mouse */
+}
+.question-text {
+    font-weight: 500;
+    color: #333;
+    font-size: 1.15rem; /* Tamaño de fuente ligeramente más grande */
+    margin-bottom: 0.75rem;
+}
+.option-item {
+    font-size: 0.95rem;
+    color: #555;
+    padding: 0.25rem 0;
+    list-style: none; /* Quitar viñetas de lista por defecto */
+}
+.category-badge {
+    font-size: 0.8rem;
+    padding: 0.4em 0.8em;
+    border-radius: 0.5rem; /* Bordes más redondeados para insignias */
+    font-weight: 600;
+    margin-bottom: 0.75rem; /* Espacio debajo de la categoría */
+    display: inline-block; /* Para que margin-bottom funcione */
+}
+/* Colores para las categorías */
+.category-geografia { background-color: #e0f2f7; color: #0288d1; } /* Azul claro */
+.category-ciencia { background-color: #e8f5e9; color: #388e3c; }   /* Verde claro */
+.category-historia { background-color: #fbe9e7; color: #d84315; } /* Naranja suave */
+.category-literatura { background-color: #ede7f6; color: #673ab7; } /* Morado claro */
+.category-matematicas { background-color: #fffde7; color: #fbc02d; } /* Amarillo suave */
+.action-icon {
+    cursor: pointer;
+    transition: transform 0.2s ease, color 0.2s ease;
+}
+.action-icon:hover {
+    transform: scale(1.1);
+}
+.fa-check {
+    color: #28a745; /* Verde Bootstrap */
+}
+.fa-check:hover {
+    color: #218838;
+}
+.fa-xmark {
+    color: #dc3545; /* Rojo Bootstrap */
+}
+.fa-xmark:hover {
+    color: #c82333;
+}
