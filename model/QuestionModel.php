@@ -54,4 +54,70 @@ class QuestionModel
 
 
 
+    public function obtenerPreguntasSugeridas()
+    {
+        $sql = "
+            SELECT
+                sp.texto,
+                sp.opcionA,
+                sp.opcionB,
+                sp.opcionC,
+                sp.opcionD,
+                sp.fecha_sugerencia,
+                u.nombre_completo AS nombre_usuario,
+                c.nombre AS nombre_categoria,
+                c.color AS categoria_color
+            FROM
+                sugerencia_pregunta AS sp
+            JOIN
+                usuarios AS u ON sp.id_usuario = u.id
+            JOIN
+                categoria AS c ON sp.id_categoria = c.id
+            WHERE
+                sp.estado = 'pendiente'
+            ORDER BY
+                sp.fecha_sugerencia DESC;
+        ";
+
+        $preguntasSugeridasCompletas = $this->database->query($sql);
+
+        return $preguntasSugeridasCompletas;
+    }
+
+    public function aprobarPreguntaSugerida($idPregunta)
+    {
+        // Obtengo la pregunta sugerida de sugerencia_pregunta
+        $sql = "SELECT * FROM sugerencia_pregunta WHERE id = ?";
+        $stmt = $this->database->getConnection()->prepare($sql);
+        $stmt->bind_param("i", $idPregunta);
+        $stmt->execute();
+        $preguntaAprobada = $stmt->get_result()->fetch_assoc();
+        $stmt->close();
+
+        // Agrego la pregunta a la tabla pregunta
+        $sql2 = "INSERT INTO pregunta (texto, id_categoria, id_creador, estado) VALUES (?, ?, ?, ?)";
+        $stmt2 = $this->database->getConnection()->prepare($sql2);
+        $stmt2->bind_param("siis", $preguntaAprobada["texto"], $preguntaAprobada["id_categoria"], $preguntaAprobada["id_creador"], 'activa');
+        $stmt2->execute();
+        $stmt2->close();
+
+        // Elimino la pregunta sugerida de la tabla sugerencia_pregunta
+        $sql3 = "DELETE FROM sugerencia_pregunta WHERE id = ?";
+        $stmt3 = $this->database->getConnection()->prepare($sql3);
+        $stmt3->bind_param("i", $idPregunta);
+        $stmt3->execute();
+        $stmt3->close();
+
+    }
+
+    public function rechazarPreguntaSugerida($idPregunta)
+    {
+        $sql = "DELETE FROM sugerencia_pregunta WHERE id = ?";
+        $stmt = $this->database->getConnection()->prepare($sql);
+        $stmt->bind_param("i", $idPregunta);
+        $stmt->execute();
+        $stmt->close();
+    }
+
+
 }

@@ -205,115 +205,25 @@ INSERT INTO dificultad (descripcion) VALUES
                                          ('Difícil');
 
 -- Insertar preguntas y respuestas
--- Insertar 15 preguntas (sin especificar dificultad, usará valor por defecto = 2)
-INSERT INTO pregunta (texto, id_categoria, id_creador, estado) VALUES
-                                                                   ('¿Cuántos continentes hay en el mundo?', 1, 1, 'activa'),
-                                                                   ('¿Cuál es la capital de Francia?', 1, 1, 'activa'),
-                                                                   ('¿Qué océano está al este de África?', 1, 1, 'activa'),
+INSERT INTO pregunta (texto, id_categoria, id_creador, estado, id_dificultad) VALUES
+                                                                                  ('¿Cuántos continentes hay en el mundo?', 1, 1, 'activa', 1),
+                                                                                  ('¿Cuánto es 2 + 2?', 2, 2, 'activa', 1),
+                                                                                  ('¿De qué color es el cielo en un día despejado?', 3, 3, 'activa', 1),
+                                                                                  ('¿En qué año comenzó la Segunda Guerra Mundial?', 4, 4, 'activa', 1),
+                                                                                  ('¿Cuántos jugadores hay en un equipo de fútbol?', 5, 5, 'activa', 1);
 
-                                                                   ('¿Cuánto es 2 + 2?', 2, 2, 'activa'),
-                                                                   ('¿Cuánto es 5 x 3?', 2, 2, 'activa'),
-                                                                   ('¿Cuál es la raíz cuadrada de 16?', 2, 2, 'activa'),
-
-                                                                   ('¿De qué color es el cielo en un día despejado?', 3, 3, 'activa'),
-                                                                   ('¿De qué color son las hojas en otoño?', 3, 3, 'activa'),
-                                                                   ('¿Qué color se obtiene al mezclar azul y amarillo?', 3, 3, 'activa'),
-
-                                                                   ('¿En qué año comenzó la Segunda Guerra Mundial?', 4, 4, 'activa'),
-                                                                   ('¿Quién fue el primer presidente de Argentina?', 4, 4, 'activa'),
-                                                                   ('¿En qué siglo ocurrió la Revolución Francesa?', 4, 4, 'activa'),
-
-                                                                   ('¿Cuántos jugadores hay en un equipo de fútbol?', 5, 5, 'activa'),
-                                                                   ('¿Cuántos puntos vale un gol en fútbol?', 5, 5, 'activa'),
-                                                                   ('¿Qué deporte se practica en Wimbledon?', 5, 5, 'activa');
-
--- Pregunta 1: ¿Cuántos continentes hay en el mundo?
+-- Insertar respuestas correctas e incorrectas (Cada pregunta tiene 4 opciones)
 INSERT INTO respuesta (id_pregunta, texto, es_correcta) VALUES
-                                                            (1, '5', 0),
-                                                            (1, '6', 0),
-                                                            (1, '7', 1),
-                                                            (1, '8', 0),
+                                                            (1, '5', 0), (1, '6', 0), (1, '7', 0), (1, '7', 1),
+                                                            (2, '3', 0), (2, '4', 1), (2, '5', 0), (2, '6', 0),
+                                                            (3, 'Rojo', 0), (3, 'Azul', 1), (3, 'Verde', 0), (3, 'Amarillo', 0),
+                                                            (4, '1929', 0), (4, '1935', 0), (4, '1939', 1), (4, '1942', 0),
+                                                            (5, '9', 0), (5, '10', 0), (5, '11', 1), (5, '12', 0);
 
--- Pregunta 2: ¿Cuál es la capital de Francia?
-                                                            (2, 'Madrid', 0),
-                                                            (2, 'París', 1),
-                                                            (2, 'Roma', 0),
-                                                            (2, 'Londres', 0),
-
--- Pregunta 3: ¿Qué océano está al este de África?
-                                                            (3, 'Pacífico', 0),
-                                                            (3, 'Índico', 1),
-                                                            (3, 'Atlántico', 0),
-                                                            (3, 'Ártico', 0),
-
--- Pregunta 4: ¿Cuánto es 2 + 2?
-                                                            (4, '3', 0),
-                                                            (4, '4', 1),
-                                                            (4, '5', 0),
-                                                            (4, '6', 0),
-
--- Pregunta 5: ¿Cuánto es 5 x 3?
-                                                            (5, '8', 0),
-                                                            (5, '15', 1),
-                                                            (5, '10', 0),
-                                                            (5, '20', 0),
-
--- Pregunta 6: ¿Cuál es la raíz cuadrada de 16?
-                                                            (6, '2', 0),
-                                                            (6, '4', 1),
-                                                            (6, '6', 0),
-                                                            (6, '5', 0),
-
--- Pregunta 7: ¿De qué color es el cielo en un día despejado?
-                                                            (7, 'Rojo', 0),
-                                                            (7, 'Azul', 1),
-                                                            (7, 'Verde', 0),
-                                                            (7, 'Amarillo', 0),
-
--- Pregunta 8: ¿De qué color son las hojas en otoño?
-                                                            (8, 'Verde', 0),
-                                                            (8, 'Marrón', 1),
-                                                            (8, 'Azul', 0),
-                                                            (8, 'Gris', 0),
-
--- Pregunta 9: ¿Qué color se obtiene al mezclar azul y amarillo?
-                                                            (9, 'Rojo', 0),
-                                                            (9, 'Naranja', 0),
-                                                            (9, 'Verde', 1),
-                                                            (9, 'Violeta', 0),
-
--- Pregunta 10: ¿En qué año comenzó la Segunda Guerra Mundial?
-                                                            (10, '1929', 0),
-                                                            (10, '1935', 0),
-                                                            (10, '1939', 1),
-                                                            (10, '1942', 0),
-
--- Pregunta 11: ¿Quién fue el primer presidente de Argentina?
-                                                            (11, 'San Martín', 0),
-                                                            (11, 'Rivadavia', 1),
-                                                            (11, 'Sarmiento', 0),
-                                                            (11, 'Belgrano', 0),
-
--- Pregunta 12: ¿En qué siglo ocurrió la Revolución Francesa?
-                                                            (12, 'XV', 1),
-                                                            (12, 'XVI', 0),
-                                                            (12, 'XVII', 0),
-                                                            (12, 'XIV', 0),
-
--- Pregunta 13: ¿Cuántos jugadores hay en un equipo de fútbol?
-                                                            (13, '9', 0),
-                                                            (13, '10', 0),
-                                                            (13, '11', 1),
-                                                            (13, '12', 0),
-
--- Pregunta 14: ¿Cuántos puntos vale un gol en fútbol?
-                                                            (14, '2', 0),
-                                                            (14, '3', 0),
-                                                            (14, '1', 1),
-                                                            (14, '5', 0),
-
--- Pregunta 15: ¿Qué deporte se practica en Wimbledon?
-                                                            (15, 'Golf', 0),
-                                                            (15, 'Tenis', 1),
-                                                            (15, 'Béisbol', 0),
-                                                            (15, 'Rugby', 0);
+-- Insertar sugerencias de preguntas
+INSERT INTO sugerencia_pregunta (id_usuario, texto, opcionA, opcionB, opcionC, opcionD, id_categoria, estado) VALUES
+                                                                                                                  (1, '¿Cuál es el planeta más cercano al Sol?', 'Marte', 'Venus', 'Mercurio', 'Saturno', 3, 'pendiente'),
+                                                                                                                  (2, '¿Cuánto es 10 ÷ 2?', '3', '4', '5', '6', 2, 'pendiente'),
+                                                                                                                  (3, '¿Cuál es el océano más grande del mundo?', 'Atlántico', 'Índico', 'Pacífico', 'Ártico', 1, 'pendiente'),
+                                                                                                                  (4, '¿Quién escribió "Don Quijote de la Mancha"?', 'Gabriel García Márquez', 'Mario Vargas Llosa', 'Miguel de Cervantes', 'Julio Cortázar', 4, 'pendiente'),
+                                                                                                                  (5, '¿En qué deporte se usa una raqueta?', 'Tenis', 'Fútbol', 'Baloncesto', 'Boxeo', 5, 'pendiente');
