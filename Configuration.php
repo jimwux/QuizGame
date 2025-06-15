@@ -77,4 +77,9 @@ class Configuration
         return new QuestionController(new QuestionModel($this->getDatabase()),$this->getViewer());
     }
 
+    public function getEditorController(): EditorController
+    {
+        return new EditorController(new UserModel($this->getDatabase()), $this->getViewer());
+    }
+
 }

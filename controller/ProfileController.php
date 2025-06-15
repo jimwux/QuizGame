@@ -17,7 +17,13 @@ class ProfileController extends BaseController
         $nombreUsuario = $this->getUsuarioPorVista();
         $data["user"] = $this->model->getUserByUsername($nombreUsuario);
         if($data["user"]){
-            $data["partidas"] = $this->model->getGamesResultByUsername($nombreUsuario);
+
+            $rol = $_SESSION["usuario_rol"] ?? 'jugador';
+            $data["es_jugador"] = ($rol === "jugador");
+
+            if ($data["es_jugador"]) {
+                $data["partidas"] = $this->model->getGamesResultByUsername($nombreUsuario);
+            }
 
                $urlPerfil = "http://localhost/QuizGame/profile?username=$nombreUsuario";
              //  $rutaQR = "public/qrs/qr_$nombreUsuario.png";

@@ -1,7 +1,7 @@
 <?php
 session_start();
 
-// Obtener controller y method o aplicar valores por defecto
+// Obtener controlador y metodo, o usar por defecto
 $controller = !empty($_GET["controller"]) ? $_GET["controller"] : "lobby";
 $method = !empty($_GET["method"]) ? $_GET["method"] : "show";
 $acceso = strtolower("$controller/$method");
@@ -10,37 +10,48 @@ $acceso = strtolower("$controller/$method");
 $config = parse_ini_file("configuration/config.ini", true);
 $basePath = $config["app"]["base_path"];
 
-$rutasEditor = $config["roles"]["rutas_editor"] ?? [];
 $controladoresPrivados = $config["roles"]["controladores_privados"] ?? [];
+$rutasEditor = $config["roles"]["rutas_editor"] ?? [];
+$rutasJugador = $config["roles"]["rutas_jugador"] ?? [];
 
 $rol = $_SESSION['usuario_rol'] ?? null;
-$logueado = isset($_SESSION['id']);
+$logueado = isset($_SESSION['id']); // id guardado en login()
 
 require_once("Configuration.php");
 $configuration = new Configuration();
 $router = $configuration->getRouter();
-
-// Validar si el controlador y metodo existen
 $controllerInstance = $router->getControllerInstance($controller);
 
+// Si el controlador o metodo no existen → fallback a lobby
 if (!$controllerInstance || !method_exists($controllerInstance, $method)) {
-    // Ruta inválida → usar fallback a lobby/show
     $controller = "lobby";
     $method = "show";
-    $acceso = "lobby/show"; // Necesario para que la validación funcione
+    $acceso = "lobby/show";
 }
 
-// Validar acceso por controlador
+// Validar sesión para controladores privados
 if (in_array(strtolower($controller), array_map('strtolower', $controladoresPrivados)) && !$logueado) {
-    header("Location: {$basePath}login/show");
+    header("Location: {$basePath}/login/show");
     exit;
 }
 
-// Validar acceso para editores
+// Si es editor y entra a /lobby → redirigir a su panel
+if ($rol === 'editor' && strtolower($controller) === 'lobby') {
+    header("Location: {$basePath}editor/show");
+    exit;
+}
+
+// Validar acceso a rutas exclusivas para editores
 if (in_array($acceso, array_map('strtolower', $rutasEditor)) && $rol !== 'editor') {
     header("Location: {$basePath}lobby/show");
     exit;
 }
 
-// Ruteo
+// Validar acceso a rutas exclusivas para jugadores
+if (in_array($acceso, array_map('strtolower', $rutasJugador)) && $rol !== 'jugador') {
+    header("Location: {$basePath}profile/show");
+    exit;
+}
+
+// Ejecutar la ruta solicitada
 $router->go($controller, $method, $_GET['token'] ?? null);
