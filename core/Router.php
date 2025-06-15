@@ -26,6 +26,15 @@ class Router
         return call_user_func([$this->configuration, $validController]);
     }
 
+    public function getControllerInstance($controllerName)
+    {
+        $methodName = 'get' . ucfirst($controllerName) . 'Controller';
+        if (method_exists($this->configuration, $methodName)) {
+            return $this->configuration->$methodName();
+        }
+        return null;
+    }
+
     private function executeMethodFromController($controller, $method, $param = null)
     {
         $validMethod = method_exists($controller, $method) ? $method : $this->defaultMethod;

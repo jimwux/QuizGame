@@ -28,7 +28,7 @@ class GameModel
         $this->database->execute($sql, [$puntaje, $partidaId]);
     }
 
-    public function registrarRespuestaEnPartida(int $partidaId, int $preguntaId, int $respuestaId, bool $esCorrecta): void
+    public function registrarRespuestaEnPartida($partidaId, $preguntaId, $respuestaId, $esCorrecta): void
     {
         $sql = "INSERT INTO partida_pregunta (id_partida, id_pregunta, id_respuesta, respondida_correctamente, estado_pregunta)
             VALUES (?, ?, ?, ?, 'respondida')
@@ -52,17 +52,29 @@ class GameModel
                  WHERE id_partida = ?";
         $stats = $this->database->query($sqlStats, [$partidaId])[0];
 
-        // 2. Obtener la categoría con más preguntas respondidas
+        // 2. Obtener la(s) categoría(s) con más respuestas correctas
         $sqlCategoria = "SELECT p.id_categoria, COUNT(*) as cantidad
-                     FROM partida_pregunta pp
-                     INNER JOIN pregunta p ON pp.id_pregunta = p.id
-                     WHERE pp.id_partida = ?
-                     GROUP BY p.id_categoria
-                     ORDER BY cantidad DESC
-                     LIMIT 1";
-        $categoria = $this->database->query($sqlCategoria, [$partidaId])[0]['id_categoria'] ?? null;
+                    FROM partida_pregunta pp
+                    INNER JOIN pregunta p ON pp.id_pregunta = p.id
+                    WHERE pp.id_partida = ? AND pp.respondida_correctamente = 1
+                    GROUP BY p.id_categoria
+                    ORDER BY cantidad DESC";
+        $categorias = $this->database->query($sqlCategoria, [$partidaId]);
 
-        // 3. Insertar en resumen_partida
+        // 3. Determinar si hay una categoría claramente destacada (sin empate)
+        $categoria = null;
+        if (!empty($categorias)) {
+            $maxCantidad = $categorias[0]['cantidad'];
+            $categoriasMaximas = array_filter($categorias, function($cat) use ($maxCantidad) {
+                return $cat['cantidad'] == $maxCantidad;
+            });
+
+            if (count($categoriasMaximas) === 1) {
+                $categoria = $categoriasMaximas[0]['id_categoria'];
+            }
+        }
+
+        // 4. Insertar en resumen_partida
         $sql = "INSERT INTO resumen_partida 
             (id_partida, id_usuario, cantidad_correctas, cantidad_intentos, id_categoria, puntaje, tiempo_promedio_respuesta, fecha_partida)
             VALUES (?, ?, ?, ?, ?, ?, NULL, NOW())
@@ -125,7 +137,7 @@ class GameModel
     /**
      * Obtiene una pregunta para un usuario segun su categoría y dificultad
      */
-    public function obtenerPreguntaParaUsuario($usuarioId, $partidaId, $categoriaId)
+    public function obtenerPreguntaParaUsuario($usuarioId, $categoriaId)
     {
         // 1. Obtener estadísticas del usuario: total de preguntas respondidas y cuántas fueron correctas
         $estadisticasUsuario = $this->database->query(

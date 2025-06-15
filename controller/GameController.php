@@ -101,14 +101,14 @@ class GameController extends BaseController
         }
 
         // Si no entró en la condición anterior, obtener nueva pregunta
-        $pregunta = $this->model->obtenerPreguntaParaUsuario($usuarioId, $partidaId, $categoriaId);
+        $pregunta = $this->model->obtenerPreguntaParaUsuario($usuarioId, $categoriaId);
 
         // Si no encuentra pregunta para el usuario, se fija si es debido a que ya
         // respondió todas las que le correspondian. De ser así, limpia la tabla
         if (!$pregunta) {
             if ($this->model->usuarioRespondioTodas($usuarioId, $categoriaId)) {
                 $this->model->resetearPreguntasRespondidas($usuarioId, $categoriaId);
-                $pregunta = $this->model->obtenerPreguntaParaUsuario($usuarioId, $partidaId, $categoriaId);
+                $pregunta = $this->model->obtenerPreguntaParaUsuario($usuarioId, $categoriaId);
             }
         }
 
@@ -162,7 +162,7 @@ class GameController extends BaseController
 
         // Si es correcta, actualizar puntaje
         if ($correcta) {
-            SessionController::incrementarPuntaje($puntaje); // Se asume que incrementarPuntaje suma el puntaje actual
+            SessionController::incrementarPuntaje($puntaje);
             $estado['puntaje'] += $puntaje;
         } else {
             // Si es incorrecta, se finaliza la partida pero aún se muestra la vista con el puntaje
