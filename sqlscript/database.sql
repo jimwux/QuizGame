@@ -109,16 +109,22 @@ CREATE TABLE sugerencia_pregunta (
                                      id INT AUTO_INCREMENT PRIMARY KEY,
                                      id_usuario INT NOT NULL,
                                      texto TEXT NOT NULL,
-                                     opcionA TEXT NOT NULL ,
-                                     opcionB TEXT NOT NULL,
-                                     opcionC TEXT NOT NULL,
-                                     opcionD TEXT NOT NULL,
                                      id_categoria INT NOT NULL,
-                                     estado ENUM('pendiente', 'aprobada', 'rechazada') DEFAULT 'pendiente',
                                      fecha_sugerencia DATETIME DEFAULT CURRENT_TIMESTAMP,
                                      FOREIGN KEY (id_usuario) REFERENCES usuarios(id),
                                      FOREIGN KEY (id_categoria) REFERENCES categoria(id)
 );
+
+-- Tabla sugerencia_respuesta
+DROP TABLE IF EXISTS sugerencia_respuesta;
+CREATE TABLE sugerencia_respuesta (
+                                      id INT AUTO_INCREMENT PRIMARY KEY,
+                                      id_sugerencia INT NOT NULL,
+                                      texto TEXT NOT NULL,
+                                      es_correcta BOOLEAN DEFAULT 0,
+                                      FOREIGN KEY (id_sugerencia) REFERENCES sugerencia_pregunta(id)
+);
+
 
 -- Tabla resumen_partida
 DROP TABLE IF EXISTS resumen_partida;

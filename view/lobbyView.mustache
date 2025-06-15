@@ -1,4 +1,16 @@
 <div class="container min-vh-100 d-flex flex-column justify-content-center align-items-center py-4">
+
+    {{#alerta}}
+        <div class="row w-100 mb-3">
+            <div class="col-12">
+                <div class="alert alert-success alert-dismissible fade show text-center fw-semibold fs-5 w-100" role="alert" id="alerta">
+                    {{alerta}}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+                </div>
+            </div>
+        </div>
+    {{/alerta}}
+
     <div
             class="bg-secondary bg-gradient rounded-3 d-flex align-items-center justify-content-center mb-4 w-100"
             style="height: 250px;"
@@ -73,7 +85,7 @@
                     </a>
                 </div>
                 <div class="col-md-6 d-flex">
-                    <a
+                    <a href="/QuizGame/question/formularioSugerirPregunta"
                             class="btn btn-secondary d-flex flex-column justify-content-center align-items-center gap-2 w-100 fw-bold"
                             style="height: 180px;"
                     >
@@ -93,6 +105,15 @@
             </div>
         </aside>
 
-
     </main>
 </div>
+
+<script>
+    setTimeout(() => {
+        const alerta = document.getElementById("alerta");
+        if (alerta) {
+            alerta.classList.remove("show");
+            alerta.classList.add("fade");
+        }
+    }, 4000); // Oculta después de 4 segundos
+</script>

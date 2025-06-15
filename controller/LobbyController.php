@@ -19,6 +19,11 @@ class LobbyController extends BaseController
             'partidas' => $partidas,
         ];
 
+        if (!empty($_SESSION["alerta"])) {
+            $data["alerta"] = $_SESSION["alerta"];
+            unset($_SESSION["alerta"]);
+        }
+
         $this->view->render('lobby', $data);
     }
 
