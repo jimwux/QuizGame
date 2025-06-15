@@ -1,85 +1,88 @@
 <div class="container py-5">
-    <div class="card shadow-lg">
-        <div class="card-header text-center">
-            <div class="d-flex align-items-center justify-content-center mb-2">
-                <i class="fa-solid fa-clipboard-question text-primary me-3" style="font-size: 2.2rem;"></i>
-                <h3 class="mb-0 fw-bold text-dark">Revisión de Preguntas</h3>
-            </div>
-            <p class="text-muted mb-0" style="font-size: 0.95rem;">Gestiona eficientemente el banco de preguntas de tu plataforma.</p>
-        </div>
-        <div class="card-body p-0">
-            <ul class="list-group list-group-flush">
-                <li class="list-group-item d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center">
+    <div class="card-body p-0">
+        <ul class="list-group list-group-flush">
+            {{#pregunta}}
+                <li class="list-group-item d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center gap-3"
+                    style="border-left: 5px solid {{categoria_color}};">
                     <div class="flex-grow-1 me-md-3 w-100">
-                        <span class="category-badge category-geografia">Geografía</span>
-                        <p class="question-text">¿Cuál es el río más largo del mundo?</p>
-                        <ul class="list-unstyled mb-2 mb-md-0 ps-3">
-                            <li class="option-item">a) Río Nilo</li>
-                            <li class="option-item">b) Río Amazonas</li>
-                            <li class="option-item">c) Río Yangtsé</li>
-                            <li class="option-item">d) Río Misisipi</li>
+                        <span class="badge rounded-pill fw-semibold mb-2"
+                              style="background-color: {{categoria_color}}; color: #fff;">
+                            {{nombre_categoria}}
+                        </span>
+                        <p class="mb-2 fw-semibold" style="font-size: 1.1rem; color: #212529;">{{texto}}</p>
+                        <ul class="list-unstyled mb-1 ps-3" style="font-size: 0.95rem; color: #495057;">
+                            <li>a) {{opcionA}}</li>
+                            <li>b) {{opcionB}}</li>
+                            <li>c) {{opcionC}}</li>
+                            <li>d) {{opcionD}}</li>
                         </ul>
+                        <div class="text-muted border border-bottom-0 border-start-0 border-end-0 py-2"
+                             style="font-size: 0.85rem; max-width: 10%;">
+                            {{fecha_sugerencia}}
+                        </div>
                     </div>
-                    <div class="d-flex flex-row flex-md-column justify-content-end align-items-end mt-3 mt-md-0">
-                        <i class="fa-solid fa-check action-icon mb-md-3" style="font-size: 30px; padding: 8px;"></i>
-                        <i class="fa-solid fa-xmark action-icon" style="font-size: 30px; padding: 10px;"></i>
-                    </div>
-                </li>
+                    <form action="/QuizGame/question/aprobarPregunta" method="POST">
+                        <input type="hidden" name="id_pregunta" value="{{id_pregunta}}">
 
-                <li class="list-group-item d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center">
-                    <div class="flex-grow-1 me-md-3 w-100">
-                        <span class="category-badge category-ciencia">Ciencia</span>
-                        <p class="question-text">¿Cuál es el principal gas responsable del efecto invernadero?</p>
-                        <ul class="list-unstyled mb-2 mb-md-0 ps-3">
-                            <li class="option-item">a) Oxígeno</li>
-                            <li class="option-item">b) Nitrógeno</li>
-                            <li class="option-item">c) Dióxido de carbono</li>
-                            <li class="option-item">d) Metano</li>
-                        </ul>
-                    </div>
-                    <div class="d-flex flex-row flex-md-column justify-content-end align-items-end mt-3 mt-md-0">
-                        <i class="fa-solid fa-check action-icon mb-md-3" style="font-size: 30px; padding: 8px;"></i>
-                        <i class="fa-solid fa-xmark action-icon" style="font-size: 30px; padding: 10px;"></i>
-                    </div>
-                </li>
+                        <div class="d-flex flex-row flex-md-column justify-content-end align-items-center gap-2 mt-3 mt-md-0">
+                            <button type="submit"
+                                    name="accion"
+                                    value="aprobar"
+                                    class="btn btn-success btn-sm d-flex align-items-center justify-content-center"
+                                    style="width: 42px; height: 42px; border-radius: 50%;"
+                                    title="Aprobar pregunta">
+                                <i class="fa-solid fa-check" style="font-size: 1.25rem; color: white;"></i>
+                            </button>
 
-                <li class="list-group-item d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center">
-                    <div class="flex-grow-1 me-md-3 w-100">
-                        <span class="category-badge category-historia">Historia</span>
-                        <p class="question-text">¿En qué año cayó el Muro de Berlín?</p>
-                        <ul class="list-unstyled mb-2 mb-md-0 ps-3">
-                            <li class="option-item">a) 1985</li>
-                            <li class="option-item">b) 1989</li>
-                            <li class="option-item">c) 1991</li>
-                            <li class="option-item">d) 1990</li>
-                        </ul>
-                    </div>
-                    <div class="d-flex flex-row flex-md-column justify-content-end align-items-end mt-3 mt-md-0">
-                        <i class="fa-solid fa-check action-icon mb-md-3" style="font-size: 30px; padding: 8px;"></i>
-                        <i class="fa-solid fa-xmark action-icon" style="font-size: 30px; padding: 10px;"></i>
-                    </div>
+                            <button type="submit"
+                                    name="accion"
+                                    value="rechazar"
+                                    class="btn btn-danger btn-sm d-flex align-items-center justify-content-center"
+                                    style="width: 42px; height: 42px; border-radius: 50%;"
+                                    title="Rechazar pregunta">
+                                <i class="fa-solid fa-xmark" style="font-size: 1.25rem; color: white;"></i>
+                            </button>
+                        </div>
+                    </form>
                 </li>
-
-                <li class="list-group-item d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center">
-                    <div class="flex-grow-1 me-md-3 w-100">
-                        <span class="category-badge category-literatura">Literatura</span>
-                        <p class="question-text">¿Quién escribió "Cien años de soledad"?</p>
-                        <ul class="list-unstyled mb-2 mb-md-0 ps-3">
-                            <li class="option-item">a) Mario Vargas Llosa</li>
-                            <li class="option-item">b) Jorge Luis Borges</li>
-                            <li class="option-item">c) Gabriel García Márquez</li>
-                            <li class="option-item">d) Julio Cortázar</li>
-                        </ul>
-                    </div>
-                    <div class="d-flex flex-row flex-md-column justify-content-end align-items-end mt-3 mt-md-0">
-                        <i class="fa-solid fa-check action-icon mb-md-3" style="font-size: 30px; padding: 8px;"></i>
-                        <i class="fa-solid fa-xmark action-icon" style="font-size: 30px; padding: 10px;"></i>
-                    </div>
-                </li>
-            </ul>
-        </div>
-        <div class="card-footer bg-light text-center py-3 rounded-bottom" style="border-top: 1px solid #e0e0e0;">
-            <small class="text-muted">Editor de Preguntas v1.0</small>
-        </div>
+            {{/pregunta}}
+        </ul>
+    </div>
+    <div class="card-footer bg-light text-center py-3 rounded-bottom" style="border-top: 1px solid #e0e0e0;">
+        <small class="text-muted">Editor de Preguntas v1.0</small>
     </div>
 </div>
+
+{{#mostrarMensaje}}
+    <div class="modal fade" id="confirmationModal" tabindex="-1" aria-labelledby="confirmationModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-body text-center py-5">
+                    {{#esExito}}
+                        <i class="fa-solid fa-circle-check text-success mb-3" style="font-size: 5rem;"></i>
+                    {{/esExito}}
+                    {{#esError}}
+                        <i class="fa-solid fa-circle-xmark text-danger mb-3" style="font-size: 5rem;"></i>
+                    {{/esError}}
+                    <h4 id="modalMessage" class="fw-bold">{{mensaje}}</h4>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            var myModalElement = document.getElementById('confirmationModal');
+            if (myModalElement) {
+                var myModal = new bootstrap.Modal(myModalElement);
+                myModal.show();
+
+                setTimeout(function () {
+                    myModal.hide();
+
+                }, 2000);
+            }
+        });
+    </script>
+{{/mostrarMensaje}}

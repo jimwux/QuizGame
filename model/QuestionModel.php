@@ -58,6 +58,7 @@ class QuestionModel
     {
         $sql = "
             SELECT
+                sp.id AS id_pregunta,
                 sp.texto,
                 sp.opcionA,
                 sp.opcionB,
@@ -86,27 +87,46 @@ class QuestionModel
 
     public function aprobarPreguntaSugerida($idPregunta)
     {
-        // Obtengo la pregunta sugerida de sugerencia_pregunta
-        $sql = "SELECT * FROM sugerencia_pregunta WHERE id = ?";
-        $stmt = $this->database->getConnection()->prepare($sql);
-        $stmt->bind_param("i", $idPregunta);
-        $stmt->execute();
-        $preguntaAprobada = $stmt->get_result()->fetch_assoc();
-        $stmt->close();
 
-        // Agrego la pregunta a la tabla pregunta
-        $sql2 = "INSERT INTO pregunta (texto, id_categoria, id_creador, estado) VALUES (?, ?, ?, ?)";
-        $stmt2 = $this->database->getConnection()->prepare($sql2);
-        $stmt2->bind_param("siis", $preguntaAprobada["texto"], $preguntaAprobada["id_categoria"], $preguntaAprobada["id_creador"], 'activa');
-        $stmt2->execute();
-        $stmt2->close();
+        $conexion = $this->database->getConnection();
 
-        // Elimino la pregunta sugerida de la tabla sugerencia_pregunta
-        $sql3 = "DELETE FROM sugerencia_pregunta WHERE id = ?";
-        $stmt3 = $this->database->getConnection()->prepare($sql3);
-        $stmt3->bind_param("i", $idPregunta);
-        $stmt3->execute();
-        $stmt3->close();
+        $conexion->autocommit(FALSE);
+
+        try {
+            // Obtengo la pregunta sugerida de sugerencia_pregunta
+            $sql = "SELECT * FROM sugerencia_pregunta WHERE id = ?";
+            $stmt = $this->database->getConnection()->prepare($sql);
+            $stmt->bind_param("i", $idPregunta);
+            $stmt->execute();
+            $preguntaAprobada = $stmt->get_result()->fetch_assoc();
+            $stmt->close();
+
+            // Agrego la pregunta a la tabla pregunta
+            $sql2 = "INSERT INTO pregunta (texto, id_categoria, id_creador, estado) VALUES (?, ?, ?,  'activa')";
+            $stmt2 = $this->database->getConnection()->prepare($sql2);
+            $stmt2->bind_param("sii", $preguntaAprobada["texto"], $preguntaAprobada["id_categoria"], $preguntaAprobada["id_usuario"]);
+            $stmt2->execute();
+            $stmt2->close();
+
+            // Agrego las respuestas
+
+
+            // Elimino la pregunta sugerida de la tabla sugerencia_pregunta
+            $sql3 = "DELETE FROM sugerencia_pregunta WHERE id = ?";
+            $stmt3 = $this->database->getConnection()->prepare($sql3);
+            $stmt3->bind_param("i", $idPregunta);
+            $stmt3->execute();
+            $stmt3->close();
+
+            $conexion->commit();
+            $conexion->autocommit(TRUE);
+            return true;
+        } catch (Exception $e){
+            $conexion->rollback();
+            $conexion->autocommit(FALSE);
+            echo "Error en la transaccion " . $e->getMessage();
+            return false;
+        }
 
     }
 

@@ -11,28 +11,32 @@ class QuestionController extends BaseController
         $this->view = $view;
     }
 
-    public function show(){
+    public function show($mensaje)
+    {
+        echo "<br>";
+        echo "<br>";
+        echo "<br>";
+        echo "<br>";
+        $preguntasSugeridas = $this->model->obtenerPreguntasSugeridas();
 
-        echo "<br>";
-        echo "<br>";
-        echo "<br>";
-        echo "<br>";
-        $preguntasSugeridas =$this->model->obtenerPreguntasSugeridas();
-        echo "<pre>";
-        var_dump($preguntasSugeridas);
-        echo "</pre>";
-        echo "\n\n\nnashe";
-
-        $this->view->render('questionsSuggested', $preguntasSugeridas);
+        $this->view->render('questionsSuggested', ["pregunta" => $preguntasSugeridas, "mostrarMensaje" => $mensaje]);
     }
 
-    public function aprobarPregunta(){
-        $this->view->render('preguntasSugeridas');
+    public function aprobarPregunta()
+    {
+        $accion = $_POST['accion'];
+        $idPregunta = $_POST['id_pregunta'];
+        $mensaje = "";
 
-    }
+        if($accion == "aprobar"){
+            $this->model->aprobarPreguntaSugerida($idPregunta);
+            $mensaje = "Pregunta aprobada correctamente";
+        } else if ($accion == "rechazar"){
+            $this->model->rechazarPreguntaSugerida($idPregunta);
+            $mensaje = "Pregunta rechazada";
+        }
 
-    public function rechazarPregunta(){
-        $this->view->render('preguntasSugeridas');
+        $this->show($mensaje);
     }
 
     public function formularioSugerirPregunta()
