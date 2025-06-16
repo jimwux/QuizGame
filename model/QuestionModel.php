@@ -53,27 +53,26 @@ class QuestionModel
     }
 
 
-
     public function obtenerPreguntasSugeridas()
     {
         $sql = "
             SELECT
                 sp.id AS id_pregunta,
                 sp.texto,
-                sp.opcionA,
-                sp.opcionB,
-                sp.opcionC,
-                sp.opcionD,
                 sp.fecha_sugerencia,
                 u.nombre_completo AS nombre_usuario,
                 c.nombre AS nombre_categoria,
-                c.color AS categoria_color
+                c.color AS categoria_color,
+                sr.texto AS respuestas,
+                sr.es_correcta AS es_correcta
             FROM
                 sugerencia_pregunta AS sp
             JOIN
                 usuarios AS u ON sp.id_usuario = u.id
             JOIN
                 categoria AS c ON sp.id_categoria = c.id
+            JOIN 
+                sugerencia_respuesta AS sr ON sr.id_sugerencia = sp.id
             WHERE
                 sp.estado = 'pendiente'
             ORDER BY
@@ -82,62 +81,166 @@ class QuestionModel
 
         $preguntasSugeridasCompletas = $this->database->query($sql);
 
-        return $preguntasSugeridasCompletas;
+        $resultado = [];
+
+        foreach ($preguntasSugeridasCompletas as $fila) {
+            $idPregunta = $fila["id_pregunta"];
+
+            if (!isset($resultado[$idPregunta])) {
+                $resultado[$idPregunta] = [
+                    "id_pregunta" => $fila["id_pregunta"],
+                    "texto" => $fila["texto"],
+                    "fecha_sugerencia" => $fila["fecha_sugerencia"],
+                    "nombre_usuario" => $fila["nombre_usuario"],
+                    "nombre_categoria" => $fila["nombre_categoria"],
+                    "color" => $fila["categoria_color"],
+                    "respuestas" => [],
+                ];
+            }
+
+            $resultado[$idPregunta]["respuestas"][] = [
+                "texto" => $fila["respuestas"],
+                "es_correcta" => $fila["es_correcta"],
+            ];
+        }
+
+        return array_values($resultado);
     }
 
     public function aprobarPreguntaSugerida($idPregunta)
     {
-
-        $conexion = $this->database->getConnection();
-
-        $conexion->autocommit(FALSE);
-
         try {
-            // Obtengo la pregunta sugerida de sugerencia_pregunta
-            $sql = "SELECT * FROM sugerencia_pregunta WHERE id = ?";
-            $stmt = $this->database->getConnection()->prepare($sql);
-            $stmt->bind_param("i", $idPregunta);
-            $stmt->execute();
-            $preguntaAprobada = $stmt->get_result()->fetch_assoc();
-            $stmt->close();
+            // Inicia la transacción
+            $this->database->beginTransaction();
 
-            // Agrego la pregunta a la tabla pregunta
-            $sql2 = "INSERT INTO pregunta (texto, id_categoria, id_creador, estado) VALUES (?, ?, ?,  'activa')";
-            $stmt2 = $this->database->getConnection()->prepare($sql2);
-            $stmt2->bind_param("sii", $preguntaAprobada["texto"], $preguntaAprobada["id_categoria"], $preguntaAprobada["id_usuario"]);
-            $stmt2->execute();
-            $stmt2->close();
+            // 1. Obtengo la pregunta sugerida de sugerencia_pregunta
+            $sqlPreguntaSugerida = "SELECT texto, id_categoria, id_usuario FROM sugerencia_pregunta WHERE id = ?";
+            $stmtPreguntaSugerida = $this->database->getConnection()->prepare($sqlPreguntaSugerida);
+            if ($stmtPreguntaSugerida === false) {
+                throw new Exception("Error al preparar la consulta de pregunta sugerida: " . $this->database->getConnection()->error);
+            }
+            $stmtPreguntaSugerida->bind_param("i", $idPregunta);
+            $stmtPreguntaSugerida->execute();
+            $preguntaAprobada = $stmtPreguntaSugerida->get_result()->fetch_assoc();
+            $stmtPreguntaSugerida->close();
 
-            // Agrego las respuestas
+            // Si la pregunta sugerida no existe, lanzamos un error
+            if (!$preguntaAprobada) {
+                throw new Exception("La pregunta sugerida con ID " . $idPregunta . " no fue encontrada.");
+            }
+
+            // 2. Agrego la pregunta a la tabla 'pregunta'
+            $sqlInsertPregunta = "INSERT INTO pregunta (texto, id_categoria, id_creador, estado) VALUES (?, ?, ?, 'activa')";
+            $stmtInsertPregunta = $this->database->getConnection()->prepare($sqlInsertPregunta);
+            if ($stmtInsertPregunta === false) {
+                throw new Exception("Error al preparar la consulta de inserción de pregunta: " . $this->database->getConnection()->error);
+            }
+            $stmtInsertPregunta->bind_param("sii", $preguntaAprobada["texto"], $preguntaAprobada["id_categoria"], $preguntaAprobada["id_usuario"]);
+            $stmtInsertPregunta->execute();
+            // Obtener el ID de la pregunta recién insertada para las respuestas
+            $newPreguntaId = $this->database->getConnection()->insert_id;
+            $stmtInsertPregunta->close();
+
+            // 3. Obtengo las respuestas sugeridas de sugerencia_respuesta
+            $sqlRespuestasSugeridas = "SELECT texto, es_correcta FROM sugerencia_respuesta WHERE id_sugerencia = ?";
+            $stmtRespuestasSugeridas = $this->database->getConnection()->prepare($sqlRespuestasSugeridas);
+            if ($stmtRespuestasSugeridas === false) {
+                throw new Exception("Error al preparar la consulta de respuestas sugeridas: " . $this->database->getConnection()->error);
+            }
+            $stmtRespuestasSugeridas->bind_param("i", $idPregunta);
+            $stmtRespuestasSugeridas->execute();
+            $respuestasAprobadas = $stmtRespuestasSugeridas->get_result(); // <-- Aquí obtienes el mysqli_result
+            $stmtRespuestasSugeridas->close();
+
+            // 4. Preparar la consulta SQL para insertar en la tabla 'respuesta'
+            $insertRespuesta = "INSERT INTO respuesta (id_pregunta, texto, es_correcta) VALUES (?, ?, ?)";
+            $insertStmt = $this->database->getConnection()->prepare($insertRespuesta);
+            if ($insertStmt === false) {
+                throw new Exception("Error al preparar la consulta de inserción de respuesta: " . $this->database->getConnection()->error);
+            }
+
+            // 5. Iterar sobre cada respuesta aprobada e insertarla en la tabla 'respuesta'
+            if ($respuestasAprobadas->num_rows > 0) {
+                while ($fila = $respuestasAprobadas->fetch_assoc()) { // <-- CORRECTO: fetch_assoc() sobre el resultado
+                    $textoRespuesta = $fila["texto"];
+                    $esCorrecta = (int)$fila["es_correcta"]; // Asegurarse de que es un entero (0 o 1)
+
+                    $insertStmt->bind_param("isi", $newPreguntaId, $textoRespuesta, $esCorrecta);
+                    if (!$insertStmt->execute()) {
+                        throw new Exception("Error al insertar respuesta '" . htmlspecialchars($textoRespuesta) . "': " . $insertStmt->error);
+                    }
+                }
+            }
+            $insertStmt->close();
 
 
-            // Elimino la pregunta sugerida de la tabla sugerencia_pregunta
-            $sql3 = "DELETE FROM sugerencia_pregunta WHERE id = ?";
-            $stmt3 = $this->database->getConnection()->prepare($sql3);
-            $stmt3->bind_param("i", $idPregunta);
-            $stmt3->execute();
-            $stmt3->close();
+            // 6. Elimino la pregunta sugerida y sus respuestas de las tablas de sugerencia
+            // Primero las respuestas sugeridas
+            $sqlDeleteRespuestasSugeridas = "DELETE FROM sugerencia_respuesta WHERE id_sugerencia = ?";
+            $stmtDeleteRespuestasSugeridas = $this->database->getConnection()->prepare($sqlDeleteRespuestasSugeridas);
+            if ($stmtDeleteRespuestasSugeridas === false) {
+                throw new Exception("Error al preparar la eliminación de respuestas sugeridas: " . $this->database->getConnection()->error);
+            }
+            $stmtDeleteRespuestasSugeridas->bind_param("i", $idPregunta);
+            $stmtDeleteRespuestasSugeridas->execute();
+            $stmtDeleteRespuestasSugeridas->close();
 
-            $conexion->commit();
-            $conexion->autocommit(TRUE);
+            // Luego la pregunta sugerida
+            $sqlDeletePreguntaSugerida = "DELETE FROM sugerencia_pregunta WHERE id = ?";
+            $stmtDeletePreguntaSugerida = $this->database->getConnection()->prepare($sqlDeletePreguntaSugerida);
+            if ($stmtDeletePreguntaSugerida === false) {
+                throw new Exception("Error al preparar la eliminación de pregunta sugerida: " . $this->database->getConnection()->error);
+            }
+            $stmtDeletePreguntaSugerida->bind_param("i", $idPregunta);
+            $stmtDeletePreguntaSugerida->execute();
+            $stmtDeletePreguntaSugerida->close();
+
+
+            // Si todo ha ido bien, confirma la transacción
+            $this->database->commit();
             return true;
-        } catch (Exception $e){
-            $conexion->rollback();
-            $conexion->autocommit(FALSE);
-            echo "Error en la transaccion " . $e->getMessage();
+
+        } catch (Exception $e) {
+            // Si algo falla, revierte la transacción
+            $this->database->rollBack();
+            error_log("Error en aprobarPreguntaSugerida: " . $e->getMessage()); // Para depuración
+            // Puedes pasar un mensaje más amigable al usuario o simplemente 'false'
             return false;
         }
-
     }
 
     public function rechazarPreguntaSugerida($idPregunta)
     {
-        $sql = "DELETE FROM sugerencia_pregunta WHERE id = ?";
-        $stmt = $this->database->getConnection()->prepare($sql);
-        $stmt->bind_param("i", $idPregunta);
-        $stmt->execute();
-        $stmt->close();
-    }
+        try {
+            $this->database->beginTransaction();
 
+            // Eliminar respuestas sugeridas primero para evitar problemas de clave foránea
+            $sql2 = "DELETE FROM sugerencia_respuesta WHERE id_sugerencia = ?";
+            $stmt2 = $this->database->getConnection()->prepare($sql2);
+            if ($stmt2 === false) {
+                throw new Exception("Error al preparar la eliminación de respuestas sugeridas (rechazar): " . $this->database->getConnection()->error);
+            }
+            $stmt2->bind_param("i", $idPregunta);
+            $stmt2->execute();
+            $stmt2->close();
+
+            // Eliminar la pregunta sugerida
+            $sql = "DELETE FROM sugerencia_pregunta WHERE id = ?";
+            $stmt = $this->database->getConnection()->prepare($sql);
+            if ($stmt === false) {
+                throw new Exception("Error al preparar la eliminación de pregunta sugerida (rechazar): " . $this->database->getConnection()->error);
+            }
+            $stmt->bind_param("i", $idPregunta);
+            $stmt->execute();
+            $stmt->close();
+
+            $this->database->commit();
+            return true;
+        } catch (Exception $e) {
+            $this->database->rollBack();
+            error_log("Error en rechazarPreguntaSugerida: " . $e->getMessage());
+            return false;
+        }
+    }
 
 }

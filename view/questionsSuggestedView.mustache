@@ -1,88 +1,153 @@
 <div class="container py-5">
     <div class="card-body p-0">
-        <ul class="list-group list-group-flush">
+        <ul class="list-group list-group-flush" id="preguntas-sugeridas-lista">
             {{#pregunta}}
                 <li class="list-group-item d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center gap-3"
-                    style="border-left: 5px solid {{categoria_color}};">
+                    data-id-pregunta="{{id_pregunta}}"
+                    style="border-left: 5px solid {{color}};">
                     <div class="flex-grow-1 me-md-3 w-100">
-                        <span class="badge rounded-pill fw-semibold mb-2"
-                              style="background-color: {{categoria_color}}; color: #fff;">
+                        <span class="badge rounded-pill fw-semibold mb-2 fs-6"
+                              style="background-color: {{color}}; color: #fff;">
                             {{nombre_categoria}}
                         </span>
-                        <p class="mb-2 fw-semibold" style="font-size: 1.1rem; color: #212529;">{{texto}}</p>
-                        <ul class="list-unstyled mb-1 ps-3" style="font-size: 0.95rem; color: #495057;">
-                            <li>a) {{opcionA}}</li>
-                            <li>b) {{opcionB}}</li>
-                            <li>c) {{opcionC}}</li>
-                            <li>d) {{opcionD}}</li>
-                        </ul>
-                        <div class="text-muted border border-bottom-0 border-start-0 border-end-0 py-2"
-                             style="font-size: 0.85rem; max-width: 10%;">
-                            {{fecha_sugerencia}}
+                        <p class="mb-3 fw-bold fs-4 text-dark">{{texto}}</p>
+
+                        <div class="d-flex flex-wrap justify-content-start align-items-stretch gap-3 mb-4">
+                            {{#respuestas}}
+                                <div class="p-3 rounded-3 text-break flex-fill
+                                    {{#es_correcta}}bg-success-subtle text-success border border-success-subtle fw-bold fs-6{{/es_correcta}}
+                                    {{^es_correcta}}bg-body-secondary text-dark border border-body-secondary fs-6{{/es_correcta}}">
+                                    <span>{{texto}}</span>
+                                    {{#es_correcta}}
+                                        <i class="fa-solid fa-check-circle ms-2 text-success"></i>
+                                    {{/es_correcta}}
+                                </div>
+                            {{/respuestas}}
+                        </div>
+
+                        <div class="text-muted border-top pt-2" style="font-size: 0.85rem;">
+                            {{nombre_usuario}} - {{fecha_sugerencia}}
                         </div>
                     </div>
-                    <form action="/QuizGame/question/aprobarPregunta" method="POST">
+                    <form class="accion-pregunta-form" method="POST">
                         <input type="hidden" name="id_pregunta" value="{{id_pregunta}}">
 
                         <div class="d-flex flex-row flex-md-column justify-content-end align-items-center gap-2 mt-3 mt-md-0">
                             <button type="submit"
                                     name="accion"
                                     value="aprobar"
-                                    class="btn btn-success btn-sm d-flex align-items-center justify-content-center"
-                                    style="width: 42px; height: 42px; border-radius: 50%;"
+                                    class="btn btn-success btn-lg d-flex align-items-center justify-content-center shadow-sm w-auto px-4"
                                     title="Aprobar pregunta">
-                                <i class="fa-solid fa-check" style="font-size: 1.25rem; color: white;"></i>
+                                <i class="fa-solid fa-check fs-5 text-white me-2"></i>
+                                <span class="d-none d-md-inline">Aprobar</span>
                             </button>
 
                             <button type="submit"
                                     name="accion"
                                     value="rechazar"
-                                    class="btn btn-danger btn-sm d-flex align-items-center justify-content-center"
-                                    style="width: 42px; height: 42px; border-radius: 50%;"
+                                    class="btn btn-danger btn-lg d-flex align-items-center justify-content-center shadow-sm w-auto px-4"
                                     title="Rechazar pregunta">
-                                <i class="fa-solid fa-xmark" style="font-size: 1.25rem; color: white;"></i>
+                                <i class="fa-solid fa-xmark fs-5 text-white me-2"></i>
+                                <span class="d-none d-md-inline">Rechazar</span>
                             </button>
                         </div>
                     </form>
                 </li>
             {{/pregunta}}
         </ul>
+        {{^pregunta}}
+            <div>
+                <p class="fs-1 text-center">Nadie a sugerido preguntas, descansa loco... Merecido descanso</p>
+            </div>
+        {{/pregunta}}
     </div>
-    <div class="card-footer bg-light text-center py-3 rounded-bottom" style="border-top: 1px solid #e0e0e0;">
+    <div class="card-footer bg-light text-center py-3 rounded-bottom border-top"
+         style="border-color: #e0e0e0 !important;">
         <small class="text-muted">Editor de Preguntas v1.0</small>
     </div>
 </div>
 
-{{#mostrarMensaje}}
-    <div class="modal fade" id="confirmationModal" tabindex="-1" aria-labelledby="confirmationModalLabel"
-         aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-body text-center py-5">
-                    {{#esExito}}
-                        <i class="fa-solid fa-circle-check text-success mb-3" style="font-size: 5rem;"></i>
-                    {{/esExito}}
-                    {{#esError}}
-                        <i class="fa-solid fa-circle-xmark text-danger mb-3" style="font-size: 5rem;"></i>
-                    {{/esError}}
-                    <h4 id="modalMessage" class="fw-bold">{{mensaje}}</h4>
+<div class="modal fade" id="confirmationModal" tabindex="-1" aria-labelledby="confirmationModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-body text-center py-5">
+                <div id="modalIconContainer">
                 </div>
+                <h4 id="modalMessage" class="fw-bold"></h4>
             </div>
         </div>
     </div>
+</div>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            var myModalElement = document.getElementById('confirmationModal');
-            if (myModalElement) {
-                var myModal = new bootstrap.Modal(myModalElement);
-                myModal.show();
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const confirmationModal = new bootstrap.Modal(document.getElementById('confirmationModal'));
+        const modalMessage = document.getElementById('modalMessage');
+        const modalIconContainer = document.getElementById('modalIconContainer');
 
-                setTimeout(function () {
-                    myModal.hide();
+        document.querySelectorAll('.accion-pregunta-form').forEach(form => {
+            form.addEventListener('submit', function (event) {
+                event.preventDefault();
 
-                }, 2000);
-            }
+                const form = this;
+                const idPregunta = form.querySelector('input[name="id_pregunta"]').value;
+                const accion = event.submitter.value;
+
+
+                const formData = new FormData();
+                formData.append('id_pregunta', idPregunta);
+                formData.append('accion', accion);
+
+
+                const url = '/QuizGame/question/aprobarPregunta';
+
+                fetch(url, {
+                    method: 'POST',
+                    body: formData,
+                })
+                        .then(response => {
+
+                            const contentType = response.headers.get('content-type');
+                            if (contentType && contentType.indexOf('application/json') !== -1) {
+                                return response.json();
+                            } else {
+                                console.error('Respuesta no es JSON:', response);
+                                throw new Error('El servidor respondió con un formato inesperado.');
+                            }
+                        })
+                        .then(data => {
+
+                            modalMessage.textContent = data.mensaje;
+                            modalIconContainer.innerHTML = '';
+
+                            if (data.esExito) {
+                                modalIconContainer.innerHTML = '<i class="fa-solid fa-circle-check text-success mb-3" style="font-size: 5rem;"></i>';
+                            } else {
+                                modalIconContainer.innerHTML = '<i class="fa-solid fa-circle-xmark text-danger mb-3" style="font-size: 5rem;"></i>';
+                            }
+
+                            confirmationModal.show();
+
+                            setTimeout(() => {
+                                confirmationModal.hide();
+                            }, 2000);
+
+                            const listItem = form.closest('li[data-id-pregunta]');
+                            if (listItem) {
+                                listItem.remove();
+                            }
+                        })
+                        .catch(error => {
+                            // console.error('Error en la petición AJAX:', error);
+                            modalMessage.textContent = 'Ocurrió un error inesperado. Intenta de nuevo.';
+                            modalIconContainer.innerHTML = '<i class="fa-solid fa-triangle-exclamation text-warning mb-3" style="font-size: 5rem;"></i>';
+                            confirmationModal.show();
+                            setTimeout(() => {
+                                confirmationModal.hide();
+                            }, 3000); // CAMBIAR PARA QUE ESTE MAS TIEMPO ACA URA
+                        });
+            });
         });
-    </script>
-{{/mostrarMensaje}}
+    });
+</script>

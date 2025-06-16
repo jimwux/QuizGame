@@ -11,32 +11,55 @@ class QuestionController extends BaseController
         $this->view = $view;
     }
 
-    public function show($mensaje)
+    public function showSuggested()
     {
-        echo "<br>";
-        echo "<br>";
-        echo "<br>";
-        echo "<br>";
         $preguntasSugeridas = $this->model->obtenerPreguntasSugeridas();
-
-        $this->view->render('questionsSuggested', ["pregunta" => $preguntasSugeridas, "mostrarMensaje" => $mensaje]);
+        $this->view->render('questionsSuggested', ["pregunta" => $preguntasSugeridas]);
     }
 
     public function aprobarPregunta()
     {
-        $accion = $_POST['accion'];
-        $idPregunta = $_POST['id_pregunta'];
-        $mensaje = "";
+        if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['accion']) && isset($_POST['id_pregunta'])) {
+            $accion = $_POST['accion'];
+            $idPregunta = $_POST['id_pregunta'];
+            $mensaje = "";
+            $esExito = false;
 
-        if($accion == "aprobar"){
-            $this->model->aprobarPreguntaSugerida($idPregunta);
-            $mensaje = "Pregunta aprobada correctamente";
-        } else if ($accion == "rechazar"){
-            $this->model->rechazarPreguntaSugerida($idPregunta);
-            $mensaje = "Pregunta rechazada";
+            if ($accion == "aprobar") {
+                if ($this->model->aprobarPreguntaSugerida($idPregunta)) {
+                    $mensaje = "Pregunta aprobada correctamente :D";
+                    $esExito = true;
+                } else {
+                    $mensaje = "Error al aprobar la pregunta D:";
+                }
+            } else if ($accion == "rechazar") {
+                if ($this->model->rechazarPreguntaSugerida($idPregunta)) {
+                    $mensaje = "Pregunta rechazada correctamente.";
+                    $esExito = true;
+                } else {
+                    $mensaje = "Error al rechazar la pregunta";
+                }
+            }
+
+
+            header('Content-Type: application/json');
+            echo json_encode([
+                'success' => $esExito,
+                'mensaje' => $mensaje,
+                'esExito' => $esExito,
+                'esError' => !$esExito
+            ]);
+            exit();
+        } else {
+            header('Content-Type: application/json');
+            echo json_encode([
+                'success' => false,
+                'mensaje' => 'Peticionj invalida',
+                'esExito' => false,
+                'esError' => true
+            ]);
+            exit();
         }
-
-        $this->show($mensaje);
     }
 
     public function formularioSugerirPregunta()
