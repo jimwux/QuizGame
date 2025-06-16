@@ -57,9 +57,29 @@ class Database
         $this->conn->close();
     }
 
+    public function lastInsertId()
+    {
+        return $this->conn->insert_id;
+    }
+
     public function getConnection()
     {
         return $this->conn;
+    }
+
+    public function beginTransaction()
+    {
+        $this->conn->begin_transaction();
+    }
+
+    public function commit()
+    {
+        $this->conn->commit();
+    }
+
+    public function rollBack()
+    {
+        $this->conn->rollBack();
     }
 
 }
