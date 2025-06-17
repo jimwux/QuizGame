@@ -68,7 +68,7 @@ CREATE TABLE respuesta
     id_pregunta INT          NOT NULL,
     texto       VARCHAR(255) NOT NULL,
     es_correcta BOOLEAN      NOT NULL,
-    FOREIGN KEY (id_pregunta) REFERENCES pregunta (id)
+    FOREIGN KEY (id_pregunta) REFERENCES pregunta (id) ON DELETE CASCADE
 );
 
 -- Tabla partida (simplificada, sin tipo)

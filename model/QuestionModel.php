@@ -52,6 +52,12 @@ class QuestionModel
         return $this->database->query($sql);
     }
 
+    public function obtenerDificultades()
+    {
+        $sql = "SELECT * FROM dificultad";
+        return $this->database->query($sql);
+    }
+
 
     public function obtenerPreguntasSugeridas()
     {
@@ -242,5 +248,192 @@ class QuestionModel
             return false;
         }
     }
+    ######################################################### MI PARTE
+
+    public function crearPregunta($datosPregunta, $respuestas)
+    {
+        try {
+            $this->database->beginTransaction();
+
+            // Insertar la pregunta en la tabla 'pregunta'
+            $sqlPregunta = "INSERT INTO pregunta (texto, id_categoria, id_creador, estado, id_dificultad) VALUES (?, ?, ?, ?, ?)";
+            // Asumo 'id_dificultad' y 'estado' serán pasados en $datosPregunta o tendrán valores por defecto
+            // Si 'estado' siempre es 'activa' y 'id_dificultad' siempre es 2, puedes quitarlo de los parámetros.
+            $this->database->execute($sqlPregunta, [
+                $datosPregunta["texto"],
+                $datosPregunta["id_categoria"],
+                $datosPregunta["id_creador"],
+                $datosPregunta["estado"] ?? 'activa', // Valor por defecto si no se especifica
+                $datosPregunta["id_dificultad"] ?? 2  // Valor por defecto si no se especifica
+            ]);
+
+            $idPregunta = $this->database->lastInsertId();
+
+            // Insertar las respuestas en la tabla 'respuesta'
+            $sqlRespuesta = "INSERT INTO respuesta (id_pregunta, texto, es_correcta) VALUES (?, ?, ?)";
+            foreach ($respuestas as $r) {
+                $this->database->execute($sqlRespuesta, [
+                    $idPregunta,
+                    $r["texto"],
+                    $r["es_correcta"] ? 1 : 0
+                ]);
+            }
+
+            $this->database->commit();
+            return true;
+
+        } catch (Exception $e) {
+            $this->database->rollBack();
+            error_log("Error al crear pregunta: " . $e->getMessage());
+            return false;
+        }
+    }
+
+    public function editarPregunta($idPregunta, $datosPregunta, $respuestas)
+    {
+        try {
+            $this->database->beginTransaction();
+
+            // Actualizar la pregunta en la tabla 'pregunta'
+            $sqlPregunta = "UPDATE pregunta SET texto = ?, id_categoria = ?, id_dificultad = ? WHERE id = ?";
+            $this->database->execute($sqlPregunta, [
+                $datosPregunta["texto"],
+                $datosPregunta["id_categoria"],
+                $datosPregunta["id_dificultad"] ?? 2, // Se mantiene el valor por defecto si no se especifica
+                $idPregunta
+            ]);
+
+            // Eliminar respuestas existentes para la pregunta (para luego reinsertar las nuevas)
+            $sqlDeleteRespuestas = "DELETE FROM respuesta WHERE id_pregunta = ?";
+            $this->database->execute($sqlDeleteRespuestas, [$idPregunta]);
+
+            // Insertar las respuestas actualizadas
+            $sqlInsertRespuesta = "INSERT INTO respuesta (id_pregunta, texto, es_correcta) VALUES (?, ?, ?)";
+            foreach ($respuestas as $r) {
+                $this->database->execute($sqlInsertRespuesta, [
+                    $idPregunta,
+                    $r["texto"],
+                    $r["es_correcta"] ? 1 : 0
+                ]);
+            }
+
+            $this->database->commit();
+            return true;
+
+        } catch (Exception $e) {
+            $this->database->rollBack();
+            error_log("Error al editar pregunta: " . $e->getMessage());
+            return false;
+        }
+    }
+
+    public function obtenerPreguntaPorId($id)
+    {
+        // Obtener la pregunta
+        $sqlPregunta = "SELECT p.id, p.texto, p.id_categoria, p.id_dificultad, c.nombre AS nombre_categoria
+                        FROM pregunta p
+                        JOIN categoria c ON p.id_categoria = c.id
+                        WHERE p.id = ?";
+        $pregunta = $this->database->query($sqlPregunta, [$id]);
+
+        if (empty($pregunta)) {
+            return null;
+        }
+
+        $pregunta = $pregunta[0]; // La consulta debería devolver solo una fila
+
+        // Obtener las respuestas asociadas
+        $sqlRespuestas = "SELECT texto, es_correcta FROM respuesta WHERE id_pregunta = ?";
+        $respuestas = $this->database->query($sqlRespuestas, [$id]);
+
+        // Formatear las respuestas para que sean fáciles de usar en el formulario (opcionA, opcionB, etc.)
+        $opciones = [];
+        $correcta = '';
+        if (!empty($respuestas)) {
+            foreach ($respuestas as $index => $r) {
+                $opcionKey = chr(65 + $index); // A, B, C, D
+                $opciones["opcion" . $opcionKey] = $r["texto"];
+                if ($r["es_correcta"]) {
+                    $correcta = $opcionKey;
+                }
+            }
+        }
+
+        // Combinar datos de pregunta y respuestas
+        return array_merge($pregunta, $opciones, ["correcta" => $correcta]);
+    }
+
+    public function obtenerTodas()
+    {
+        $sql = "
+            SELECT
+                p.id AS id_pregunta,
+                p.texto AS texto_pregunta,
+                c.nombre AS nombre_categoria,
+                c.color AS color_categoria,
+                d.descripcion AS nombre_dificultad,
+                GROUP_CONCAT(CONCAT(r.texto, '||', r.es_correcta) ORDER BY r.id SEPARATOR ';;') AS respuestas_json
+            FROM
+                pregunta AS p
+            JOIN
+                categoria AS c ON p.id_categoria = c.id
+            JOIN
+                dificultad AS d ON p.id_dificultad = d.id
+            LEFT JOIN
+                respuesta AS r ON r.id_pregunta = p.id
+            WHERE
+                p.estado = 'activa'
+            GROUP BY
+                p.id
+            ORDER BY
+                p.id DESC;
+        ";
+
+        $preguntasCompletas = $this->database->query($sql);
+
+        $resultado = [];
+        foreach ($preguntasCompletas as $fila) {
+            $respuestasRaw = explode(';;', $fila['respuestas_json']);
+            $respuestasFormateadas = [];
+            foreach ($respuestasRaw as $respuesta) {
+                list($texto, $esCorrecta) = explode('||', $respuesta);
+                $respuestasFormateadas[] = [
+                    'texto' => $texto,
+                    'es_correcta' => (bool)$esCorrecta
+                ];
+            }
+
+            $resultado[] = [
+                'id_pregunta' => $fila['id_pregunta'],
+                'texto_pregunta' => $fila['texto_pregunta'],
+                'nombre_categoria' => $fila['nombre_categoria'],
+                'color_categoria' => $fila['color_categoria'],
+                'nombre_dificultad' => $fila['nombre_dificultad'],
+                'respuestas' => $respuestasFormateadas,
+            ];
+        }
+        return $resultado;
+    }
+
+
+    public function eliminarPregunta($id)
+    {
+        try {
+            $this->database->beginTransaction();
+
+            // Gracias a ON DELETE CASCADE, no es necesario borrar respuestas explícitamente
+            $sqlDeletePregunta = "DELETE FROM pregunta WHERE id = ?";
+            $this->database->execute($sqlDeletePregunta, [$id]);
+
+            $this->database->commit();
+            return true;
+
+        } catch (Exception $e) {
+            $this->database->rollBack();
+            error_log("Error al eliminar pregunta: " . $e->getMessage());
+            return false;
+        }
+    }
+
 
 }
