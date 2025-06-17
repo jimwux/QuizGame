@@ -80,17 +80,6 @@
                                 </select>
                             </div>
 
-                            <!-- Dificultad -->
-                            <div class="mb-4">
-                                <label for="dificultad" class="form-label">Dificultad</label>
-                                <select name="dificultad" id="dificultad" class="form-select" required>
-                                    <option value="">Seleccione una dificultad</option>
-                                    {{#dificultades}}
-                                        <option value="{{id}}" {{#selected}}selected{{/selected}}>{{descripcion}}</option>
-                                    {{/dificultades}}
-                                </select>
-                            </div>
-
                             <div class="text-center">
                                 <button type="submit" class="btn btn-primary px-4 py-2">{{boton}}</button>
                             </div>

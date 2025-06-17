@@ -157,13 +157,10 @@ class QuestionController extends BaseController
     public function create()#formularioCrearPregunta
     {
         $categorias = $this->model->obtenerCategorias();
-        // Asumiendo que también necesitas las dificultades para el formulario de crear/editar
-        $dificultades = $this->model->obtenerDificultades(); // Necesitarás añadir este método al modelo
         $this->view->render("formQuestion", [
             "accion" => "/QuizGame/question/guardarPregunta",
             "boton" => "Crear",
-            "categorias" => $categorias,
-            "dificultades" => $dificultades
+            "categorias" => $categorias
         ]);
     }
 
@@ -178,8 +175,7 @@ class QuestionController extends BaseController
                 "opcionC" => "Opción C",
                 "opcionD" => "Opción D",
                 "correcta" => "Opción correcta",
-                "categoria" => "Categoría",
-                "dificultad" => "Dificultad" // Agregamos dificultad
+                "categoria" => "Categoría"
             ];
 
             $errores = [];
@@ -203,18 +199,11 @@ class QuestionController extends BaseController
                     return $cat;
                 }, $categorias);
 
-                $dificultades = $this->model->obtenerDificultades(); // Necesitas este método
-                $formDificultad = $_POST["dificultad"] ?? null;
-                $dificultadesMarcadas = array_map(function ($dif) use ($formDificultad) {
-                    $dif["selected"] = $dif["id"] == $formDificultad;
-                    return $dif;
-                }, $dificultades);
 
                 $this->view->render("formQuestion", [
                     "errores" => $errores,
                     "formulario" => $form,
                     "categorias" => $categoriasMarcadas,
-                    "dificultades" => $dificultadesMarcadas,
                     "accion" => "/QuizGame/question/guardarPregunta",
                     "boton" => "Crear"
                 ]);
@@ -225,7 +214,6 @@ class QuestionController extends BaseController
                 "texto" => $_POST["texto"],
                 "id_categoria" => $_POST["categoria"],
                 "id_creador" => $_SESSION["id"] ?? 1, // Asumo un ID de usuario por defecto si no hay sesión
-                "id_dificultad" => $_POST["dificultad"],
                 "estado" => 'activa' // Las preguntas creadas por admin son activas por defecto
             ];
 
@@ -281,8 +269,7 @@ class QuestionController extends BaseController
             "accion" => "/Quizgame/question/guardarEdicionPregunta",
             "boton" => "Actualizar",
             "pregunta" => $pregunta,
-            "categorias" => $categoriasMarcadas,
-            "dificultades" => $dificultadesMarcadas
+            "categorias" => $categoriasMarcadas
         ]);
     }
 
@@ -299,8 +286,7 @@ class QuestionController extends BaseController
                 "opcionC" => "Opción C",
                 "opcionD" => "Opción D",
                 "correcta" => "Opción correcta",
-                "categoria" => "Categoría",
-                "dificultad" => "Dificultad"
+                "categoria" => "Categoría"
             ];
 
             $errores = [];
@@ -325,19 +311,11 @@ class QuestionController extends BaseController
                     return $cat;
                 }, $categorias);
 
-                $dificultades = $this->model->obtenerDificultades();
-                $formDificultad = $_POST["dificultad"] ?? null;
-                $dificultadesMarcadas = array_map(function ($dif) use ($formDificultad) {
-                    $dif["selected"] = $dif["id"] == $formDificultad;
-                    return $dif;
-                }, $dificultades);
-
                 $this->view->render("formQuestion", [
                     "errores" => $errores,
                     "formulario" => $form,
                     "pregunta" => ["id" => $idPregunta], // Se necesita el ID para que el formulario sepa qué editar
                     "categorias" => $categoriasMarcadas,
-                    "dificultades" => $dificultadesMarcadas,
                     "accion" => "/QuizGame/question/guardarEdicionPregunta",
                     "boton" => "Actualizar"
                 ]);
@@ -346,8 +324,7 @@ class QuestionController extends BaseController
 
             $dataPregunta = [
                 "texto" => $_POST["texto"],
-                "id_categoria" => $_POST["categoria"],
-                "id_dificultad" => $_POST["dificultad"]
+                "id_categoria" => $_POST["categoria"]
             ];
 
             $respuestas = [

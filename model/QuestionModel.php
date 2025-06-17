@@ -256,15 +256,13 @@ class QuestionModel
             $this->database->beginTransaction();
 
             // Insertar la pregunta en la tabla 'pregunta'
-            $sqlPregunta = "INSERT INTO pregunta (texto, id_categoria, id_creador, estado, id_dificultad) VALUES (?, ?, ?, ?, ?)";
-            // Asumo 'id_dificultad' y 'estado' serán pasados en $datosPregunta o tendrán valores por defecto
-            // Si 'estado' siempre es 'activa' y 'id_dificultad' siempre es 2, puedes quitarlo de los parámetros.
+            $sqlPregunta = "INSERT INTO pregunta (texto, id_categoria, id_creador, estado) VALUES (?, ?, ?, ?)";
+
             $this->database->execute($sqlPregunta, [
                 $datosPregunta["texto"],
                 $datosPregunta["id_categoria"],
                 $datosPregunta["id_creador"],
-                $datosPregunta["estado"] ?? 'activa', // Valor por defecto si no se especifica
-                $datosPregunta["id_dificultad"] ?? 2  // Valor por defecto si no se especifica
+                $datosPregunta["estado"] ?? 'activa'
             ]);
 
             $idPregunta = $this->database->lastInsertId();
