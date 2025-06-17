@@ -52,6 +52,14 @@ class SessionController
         $_SESSION['estado_partida']['puntaje'] += $puntajeIncremento;
     }
 
+    public static function eliminarClaveEstadoPartida($clave)
+    {
+        if (isset($_SESSION['estado_partida'][$clave])) {
+            unset($_SESSION['estado_partida'][$clave]);
+        }
+    }
+
+
     // Puedes añadir más métodos para la sesión de usuario
     public static function iniciarSesionUsuario($id, $username)
     {

@@ -37,6 +37,7 @@ class QuestionController extends BaseController
         $data['mensaje'] = $mensaje;
         $data['url_partida'] = '/QuizGame/game/mostrarPregunta';
 
+        SessionController::actualizarEstadoPartida('pausa_timestamp', time());
 
         $this->view->render("formReport", $data);
     }
