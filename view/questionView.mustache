@@ -68,27 +68,28 @@
                     Reportar Pregunta <i class="bi bi-flag-fill"></i>
                 </button>
             </div>
-
-            <div class="modal fade" id="reportQuestionModal" tabindex="-1" aria-labelledby="reportQuestionModalLabel"
-                 aria-hidden="true">
+            <div class="modal fade" id="reportQuestionModal" tabindex="-1" aria-labelledby="reportQuestionModalLabel" aria-hidden="true">
                 <div class="modal-dialog modal-dialog-centered">
                     <div class="modal-content">
-                        <div class="modal-header bg-danger text-white">
-                            <h5 class="modal-title" id="reportQuestionModalLabel">Reportar Pregunta</h5>
-                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
-                                    aria-label="Close"></button>
-                        </div>
-                        <div class="modal-body">
-                            <p>¿Estás seguro de que quieres reportar esta pregunta por ser inapropiada o incorrecta?</p>
-                            <textarea class="form-control" rows="3" placeholder="Añade un comentario (opcional)"></textarea>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                            <button type="button" class="btn btn-danger">Enviar Reporte</button>
-                        </div>
+                        <form method="POST" action="/QuizGame/question/enviarReporte">
+                            <div class="modal-header bg-danger text-white">
+                                <h5 class="modal-title">Reportar Pregunta</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                            </div>
+                            <div class="modal-body">
+                                <input type="hidden" name="idPregunta" value="{{question.id}}">
+                                <p>¿Estás seguro de que quieres reportar esta pregunta?</p>
+                                <textarea name="motivo" class="form-control" rows="3" placeholder="Añade un comentario (obligatorio)" required></textarea>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                <button type="submit" class="btn btn-danger">Enviar Reporte</button>
+                            </div>
+                        </form>
                     </div>
                 </div>
             </div>
+
         </div>
     {{/datos}}
 

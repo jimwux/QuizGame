@@ -74,58 +74,56 @@ class GameController extends BaseController
     {
         $estado = SessionController::obtenerEstadoPartida();
         $usuarioId = $_SESSION['id'];
-        $partidaId = $estado['partida_id'] ?? null; // Obtiene el id de la partida que actualmente está en sesión
+        $partidaId = $estado['partida_id'] ?? null;
 
         if (!$partidaId) {
-            $this->view->render('lobby', ['mensaje' => 'No hay partida activa.']);
+            $this->redirectTo('lobby');
             return;
         }
 
-        // Se trae la categoría aleatoria que guardamos anteriormente en sesión
         $categoriaId = $estado['categoria_actual'] ?? null;
         if (!$categoriaId) {
-            $this->redirectTo('seleccionarCategoria');
+            $this->redirectTo('game/seleccionarCategoria');
+            return;
         }
 
-        // Si hay una pregunta en curso no respondida, volver a mostrarla
+        $pregunta = null;
+
+        // ¿Estamos volviendo a una pregunta que ya estaba en curso?
         if ($estado['pregunta_actual_id']) {
-            // Calcular si aún está dentro del tiempo disponible
-            $tiempoRestante = $this->calcularTiempoRestante($estado);
+            $pregunta = $this->model->obtenerPreguntaPorId($estado['pregunta_actual_id']);
 
-            if ($tiempoRestante > 0) {
-                // Si el tiempo no se agotó, renderizar la pregunta actual
-                $pregunta = $this->model->obtenerPreguntaPorId($estado['pregunta_actual_id']);
-                $this->renderizarPregunta($pregunta, $estado);
-                return;
-            }
-        }
+            // ====================================================================
+            // LÍNEA CLAVE: Reiniciamos el timestamp de inicio de la pregunta.
+            // Esto hará que el reloj se calcule desde ahora y vuelva a 30 segundos.
+            SessionController::actualizarEstadoPartida('inicio_pregunta_timestamp', time());
+            // ====================================================================
 
-        // Si no entró en la condición anterior, obtener nueva pregunta
-        $pregunta = $this->model->obtenerPreguntaParaUsuario($usuarioId, $categoriaId);
+        } else {
+            // Si no, es una pregunta completamente nueva
+            $pregunta = $this->model->obtenerPreguntaParaUsuario($usuarioId, $categoriaId);
 
-        // Si no encuentra pregunta para el usuario, se fija si es debido a que ya
-        // respondió todas las que le correspondian. De ser así, limpia la tabla
-        if (!$pregunta) {
-            if ($this->model->usuarioRespondioTodas($usuarioId, $categoriaId)) {
+            if (!$pregunta && $this->model->usuarioRespondioTodas($usuarioId, $categoriaId)) {
                 $this->model->resetearPreguntasRespondidas($usuarioId, $categoriaId);
                 $pregunta = $this->model->obtenerPreguntaParaUsuario($usuarioId, $categoriaId);
             }
+
+            if ($pregunta) {
+                SessionController::actualizarEstadoPartida('pregunta_actual_id', $pregunta['id']);
+                SessionController::actualizarEstadoPartida('inicio_pregunta_timestamp', time());
+            }
         }
 
-        // Si incluso así no encuentra preguntas (lo cual no debería suceder ya que el paso anterior
-        // siempre traería preguntas de la dificultad del usuario) finaliza la partida
         if (!$pregunta) {
             $this->finalizarPartida($partidaId, $estado['puntaje']);
+            $this->view->render('lobby', ['mensaje' => '¡Completaste todas las preguntas! Puntaje final: ' . $estado['puntaje']]);
             return;
         }
 
-        // Guarda los datos de la nueva pregunta en sesión
-        SessionController::actualizarEstadoPartida('pregunta_actual_id', $pregunta['id']);
-        SessionController::actualizarEstadoPartida('inicio_pregunta_timestamp', time());
+        // Ahora el estado está actualizado, lo volvemos a obtener para pasarlo a la vista
+        $estadoActualizado = SessionController::obtenerEstadoPartida();
 
-        // Redirige a la vista con la pregunta y sus respuestas, donde también está el contador
-        $this->renderizarPregunta($pregunta, $estado);
-
+        $this->renderizarPregunta($pregunta, $estadoActualizado);
     }
 
     /**
@@ -245,21 +243,14 @@ class GameController extends BaseController
     {
         $this->view->render('question', [
             'datos' => [
-                'question' => [
-                    'id' => $pregunta['id'],
-                    'texto' => $pregunta['texto']
-                ],
+                'question' => ['id' => $pregunta['id'], 'texto' => $pregunta['texto']],
                 'answers' => $this->model->obtenerOpcionesRespuesta($pregunta['id']),
                 'category' => $this->model->obtenerCategoriaPorId($pregunta['id_categoria']),
             ],
             'puntaje' => $estado['puntaje'],
-            'usuario' => [
-                'nombre' => $_SESSION['username']
-            ],
-            'partida' => [
-                'id' => $estado['partida_id']
-            ],
-            'tiempo_restante' => $this->calcularTiempoRestante($estado)
+            'usuario' => ['nombre' => $_SESSION['username']],
+            'partida' => ['id' => $estado['partida_id']],
+            'tiempo_restante' => $this->calcularTiempoRestante($estado) // Usa la función para calcular
         ]);
     }
 

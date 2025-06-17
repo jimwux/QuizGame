@@ -8,7 +8,51 @@ class QuestionModel
     {
         $this->database = $database;
     }
+    public function guardarReporte($idUsuario, $idPregunta, $motivo)
+    {
+        // Estos chequeos iniciales están bien y se mantienen.
+        if (!isset($motivo) || trim($motivo) === '') {
+            return 'EMPTY_REASON';
+        }
+        if ($this->alreadyReported($idUsuario, $idPregunta)) {
+            return 'ALREADY_REPORTED';
+        }
 
+        $sql = "INSERT INTO reporte_pregunta 
+                    (id_pregunta, id_usuario, motivo, fecha_reporte, estado) 
+                    VALUES (?, ?, ?, NOW(), 0)";
+
+        try {
+            // 1. Intentamos ejecutar la inserción.
+            $this->database->execute($sql, [$idPregunta, $idUsuario, $motivo]);
+
+            // 2. Si la línea anterior NO lanzó un error, significa que la consulta se ejecutó.
+            // Como tú confirmas que el dato se guarda, podemos asumir con seguridad que fue un éxito.
+            // Devolvemos 'SUCCESS' directamente.
+            return 'SUCCESS';
+
+        } catch (Exception $e) {
+            // 3. Si por alguna razón la base de datos fallara y lanzara una excepción,
+            // este bloque la atraparía y devolvería nuestro error controlado.
+            error_log("Error al guardar reporte en la BD: " . $e->getMessage());
+            return 'DB_ERROR';
+        }
+    }
+
+    /**
+     * Esta función ya está corregida y funciona bien. Se mantiene igual.
+     */
+    public function alreadyReported($idUsuario, $idPregunta)
+    {
+        if ($idUsuario === null || $idPregunta === null) {
+            return true;
+        }
+
+        $sql = "SELECT id FROM reporte_pregunta WHERE id_usuario = ? AND id_pregunta = ?";
+        $resultado = $this->database->query($sql, [$idUsuario, $idPregunta]);
+
+        return !empty($resultado);
+    }
     public function guardarSugerencia($datosPregunta, $respuestas)
     {
         try {

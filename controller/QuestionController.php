@@ -11,6 +11,51 @@ class QuestionController extends BaseController
         $this->view = $view;
     }
 
+
+
+
+    public function showFormularioReporte()
+    {
+        $status = $_GET['status'] ?? 'DEFAULT';
+        $mensaje = '';
+
+        switch ($status) {
+            case 'SUCCESS':
+                $mensaje = "¡Pregunta reportada con éxito! Gracias por tu colaboración.";
+                break;
+            case 'ALREADY_REPORTED':
+                $mensaje = "Error: Ya has reportado esta pregunta anteriormente.";
+                break;
+            case 'EMPTY_REASON':
+                $mensaje = "Error: El motivo del reporte no puede estar vacío.";
+                break;
+            default:
+                $mensaje = "Error: No se pudo procesar tu reporte en este momento.";
+                break;
+        }
+
+        $data['mensaje'] = $mensaje;
+        $data['url_partida'] = '/QuizGame/game/mostrarPregunta';
+
+        // Renderiza la vista intermedia con el nombre base "formReport"
+        $this->view->render("formReport", $data);
+    }
+
+    /**
+     * Recibe los datos del formulario, procesa el reporte y redirige a la página de estado.
+     */
+    public function enviarReporte()
+    {
+        $idUsuario = $_SESSION['id'] ?? null;
+        $idPregunta = $_POST['idPregunta'] ?? null;
+        $motivo = $_POST['motivo'] ?? null;
+
+        $resultado = $this->model->guardarReporte($idUsuario, $idPregunta, $motivo);
+
+        // Redirigimos, pasando el resultado en la URL para que showFormularioReporte lo lea
+        $this->redirectTo('question/showFormularioReporte?status=' . $resultado);
+    }
+
     public function showSuggested()
     {
         $preguntasSugeridas = $this->model->obtenerPreguntasSugeridas();
