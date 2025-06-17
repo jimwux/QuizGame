@@ -10,7 +10,7 @@ class QuestionModel
     }
     public function guardarReporte($idUsuario, $idPregunta, $motivo)
     {
-        // Estos chequeos iniciales están bien y se mantienen.
+
         if (!isset($motivo) || trim($motivo) === '') {
             return 'EMPTY_REASON';
         }
@@ -20,38 +20,85 @@ class QuestionModel
 
         $sql = "INSERT INTO reporte_pregunta 
                     (id_pregunta, id_usuario, motivo, fecha_reporte, estado) 
-                    VALUES (?, ?, ?, NOW(), 0)";
+                    VALUES (?, ?, ?, NOW(), 'pendiente')";
 
         try {
             // 1. Intentamos ejecutar la inserción.
             $this->database->execute($sql, [$idPregunta, $idUsuario, $motivo]);
-
-            // 2. Si la línea anterior NO lanzó un error, significa que la consulta se ejecutó.
-            // Como tú confirmas que el dato se guarda, podemos asumir con seguridad que fue un éxito.
-            // Devolvemos 'SUCCESS' directamente.
             return 'SUCCESS';
 
         } catch (Exception $e) {
-            // 3. Si por alguna razón la base de datos fallara y lanzara una excepción,
-            // este bloque la atraparía y devolvería nuestro error controlado.
+
             error_log("Error al guardar reporte en la BD: " . $e->getMessage());
             return 'DB_ERROR';
         }
     }
 
-    /**
-     * Esta función ya está corregida y funciona bien. Se mantiene igual.
-     */
+
     public function alreadyReported($idUsuario, $idPregunta)
     {
         if ($idUsuario === null || $idPregunta === null) {
             return true;
         }
 
+
         $sql = "SELECT id FROM reporte_pregunta WHERE id_usuario = ? AND id_pregunta = ?";
         $resultado = $this->database->query($sql, [$idUsuario, $idPregunta]);
 
         return !empty($resultado);
+    }
+    public function aprobarReporte($reporte_id)
+    {
+
+        $sql = "UPDATE reporte_pregunta SET estado = 'aprobada' WHERE id = ?";
+        return $this->database->execute($sql, [$reporte_id]);
+    }
+
+
+    public function rechazarReporte($reporte_id)
+    {
+
+        $sql = "UPDATE reporte_pregunta SET estado = 'rechazada' WHERE id = ?";
+        return $this->database->execute($sql, [$reporte_id]);
+    }
+
+
+    public function obtenerPreguntasReportadas()
+    {
+
+        $sql = "
+            SELECT 
+                rp.id AS reporte_id, 
+                rp.motivo, 
+                rp.fecha_reporte,
+                p.texto AS pregunta_texto,
+                u.nombre_completo AS usuario_nombre
+            FROM 
+                reporte_pregunta rp
+            LEFT JOIN 
+                pregunta p ON rp.id_pregunta = p.id
+            LEFT JOIN 
+                usuarios u ON rp.id_usuario = u.id
+            WHERE 
+                rp.estado = 'pendiente'
+            ORDER BY 
+                rp.fecha_reporte DESC;
+        ";
+
+
+        $reportesCrudos = $this->database->query($sql);
+
+
+        $reportesProcesados = [];
+        if (!empty($reportesCrudos)) {
+            foreach ($reportesCrudos as $fila) {
+                // Este bucle asegura que estamos creando un array 100% nativo de PHP,
+                // eliminando cualquier particularidad del resultado de la base de datos.
+                $reportesProcesados[] = $fila;
+            }
+        }
+        return $reportesProcesados;
+
     }
     public function guardarSugerencia($datosPregunta, $respuestas)
     {

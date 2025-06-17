@@ -89,13 +89,11 @@ class GameController extends BaseController
 
         $pregunta = null;
 
-        // ¿Estamos volviendo a una pregunta que ya estaba en curso?
+        // es para saber si estamos volviendo a una pregunta que ya estaba en curso
         if ($estado['pregunta_actual_id']) {
             $pregunta = $this->model->obtenerPreguntaPorId($estado['pregunta_actual_id']);
 
-            // ====================================================================
-            // LÍNEA CLAVE: Reiniciamos el timestamp de inicio de la pregunta.
-            // Esto hará que el reloj se calcule desde ahora y vuelva a 30 segundos.
+
             SessionController::actualizarEstadoPartida('inicio_pregunta_timestamp', time());
             // ====================================================================
 
@@ -120,7 +118,6 @@ class GameController extends BaseController
             return;
         }
 
-        // Ahora el estado está actualizado, lo volvemos a obtener para pasarlo a la vista
         $estadoActualizado = SessionController::obtenerEstadoPartida();
 
         $this->renderizarPregunta($pregunta, $estadoActualizado);
@@ -250,7 +247,7 @@ class GameController extends BaseController
             'puntaje' => $estado['puntaje'],
             'usuario' => ['nombre' => $_SESSION['username']],
             'partida' => ['id' => $estado['partida_id']],
-            'tiempo_restante' => $this->calcularTiempoRestante($estado) // Usa la función para calcular
+            'tiempo_restante' => $this->calcularTiempoRestante($estado) // usa la función para calcular
         ]);
     }
 

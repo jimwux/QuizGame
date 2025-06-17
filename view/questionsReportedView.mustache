@@ -1,0 +1,74 @@
+<section class="bg-light py-5">
+    <div class="container">
+        <div class="card shadow rounded-4">
+            <div class="card-header bg-dark text-white text-center rounded-top-4 p-4">
+                <h3 class="mb-0">Panel de Preguntas Reportadas</h3>
+            </div>
+            <div class="card-body bg-white rounded-bottom-4 p-4">
+
+                {{#alerta}}
+                    <div class="alert alert-success alert-dismissible fade show text-center fw-semibold fs-5" role="alert">
+                        {{alerta}}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+                    </div>
+                {{/alerta}}
+
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle">
+                        <thead class="table-secondary">
+                        <tr>
+                            <th>ID Reporte</th>
+                            <th>Pregunta Reportada</th>
+                            <th style="min-width: 250px;">Motivo del Reporte</th>
+                            <th>Reportado por</th>
+                            <th>Fecha</th>
+                            <th class="text-center">Acciones</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {{#preguntas}}
+                            <tr>
+                                <td><strong>{{reporte_id}}</strong></td>
+                                <td class="text-break">{{pregunta_texto}}</td>
+                                <td class="text-break">{{motivo}}</td>
+                                <td>{{usuario_nombre}}</td>
+                                <td>{{fecha_reporte}}</td>
+                                <td class="text-center">
+                                    <div class="d-flex justify-content-center">
+                                        <form action="/QuizGame/question/approveReport" method="POST" class="me-1">
+                                            <input type="hidden" name="reporte_id" value="{{reporte_id}}">
+                                            <button type="submit" class="btn btn-sm btn-success" onclick="return confirm('¿Estás seguro de que quieres marcar este reporte como revisado?');">
+                                                Revisado
+                                            </button>
+                                        </form>
+
+                                        <form action="/QuizGame/question/rejectReport" method="POST">
+                                            <input type="hidden" name="reporte_id" value="{{reporte_id}}">
+                                            <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('¿Estás seguro de que quieres rechazar este reporte?');">
+                                                Rechazar
+                                            </button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                        {{/preguntas}}
+
+                        {{^preguntas}}
+                            <tr>
+                                <td colspan="6" class="text-center text-muted p-4">
+                                    No hay preguntas reportadas pendientes de revisión.
+                                </td>
+                            </tr>
+                        {{/preguntas}}
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="text-center mt-4">
+                    <a href="/QuizGame/lobby" class="btn btn-secondary px-4">Volver al Lobby</a>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</section>

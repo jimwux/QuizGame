@@ -37,7 +37,7 @@ class QuestionController extends BaseController
         $data['mensaje'] = $mensaje;
         $data['url_partida'] = '/QuizGame/game/mostrarPregunta';
 
-        // Renderiza la vista intermedia con el nombre base "formReport"
+
         $this->view->render("formReport", $data);
     }
 
@@ -52,7 +52,7 @@ class QuestionController extends BaseController
 
         $resultado = $this->model->guardarReporte($idUsuario, $idPregunta, $motivo);
 
-        // Redirigimos, pasando el resultado en la URL para que showFormularioReporte lo lea
+
         $this->redirectTo('question/showFormularioReporte?status=' . $resultado);
     }
 
@@ -403,10 +403,50 @@ class QuestionController extends BaseController
         }
         $this->redirectTo('/question/all');
     }
+
     public function reported()
     {
-        // Lógica para obtener preguntas reportadas del modelo
-        // $preguntasReportadas = $this->model->obtenerPreguntasReportadas(); // Necesitarás este método en tu modelo
-        $this->view->render('questionsReported', ["preguntas" => [] /* pasa tus datos aquí */]); // Y una vista 'questionsReported'
+        $data['alerta'] = null;
+        $status = $_GET['status'] ?? null;
+
+        if ($status) {
+            switch ($status) {
+                case 'approved':
+                    $data['alerta'] = '¡El reporte ha sido marcado como revisado con éxito!';
+                    break;
+                case 'rejected':
+                    $data['alerta'] = 'El reporte ha sido rechazado correctamente.';
+                    break;
+                case 'error':
+                    $data['alerta'] = 'Hubo un error al procesar la solicitud.';
+                    break;
+            }
+        }
+
+        $data['preguntas'] = $this->model->obtenerPreguntasReportadas();
+
+        $this->view->render('questionsReported', $data);
+    }
+
+    public function approveReport()
+    {
+        $reporte_id = $_POST['reporte_id'] ?? null;
+        if ($reporte_id) {
+            $this->model->aprobarReporte($reporte_id);
+            $this->redirectTo('question/reported?status=approved');
+        } else {
+            $this->redirectTo('question/reported?status=error');
+        }
+    }
+
+    public function rejectReport()
+    {
+        $reporte_id = $_POST['reporte_id'] ?? null;
+        if ($reporte_id) {
+            $this->model->rechazarReporte($reporte_id);
+            $this->redirectTo('question/reported?status=rejected');
+        } else {
+            $this->redirectTo('question/reported?status=error');
+        }
     }
 }
