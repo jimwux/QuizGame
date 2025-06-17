@@ -68,7 +68,7 @@ CREATE TABLE respuesta
     id_pregunta INT          NOT NULL,
     texto       VARCHAR(255) NOT NULL,
     es_correcta BOOLEAN      NOT NULL,
-    FOREIGN KEY (id_pregunta) REFERENCES pregunta (id)
+    FOREIGN KEY (id_pregunta) REFERENCES pregunta (id) ON DELETE CASCADE
 );
 
 -- Tabla partida (simplificada, sin tipo)
@@ -223,12 +223,12 @@ VALUES ('Fácil'),
        ('Difícil');
 
 -- Insertar preguntas y respuestas
-INSERT INTO pregunta (texto, id_categoria, id_creador, estado, id_dificultad)
-VALUES ('¿Cuántos continentes hay en el mundo?', 1, 1, 'activa', 1),
-       ('¿Cuánto es 2 + 2?', 2, 2, 'activa', 1),
-       ('¿De qué color es el cielo en un día despejado?', 3, 3, 'activa', 1),
-       ('¿En qué año comenzó la Segunda Guerra Mundial?', 4, 4, 'activa', 1),
-       ('¿Cuántos jugadores hay en un equipo de fútbol?', 5, 5, 'activa', 1);
+INSERT INTO pregunta (texto, id_categoria, id_creador, estado)
+VALUES ('¿Cuántos continentes hay en el mundo?', 1, 1, 'activa'),
+       ('¿Cuánto es 2 + 2?', 2, 2, 'activa'),
+       ('¿De qué color es el cielo en un día despejado?', 3, 3, 'activa'),
+       ('¿En qué año comenzó la Segunda Guerra Mundial?', 4, 4, 'activa'),
+       ('¿Cuántos jugadores hay en un equipo de fútbol?', 5, 5, 'activa');
 
 -- Insertar respuestas correctas e incorrectas (Cada pregunta tiene 4 opciones)
 INSERT INTO respuesta (id_pregunta, texto, es_correcta)

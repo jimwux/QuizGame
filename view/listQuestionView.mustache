@@ -1,0 +1,66 @@
+<section class="bg-light py-5">
+    <div class="container">
+        <div class="card shadow rounded-4">
+            <div class="card-header bg-dark text-white text-center rounded-top-4 p-4">
+                <h3 class="mb-0">Listado de Preguntas</h3>
+            </div>
+            <div class="card-body bg-white rounded-bottom-4 p-4">
+
+                {{#alerta}}
+                    <div class="alert alert-success alert-dismissible fade show text-center fw-semibold fs-5" role="alert">
+                        {{alerta}}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+                    </div>
+                {{/alerta}}
+
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle">
+                        <thead class="table-secondary">
+                            <tr>
+                                <th>ID</th>
+                                <th>Enunciado</th>
+                                <th>Categoría</th>
+                                <th>Dificultad</th>
+                                <th>Respuestas</th>
+                                <th class="text-center">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {{#preguntas}}
+                                <tr>
+                                    <td>{{id_pregunta}}</td>
+                                    <td>{{texto_pregunta}}</td>
+                                    <td style="background-color: {{color_categoria}}; color: white;">{{nombre_categoria}}</td>
+                                    <td>{{nombre_dificultad}}</td>
+                                    <td>
+                                        <ul class="mb-0">
+                                            {{#respuestas}}
+                                                <li class="{{#es_correcta}}fw-bold text-success{{/es_correcta}}">
+                                                    {{texto}} {{#es_correcta}}(Correcta){{/es_correcta}}
+                                                </li>
+                                            {{/respuestas}}
+                                        </ul>
+                                    </td>
+                                    <td class="text-center">
+                                        <a href="/QuizGame/question/edit?id={{id_pregunta}}" class="btn btn-sm btn-outline-primary me-1">Editar</a>
+                                        <a href="/QuizGame/question/delete?id={{id_pregunta}}" class="btn btn-sm btn-outline-danger" onclick="return confirm('¿Estás seguro de que quieres eliminar esta pregunta?');">Eliminar</a>
+                                    </td>
+                                </tr>
+                            {{/preguntas}}
+                            {{^preguntas}}
+                                <tr>
+                                    <td colspan="6" class="text-center text-muted">No hay preguntas activas para mostrar.</td>
+                                </tr>
+                            {{/preguntas}}
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="text-center mt-4">
+                    <a href="/QuizGame/question/create" class="btn btn-success px-4">Crear Nueva Pregunta</a>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</section>
