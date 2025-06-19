@@ -49,16 +49,25 @@ class QuestionModel
     }
     public function aprobarReporte($reporte_id)
     {
+        // Obtener el id_pregunta asociado al reporte
+        $sql = "SELECT id_pregunta FROM reporte_pregunta WHERE id = ?";
+        $resultado = $this->database->query($sql, [$reporte_id]);
+        $id_pregunta = $resultado[0]['id_pregunta'];
 
-        $sql = "UPDATE reporte_pregunta SET estado = 'aprobada' WHERE id = ?";
-        return $this->database->execute($sql, [$reporte_id]);
+        // Marcar el reporte como aprobado
+        $sql1 = "UPDATE reporte_pregunta SET estado = 'aprobada' WHERE id = ?";
+        $this->database->execute($sql1, [$reporte_id]);
+
+        // Desactivar la pregunta
+        $sql2 = "UPDATE pregunta SET estado = 'inactiva' WHERE id = ?";
+        return $this->database->execute($sql2, [$id_pregunta]);
     }
 
 
     public function rechazarReporte($reporte_id)
     {
-
-        $sql = "UPDATE reporte_pregunta SET estado = 'rechazada' WHERE id = ?";
+        // Eliminar el reporte directamente
+        $sql = "DELETE FROM reporte_pregunta WHERE id = ?";
         return $this->database->execute($sql, [$reporte_id]);
     }
 
