@@ -38,14 +38,14 @@
                                         <form action="/QuizGame/question/approveReport" method="POST" class="me-1">
                                             <input type="hidden" name="reporte_id" value="{{reporte_id}}">
                                             <button type="submit" class="btn btn-sm btn-success" onclick="return confirm('¿Estás seguro de que quieres marcar este reporte como revisado?');">
-                                                Revisado
+                                                <i class="fa-solid fa-eye-slash"></i> Inactivar pregunta
                                             </button>
                                         </form>
 
                                         <form action="/QuizGame/question/rejectReport" method="POST">
                                             <input type="hidden" name="reporte_id" value="{{reporte_id}}">
                                             <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('¿Estás seguro de que quieres rechazar este reporte?');">
-                                                Rechazar
+                                                <i class="fas fa-times-circle"></i> Rechazar reporte
                                             </button>
                                         </form>
                                     </div>

@@ -22,6 +22,7 @@
                                 <th>Categoría</th>
                                 <th>Dificultad</th>
                                 <th>Respuestas</th>
+                                <th>Estado</th>
                                 <th class="text-center">Acciones</th>
                             </tr>
                         </thead>
@@ -41,6 +42,7 @@
                                             {{/respuestas}}
                                         </ul>
                                     </td>
+                                    <td>{{estado_pregunta}}</td>
                                     <td class="text-center">
                                         <a href="/QuizGame/question/edit?id={{id_pregunta}}" class="btn btn-sm btn-outline-primary me-1">Editar</a>
                                         <a href="/QuizGame/question/delete?id={{id_pregunta}}" class="btn btn-sm btn-outline-danger" onclick="return confirm('¿Estás seguro de que quieres eliminar esta pregunta?');">Eliminar</a>

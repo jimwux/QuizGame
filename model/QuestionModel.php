@@ -467,6 +467,7 @@ class QuestionModel
             SELECT
                 p.id AS id_pregunta,
                 p.texto AS texto_pregunta,
+                p.estado AS estado_pregunta,
                 c.nombre AS nombre_categoria,
                 c.color AS color_categoria,
                 d.descripcion AS nombre_dificultad,
@@ -479,8 +480,6 @@ class QuestionModel
                 dificultad AS d ON p.id_dificultad = d.id
             LEFT JOIN
                 respuesta AS r ON r.id_pregunta = p.id
-            WHERE
-                p.estado = 'activa'
             GROUP BY
                 p.id
             ORDER BY
@@ -504,6 +503,7 @@ class QuestionModel
             $resultado[] = [
                 'id_pregunta' => $fila['id_pregunta'],
                 'texto_pregunta' => $fila['texto_pregunta'],
+                'estado_pregunta' => $fila['estado_pregunta'],
                 'nombre_categoria' => $fila['nombre_categoria'],
                 'color_categoria' => $fila['color_categoria'],
                 'nombre_dificultad' => $fila['nombre_dificultad'],

@@ -101,9 +101,18 @@ class GameModel
      */
     public function obtenerCategoriasDisponibles()
     {
-        $sql = "SELECT * FROM categoria";
+        $sql = "
+        SELECT c.*
+        FROM categoria c
+        WHERE EXISTS (
+            SELECT 1 FROM pregunta p
+            WHERE p.id_categoria = c.id
+              AND p.estado = 'activa'
+        )
+    ";
         return $this->database->query($sql);
     }
+
 
     /**
      * Obtiene una categoría a partir de su ID
@@ -170,6 +179,7 @@ class GameModel
         $pregunta = $this->database->query(
             "SELECT p.* FROM pregunta p
              WHERE p.id_categoria = ?
+               AND p.estado = 'activa'
                AND p.id NOT IN (
                    SELECT id_pregunta FROM pregunta_usuario WHERE id_usuario = ?
                )
@@ -183,6 +193,7 @@ class GameModel
             $pregunta = $this->database->query(
                 "SELECT p.* FROM pregunta p
                  WHERE p.id_categoria = ?
+                   AND p.estado = 'activa'
                    AND p.id NOT IN (
                        SELECT id_pregunta FROM pregunta_usuario WHERE id_usuario = ?
                    )

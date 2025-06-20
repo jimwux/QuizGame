@@ -76,6 +76,7 @@ class GameController extends BaseController
         $usuarioId = $_SESSION['id'];
         $partidaId = $estado['partida_id'] ?? null; // Obtiene el id de la partida que actualmente está en sesión
 
+        // Recalcula el tiempo si te fuiste a reportar una pregunta
         if (isset($estado['pausa_timestamp']) && isset($estado['inicio_pregunta_timestamp'])) {
             $inicio = $estado['inicio_pregunta_timestamp'];
             $pausa = $estado['pausa_timestamp'];

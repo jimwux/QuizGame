@@ -23,7 +23,8 @@ CREATE TABLE usuarios
     token_validacion VARCHAR(255),
     latitud          DECIMAL(10, 6),
     longitud         DECIMAL(10, 6),
-    rol              VARCHAR(50)  NOT NULL DEFAULT 'jugador'
+    rol              VARCHAR(50)  NOT NULL DEFAULT 'jugador',
+    fecha_creacion   DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 
 -- Tabla categoria
@@ -55,6 +56,7 @@ CREATE TABLE pregunta
     veces_mostrada                 INT           DEFAULT 0,
     veces_respondida_correctamente INT           DEFAULT 0,
     id_dificultad                  INT  NOT NULL DEFAULT 2, -- ← dificultad media por defecto
+    fecha_creacion     DATETIME DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (id_categoria) REFERENCES categoria (id),
     FOREIGN KEY (id_creador) REFERENCES usuarios (id),
     FOREIGN KEY (id_dificultad) REFERENCES dificultad (id)
@@ -157,19 +159,6 @@ CREATE TABLE resumen_partida
     FOREIGN KEY (id_usuario) REFERENCES usuarios (id),
     FOREIGN KEY (id_categoria) REFERENCES categoria (id)
 );
-
--- -- Tabla estadistica_respuestas_usuario
--- DROP TABLE IF EXISTS estadistica_respuestas_usuario;
--- CREATE TABLE estadistica_respuestas_usuario (
---                                                 id_usuario INT PRIMARY KEY,
---                                                 total_partidas_jugadas INT NOT NULL DEFAULT 0,
---                                                 total_intentos INT NOT NULL DEFAULT 0,
---                                                 total_correctas INT NOT NULL DEFAULT 0,
---                                                 porcentaje_general FLOAT DEFAULT 0,
---                                                 tiempo_promedio_respuesta FLOAT DEFAULT NULL,
---                                                 nivel_calculado INT DEFAULT NULL,
---                                                 FOREIGN KEY (id_usuario) REFERENCES usuarios(id)
--- );
 
 -- Tabla pregunta_usuario
 DROP TABLE IF EXISTS pregunta_usuario;
