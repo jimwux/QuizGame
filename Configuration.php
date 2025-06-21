@@ -82,4 +82,14 @@ class Configuration
         return new EditorController(new UserModel($this->getDatabase()), $this->getViewer());
     }
 
+    public function getAdminController(): AdminController
+    {
+        return new AdminController(new AdminModel($this->getDatabase()), $this->getViewer());
+    }
+
+    public function getGraphController(): GraphController
+    {
+        return new GraphController(new AdminModel($this->getDatabase()), $this->getViewer());
+    }
+
 }
