@@ -14,13 +14,6 @@ class EditorController extends BaseController
     public function show()
     {
         $usuario = $_SESSION["username"] ?? null;
-        $rol = $_SESSION["usuario_rol"] ?? null;
-
-        if ($rol !== 'editor') {
-            header("Location: lobby/show");
-            exit;
-        }
-
         $data = [
             "usuario" => $this->model->getUserByUsername($usuario),
         ];
