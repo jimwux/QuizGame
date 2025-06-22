@@ -175,6 +175,18 @@ CREATE TABLE pregunta_usuario
     UNIQUE KEY usuario_pregunta_unica (id_usuario, id_pregunta)
 );
 
+CREATE TABLE historial_respuestas (
+     id           INT AUTO_INCREMENT PRIMARY KEY,
+     id_usuario   INT NOT NULL,
+     id_pregunta  INT NOT NULL,
+     id_respuesta INT,
+     es_correcta  BOOLEAN NOT NULL,
+     fecha        DATETIME DEFAULT CURRENT_TIMESTAMP,
+     FOREIGN KEY (id_usuario) REFERENCES usuarios (id),
+     FOREIGN KEY (id_pregunta) REFERENCES pregunta (id),
+     FOREIGN KEY (id_respuesta) REFERENCES respuesta (id)
+);
+
 
 
 -- INSERTS POR ORDEN

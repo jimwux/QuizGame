@@ -150,7 +150,7 @@ class GameModel
     {
         // 1. Obtener estadísticas del usuario: total de preguntas respondidas y cuántas fueron correctas
         $estadisticasUsuario = $this->database->query(
-            "SELECT COUNT(*) as total, SUM(es_correcta) as correctas FROM pregunta_usuario WHERE id_usuario = ?",
+            "SELECT COUNT(*) as total, SUM(es_correcta) as correctas FROM historial_respuestas WHERE id_usuario = ?",
             [$usuarioId]
         )[0] ?? ['total' => 0, 'correctas' => 0];
 
@@ -225,12 +225,17 @@ class GameModel
 
     public function marcarPreguntaComoRespondidaPorUsuario($usuarioId, $preguntaId, $respuestaId, $esCorrecta): void
     {
-        // 1. Registrar que el usuario respondió la pregunta
+        // 1. Insertar en historial (registro permanente)
+        $sqlHistorial = "INSERT INTO historial_respuestas (id_usuario, id_pregunta, id_respuesta, es_correcta)
+                     VALUES (?, ?, ?, ?)";
+        $this->database->execute($sqlHistorial, [$usuarioId, $preguntaId, $respuestaId, $esCorrecta]);
+
+        // 2. Insertar en pregunta_usuario (registro temporal para control de preguntas no repetidas)
         $sql = "INSERT INTO pregunta_usuario (id_usuario, id_pregunta, id_respuesta, es_correcta)
                 VALUES (?, ?, ?, ?)";
         $this->database->execute($sql, [$usuarioId, $preguntaId, $respuestaId, $esCorrecta]);
 
-        // 2. Actualizar métricas de la pregunta
+        // 3. Actualizar métricas de la pregunta
         $this->database->execute(
             "UPDATE pregunta
              SET veces_mostrada = veces_mostrada + 1,
@@ -239,7 +244,7 @@ class GameModel
             [$esCorrecta ? 1 : 0, $preguntaId]
         );
 
-        // 3. Recalcular y actualizar dificultad solo si se ha mostrado al menos 10 veces
+        // 4. Recalcular y actualizar dificultad solo si se ha mostrado al menos 10 veces
         $this->database->execute(
             "UPDATE pregunta
              SET id_dificultad = CASE
