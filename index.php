@@ -11,6 +11,7 @@ $config = parse_ini_file("configuration/config.ini", true);
 $basePath = $config["app"]["base_path"];
 
 $controladoresPrivados = $config["roles"]["controladores_privados"] ?? [];
+$controladoresAdmin = $config["roles"]["controladores_admin"] ?? [];
 $rutasEditor = $config["roles"]["rutas_editor"] ?? [];
 $rutasJugador = $config["roles"]["rutas_jugador"] ?? [];
 
@@ -32,6 +33,19 @@ if (!$controllerInstance || !method_exists($controllerInstance, $method)) {
 // Validar sesión para controladores privados
 if (in_array(strtolower($controller), array_map('strtolower', $controladoresPrivados)) && !$logueado) {
     header("Location: {$basePath}/login/show");
+    exit;
+}
+
+
+// Si es admin y entra a /lobby → redirigir a su panel
+if ($rol === 'admin' && strtolower($controller) === 'lobby') {
+    header("Location: {$basePath}admin/show");
+    exit;
+}
+
+// Validar controladores exclusivos para administradores
+if (in_array(strtolower($controller), array_map('strtolower', $controladoresAdmin)) && $rol !== 'admin') {
+    header("Location: {$basePath}lobby/show");
     exit;
 }
 
