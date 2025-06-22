@@ -72,5 +72,33 @@ class AdminModel
 
     }
 
+    public function obtenerProcentajeRespuestasCcorrectasPorUsuario($filtroFecha){
+        $fechaInicio = $this->calcularRangoFecha($filtroFecha);
+
+        $sql = "SELECT
+                    u.usuario AS nombre_usuario,
+                    SUM(pu.es_correcta) AS respuestas_correctas,
+                    COUNT(pu.id) AS total_respuestas,
+                    IF(COUNT(pu.id) > 0, (SUM(pu.es_correcta) / COUNT(pu.id)) * 100, 0) AS porcentaje_aciertos
+               FROM
+                   usuarios u
+                INNER JOIN
+                    pregunta_usuario pu ON u.id = pu.id_usuario
+                INNER JOIN
+                    partida p ON pu.id_usuario = p.id_usuario
+                WHERE 
+                    p.fecha >= ? AND u.rol = 'jugador'
+                GROUP BY
+                    u.usuario
+                ORDER BY
+                        porcentaje_aciertos DESC, total_respuestas DESC 
+                    ";
+
+        $query = $this->database->getConnection()->prepare($sql);
+        $query->bind_param("s", $fechaInicio);
+        $query->execute();
+        return $query->get_result()->fetch_all(MYSQLI_ASSOC);
+    }
+
 
 }
