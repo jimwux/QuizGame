@@ -29,7 +29,7 @@ class AdminModel
 
         $sql = "SELECT pais, COUNT(*) AS cantidad
                 FROM usuarios
-                WHERE fecha_creacion >= ?
+                WHERE fecha_creacion >= ? AND rol = 'jugador'
                 GROUP BY pais";
 
         return $this->database->query($sql, [$fechaInicio]);
@@ -40,7 +40,7 @@ class AdminModel
 
         $sql = "SELECT sexo, COUNT(*) AS cantidad
             FROM usuarios
-            WHERE fecha_creacion >= ?
+            WHERE fecha_creacion >= ? AND rol = 'jugador'
             GROUP BY sexo";
 
         return $this->database->query($sql, [$fechaInicio]);
@@ -57,7 +57,7 @@ class AdminModel
                 END AS grupo_etario,
                 COUNT(*) AS cantidad
             FROM usuarios
-            WHERE fecha_creacion >= ?
+            WHERE fecha_creacion >= ? AND rol = 'jugador'
             GROUP BY grupo_etario";
 
         return $this->database->query($sql, [$fechaInicio]);

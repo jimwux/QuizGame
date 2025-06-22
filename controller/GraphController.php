@@ -13,21 +13,21 @@ class GraphController
     {
         $filtro = $_GET['filtro_fecha'] ?? 'semana';
         $datos = $this->model->obtenerUsuariosPorPais($filtro);
-        $this->generarGraficoTorta($datos, "Usuarios por país", 'pais');
+        $this->generarGraficoTorta($datos, "Jugadores por país", 'pais');
     }
 
     public function usuariosPorSexo()
     {
         $filtro = $_GET['filtro_fecha'] ?? 'semana';
         $datos = $this->model->obtenerUsuariosPorSexo($filtro);
-        $this->generarGraficoTorta($datos, "Usuarios por sexo", 'sexo');
+        $this->generarGraficoTorta($datos, "Jugadores por sexo", 'sexo');
     }
 
     public function usuariosPorGrupo()
     {
         $filtro = $_GET['filtro_fecha'] ?? 'semana';
         $datos = $this->model->obtenerUsuariosPorGrupoEtario($filtro);
-        $this->generarGraficoBarra($datos, "Usuarios por grupo etario");
+        $this->generarGraficoBarra($datos, "Jugadores por grupo etario");
     }
 
     private function generarGraficoTorta($datos, $titulo, $clave)
