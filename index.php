@@ -32,7 +32,7 @@
 
     // Validar sesión para controladores privados
     if (in_array(strtolower($controller), array_map('strtolower', $controladoresPrivados)) && !$logueado) {
-        header("Location: {$basePath}/login/show");
+        header("Location: {$basePath}login/show");
         exit;
     }
 
