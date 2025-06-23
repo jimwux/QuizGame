@@ -98,8 +98,7 @@ CREATE TABLE partida_pregunta
     orden_pregunta           INT,
     FOREIGN KEY (id_partida) REFERENCES partida (id),
     FOREIGN KEY (id_pregunta) REFERENCES pregunta (id),
-    FOREIGN KEY (id_respuesta) REFERENCES respuesta (id),
-    UNIQUE KEY (id_partida, id_pregunta)                                            -- AGREGAR ESTA LÍNEA
+    FOREIGN KEY (id_respuesta) REFERENCES respuesta (id)
 );
 
 -- Tabla reporte_pregunta
