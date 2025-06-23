@@ -350,6 +350,7 @@ class QuestionModel
     }
     ######################################################### MI PARTE
 
+
     public function crearPregunta($datosPregunta, $respuestas)
     {
         try {
@@ -424,7 +425,65 @@ class QuestionModel
             return false;
         }
     }
+    public function buscarPreguntasPorTexto($texto)
+    {
+        $sql = "
+            SELECT
+                p.id AS id_pregunta,
+                p.texto AS texto_pregunta,
+                p.estado AS estado_pregunta,
+                c.nombre AS nombre_categoria,
+                c.color AS color_categoria,
+                d.descripcion AS nombre_dificultad,
+                GROUP_CONCAT(CONCAT(r.texto, '||', r.es_correcta) ORDER BY r.id SEPARATOR ';;') AS respuestas_json
+            FROM
+                pregunta AS p
+            JOIN
+                categoria AS c ON p.id_categoria = c.id
+            JOIN
+                dificultad AS d ON p.id_dificultad = d.id
+            LEFT JOIN
+                respuesta AS r ON r.id_pregunta = p.id
+            WHERE
+                p.texto LIKE ?
+            GROUP BY
+                p.id
+            ORDER BY
+                p.id DESC;
+        ";
 
+        // Usamos comodines para el LIKE
+        $parametro = ['%' . $texto . '%'];
+        $preguntasCompletas = $this->database->query($sql, $parametro);
+
+        $resultado = [];
+        foreach ($preguntasCompletas as $fila) {
+            $respuestasRaw = explode(';;', $fila['respuestas_json'] ?? '');
+            $respuestasFormateadas = [];
+
+            foreach ($respuestasRaw as $respuesta) {
+                if (strpos($respuesta, '||') !== false) {
+                    list($textoResp, $esCorrecta) = explode('||', $respuesta);
+                    $respuestasFormateadas[] = [
+                        'texto' => $textoResp,
+                        'es_correcta' => (bool)$esCorrecta
+                    ];
+                }
+            }
+
+            $resultado[] = [
+                'id_pregunta' => $fila['id_pregunta'],
+                'texto_pregunta' => $fila['texto_pregunta'],
+                'estado_pregunta' => $fila['estado_pregunta'],
+                'nombre_categoria' => $fila['nombre_categoria'],
+                'color_categoria' => $fila['color_categoria'],
+                'nombre_dificultad' => $fila['nombre_dificultad'],
+                'respuestas' => $respuestasFormateadas,
+            ];
+        }
+
+        return $resultado;
+    }
     public function obtenerPreguntaPorId($id)
     {
         // Obtener la pregunta

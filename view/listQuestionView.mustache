@@ -13,6 +13,15 @@
                     </div>
                 {{/alerta}}
 
+                <!-- Buscador -->
+                <form class="mb-4" method="GET" action="/QuizGame/question/all">
+                    <div class="input-group">
+                        <input type="text" name="buscar" class="form-control" placeholder="Buscar pregunta por texto..."
+                               value="{{textoBusqueda}}">
+                        <button class="btn btn-outline-secondary" type="submit">Buscar</button>
+                    </div>
+                </form>
+
                 <div class="table-responsive">
                     <table class="table table-hover align-middle">
                         <thead class="table-secondary">
@@ -51,7 +60,14 @@
                             {{/preguntas}}
                             {{^preguntas}}
                                 <tr>
-                                    <td colspan="6" class="text-center text-muted">No hay preguntas activas para mostrar.</td>
+                                    <td colspan="7" class="text-center text-muted">
+                                        {{#textoBusqueda}}
+                                            No se encontraron preguntas relacionadas con la búsqueda: "<strong>{{textoBusqueda}}</strong>"
+                                        {{/textoBusqueda}}
+                                        {{^textoBusqueda}}
+                                            No hay preguntas activas para mostrar
+                                        {{/textoBusqueda}}
+                                    </td>
                                 </tr>
                             {{/preguntas}}
                         </tbody>

@@ -49,9 +49,9 @@
                         <p class="card-text fs-2 fw-bold">{{puntaje}}</p>
                     </div>
                 </div>
-                <button class="btn btn-danger shadow-sm w-75" data-bs-toggle="modal" data-bs-target="#reportQuestionModal">
+                <a href="/QuizGame/question/reportar?id={{question.id}}" class="btn btn-danger shadow-sm">
                     Reportar Pregunta <i class="bi bi-flag-fill"></i>
-                </button>
+                </a>
             </div>
 
             <div class="position-absolute bottom-0 start-50 translate-middle-x mb-4 d-none d-lg-block">
@@ -64,32 +64,10 @@
             </div>
 
             <div class="position-absolute bottom-0 end-0 mb-4 me-4 d-none d-lg-block">
-                <button class="btn btn-danger shadow-sm" data-bs-toggle="modal" data-bs-target="#reportQuestionModal">
+                <a href="/QuizGame/question/reportar?id={{question.id}}" class="btn btn-danger shadow-sm">
                     Reportar Pregunta <i class="bi bi-flag-fill"></i>
-                </button>
+                </a>
             </div>
-            <div class="modal fade" id="reportQuestionModal" tabindex="-1" aria-labelledby="reportQuestionModalLabel" aria-hidden="true">
-                <div class="modal-dialog modal-dialog-centered">
-                    <div class="modal-content">
-                        <form method="POST" action="/QuizGame/question/enviarReporte">
-                            <div class="modal-header bg-danger text-white">
-                                <h5 class="modal-title">Reportar Pregunta</h5>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                            </div>
-                            <div class="modal-body">
-                                <input type="hidden" name="idPregunta" value="{{question.id}}">
-                                <p>¿Estás seguro de que quieres reportar esta pregunta?</p>
-                                <textarea name="motivo" class="form-control" rows="3" placeholder="Añade un comentario (obligatorio)" required></textarea>
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                                <button type="submit" class="btn btn-danger">Enviar Reporte</button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
-
         </div>
     {{/datos}}
 
