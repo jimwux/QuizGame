@@ -72,5 +72,83 @@ class AdminModel
 
     }
 
+    public function obtenerCantidadUsuarios($filtroFecha)
+    {
+        $fechaInicio = $this->calcularRangoFecha($filtroFecha);
+        $sql = "SELECT
+                COUNT(*) AS total,
+                SUM(CASE WHEN fecha_creacion >= ? THEN 1 ELSE 0 END) AS filtrado
+            FROM usuarios
+            WHERE rol = 'jugador'";
+        $query = $this->database->getConnection()->prepare($sql);
+        $query->bind_param("s", $fechaInicio);
+        $query->execute();
+        return $query->get_result()->fetch_assoc();
+    }
 
+    public function obtenerCantidadPartidas($filtroFecha)
+    {
+        $fechaInicio = $this->calcularRangoFecha($filtroFecha);
+        $sql = "SELECT
+                COUNT(*) AS total,
+                SUM(CASE WHEN fecha >= ? THEN 1 ELSE 0 END) AS filtrado
+            FROM partida";
+        $query = $this->database->getConnection()->prepare($sql);
+        $query->bind_param("s", $fechaInicio);
+        $query->execute();
+        return $query->get_result()->fetch_assoc();
+    }
+    public function obtenerProcentajeRespuestasCcorrectasPorUsuario($filtroFecha){
+        $fechaInicio = $this->calcularRangoFecha($filtroFecha);
+
+        $sql = "SELECT
+                    u.usuario AS nombre_usuario,
+                    SUM(hr.es_correcta) AS respuestas_correctas,
+                    COUNT(hr.id) AS total_respuestas,
+                    IF(COUNT(hr.id) > 0, ROUND((SUM(hr.es_correcta) / COUNT(hr.id)) * 100, 1), 0) AS porcentaje_aciertos
+               FROM
+                   usuarios u
+                INNER JOIN
+                    historial_respuestas hr ON u.id = hr.id_usuario
+                WHERE 
+                    hr.fecha >= ? AND u.rol = 'jugador'
+                GROUP BY
+                    u.usuario
+                ORDER BY
+                        porcentaje_aciertos DESC, total_respuestas DESC 
+                    ";
+
+        $query = $this->database->getConnection()->prepare($sql);
+        $query->bind_param("s", $fechaInicio);
+        $query->execute();
+        return $query->get_result()->fetch_all(MYSQLI_ASSOC);
+    }
+
+
+    public function obtenerCantidadPreguntas($filtroFecha)
+    {
+        $fechaInicio = $this->calcularRangoFecha($filtroFecha);
+        $sql = "SELECT
+                COUNT(*) AS total,
+                SUM(CASE WHEN fecha_creacion >= ? THEN 1 ELSE 0 END) AS filtrado
+            FROM pregunta
+            WHERE estado like 'activa'";
+        $query = $this->database->getConnection()->prepare($sql);
+        $query->bind_param("s", $fechaInicio);
+        $query->execute();
+        return $query->get_result()->fetch_assoc();
+    }
+
+    public function obtenerCantidadPreguntasCreadas($filtroFecha)
+    {
+        $fechaInicio = $this->calcularRangoFecha($filtroFecha);
+        $sql = "SELECT
+                COUNT(*) AS total,
+                SUM(CASE WHEN fecha_creacion >= ? THEN 1 ELSE 0 END) AS filtrado
+            FROM pregunta";
+        $query = $this->database->getConnection()->prepare($sql);
+        $query->bind_param("s", $fechaInicio);
+        $query->execute();
+        return $query->get_result()->fetch_assoc();
+    }
 }
