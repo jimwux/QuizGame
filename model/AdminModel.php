@@ -77,17 +77,15 @@ class AdminModel
 
         $sql = "SELECT
                     u.usuario AS nombre_usuario,
-                    SUM(pu.es_correcta) AS respuestas_correctas,
-                    COUNT(pu.id) AS total_respuestas,
-                    IF(COUNT(pu.id) > 0, (SUM(pu.es_correcta) / COUNT(pu.id)) * 100, 0) AS porcentaje_aciertos
+                    SUM(hr.es_correcta) AS respuestas_correctas,
+                    COUNT(hr.id) AS total_respuestas,
+                    IF(COUNT(hr.id) > 0, ROUND((SUM(hr.es_correcta) / COUNT(hr.id)) * 100, 1), 0) AS porcentaje_aciertos
                FROM
                    usuarios u
                 INNER JOIN
-                    pregunta_usuario pu ON u.id = pu.id_usuario
-                INNER JOIN
-                    partida p ON pu.id_usuario = p.id_usuario
+                    historial_respuestas hr ON u.id = hr.id_usuario
                 WHERE 
-                    p.fecha >= ? AND u.rol = 'jugador'
+                    hr.fecha >= ? AND u.rol = 'jugador'
                 GROUP BY
                     u.usuario
                 ORDER BY
