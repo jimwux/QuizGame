@@ -37,8 +37,6 @@ class QuestionController extends BaseController
         $data['mensaje'] = $mensaje;
         $data['url_partida'] = '/QuizGame/game/mostrarPregunta';
 
-        SessionController::actualizarEstadoPartida('pausa_timestamp', time());
-
         $this->view->render("formReport", $data);
     }
 
@@ -186,17 +184,25 @@ class QuestionController extends BaseController
         }
     }
     ######################################################################## MI PARTE
+   # QuestionController.php: buscarPreguntas($imputTexto) → Procesa el texto, llama al modelo, retorna la vista con resultados.
 
     public function all()
     {
-        $preguntas = $this->model->obtenerTodas();
+        $inputTexto = $_GET['buscar'] ?? '';
+
+        if ($inputTexto !== null && trim($inputTexto) !== '') {
+            $preguntas = $this->model->buscarPreguntasPorTexto($inputTexto);
+        } else {
+            $preguntas = $this->model->obtenerTodas();
+        }
 
         $alerta = $_SESSION["alerta"] ?? null;
-        unset($_SESSION["alerta"]); // Eliminás el mensaje para que no se repita
+        unset($_SESSION["alerta"]); // Eliminado para que no itere
 
         $this->view->render('listQuestion', [
             "preguntas" => $preguntas,
-            "alerta" => $alerta
+            "alerta" => $alerta,
+            "textoBusqueda" => $inputTexto
         ]);
     }
 
@@ -405,7 +411,7 @@ class QuestionController extends BaseController
         $this->redirectTo('/question/all');
     }
 
-    public function reported()
+    public function reported()# El menu del editor donde confirma o da de baja un reporte
     {
         $data['alerta'] = null;
         $status = $_GET['status'] ?? null;
@@ -449,5 +455,21 @@ class QuestionController extends BaseController
         } else {
             $this->redirectTo('question/reported?status=error');
         }
+    }
+    public function reportar()#La vista del usuario desde donde formula el reporte
+    {
+        
+        SessionController::actualizarEstadoPartida('pausa_timestamp', time());
+        
+        $idPregunta = $_GET['id'] ?? null;
+        if (!$idPregunta) {
+            $_SESSION['alerta'] = "Pregunta no encontrada";
+            header("Location: /QuizGame/lobby/show");
+            exit;
+        }
+
+        $this->view->render('reportQuestion', [
+            'idPregunta' => $idPregunta
+        ]);
     }
 }
