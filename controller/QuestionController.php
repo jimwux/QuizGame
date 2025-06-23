@@ -304,11 +304,12 @@ class QuestionController extends BaseController
             return $cat;
         }, $categorias);
 
-        $dificultades = $this->model->obtenerDificultades(); // Necesitas este método
-        $dificultadesMarcadas = array_map(function ($dif) use ($pregunta) {
-            $dif["selected"] = $dif["id"] == $pregunta["id_dificultad"];
-            return $dif;
-        }, $dificultades);
+        # No editamos la dificultad pero me da cosita borrarlo
+        #$dificultades = $this->model->obtenerDificultades(); // Necesitas este método
+        #$dificultadesMarcadas = array_map(function ($dif) use ($pregunta) {
+        #    $dif["selected"] = $dif["id"] == $pregunta["id_dificultad"];
+        #    return $dif;
+        #}, $dificultades);
 
         // Marcar radio buttons para la respuesta correcta
         $pregunta["checkedA"] = ($pregunta["correcta"] ?? '') === "A";
@@ -316,6 +317,7 @@ class QuestionController extends BaseController
         $pregunta["checkedC"] = ($pregunta["correcta"] ?? '') === "C";
         $pregunta["checkedD"] = ($pregunta["correcta"] ?? '') === "D";
 
+        $pregunta["estado_activa"] = ($pregunta["estado"] ?? '') === "activa";
 
         $this->view->render("formQuestion", [
             "accion" => "/Quizgame/question/guardarEdicionPregunta",
@@ -338,7 +340,8 @@ class QuestionController extends BaseController
                 "opcionC" => "Opción C",
                 "opcionD" => "Opción D",
                 "correcta" => "Opción correcta",
-                "categoria" => "Categoría"
+                "categoria" => "Categoría",
+                "estado" => "Estado"
             ];
 
             $errores = [];
@@ -355,6 +358,7 @@ class QuestionController extends BaseController
                 $form["checkedB"] = ($form["correcta"] ?? '') === "B";
                 $form["checkedC"] = ($form["correcta"] ?? '') === "C";
                 $form["checkedD"] = ($form["correcta"] ?? '') === "D";
+                $form["estado_activa"] = ($_POST["estado"] ?? '') === "activa";
 
                 $categorias = $this->model->obtenerCategorias();
                 $formCategoria = $_POST["categoria"] ?? null;
@@ -366,7 +370,7 @@ class QuestionController extends BaseController
                 $this->view->render("formQuestion", [
                     "errores" => $errores,
                     "formulario" => $form,
-                    "pregunta" => ["id" => $idPregunta], // Se necesita el ID para que el formulario sepa qué editar
+                    "pregunta" => ["id" => $idPregunta], // Para que mantenga el ID oculto
                     "categorias" => $categoriasMarcadas,
                     "accion" => "/QuizGame/question/guardarEdicionPregunta",
                     "boton" => "Actualizar"
@@ -374,9 +378,11 @@ class QuestionController extends BaseController
                 return;
             }
 
+            // Armar datos para guardar
             $dataPregunta = [
                 "texto" => $_POST["texto"],
-                "id_categoria" => $_POST["categoria"]
+                "id_categoria" => $_POST["categoria"],
+                "estado" => $_POST["estado"]
             ];
 
             $respuestas = [
@@ -460,7 +466,7 @@ class QuestionController extends BaseController
     {
         
         SessionController::actualizarEstadoPartida('pausa_timestamp', time());
-        
+
         $idPregunta = $_GET['id'] ?? null;
         if (!$idPregunta) {
             $_SESSION['alerta'] = "Pregunta no encontrada";

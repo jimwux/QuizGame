@@ -80,6 +80,20 @@
                                 </select>
                             </div>
 
+
+                            <!-- Estado -->
+                            <div class="form-check form-check-inline">
+                                <input type="radio" name="estado" value="activa" class="form-check-input"
+                                    {{#pregunta.estado_activa}}checked{{/pregunta.estado_activa}}>
+                                <label class="form-check-label">Pregunta activa</label>
+                            </div>
+
+                            <div class="form-check form-check-inline">
+                                <input type="radio" name="estado" value="inactiva" class="form-check-input"
+                                    {{^pregunta.estado_activa}}checked{{/pregunta.estado_activa}}>
+                                <label class="form-check-label">Pregunta inactiva</label>
+                            </div>
+
                             <div class="text-center">
                                 <button type="submit" class="btn btn-primary px-4 py-2">{{boton}}</button>
                             </div>
