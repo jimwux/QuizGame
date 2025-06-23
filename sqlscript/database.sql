@@ -197,99 +197,114 @@ CREATE TABLE historial_respuestas (
 USE
 juegopreguntas;
 
--- Insertar usuarios
-INSERT INTO usuarios (nombre_completo, año_nacimiento, sexo, pais, ciudad, mail, usuario, password, rol)
-VALUES ('Juan Pérez', 1990, 'Masculino', 'Argentina', 'Buenos Aires', 'juan@gmail.com', 'juanperez', '123456',
-        'jugador'),
-       ('Ana González', 1995, 'Femenino', 'México', 'Ciudad de México', 'ana@gmail.com', 'anagonzalez', '123456',
-        'jugador'),
-       ('Carlos López', 1988, 'Masculino', 'España', 'Madrid', 'carlos@gmail.com', 'carloslopez', '123456', 'jugador'),
-       ('Lucía Martínez', 2000, 'Femenino', 'Colombia', 'Bogotá', 'lucia@gmail.com', 'luciamartinez', '123456',
-        'jugador'),
-       ('Pedro Sánchez', 1992, 'Masculino', 'Chile', 'Santiago', 'pedro@gmail.com', 'pedrosanchez', '123456',
-        'jugador');
+-- USUARIOS
+INSERT INTO usuarios (id, nombre_completo, año_nacimiento, sexo, pais, ciudad, mail, usuario, password, rol, fecha_creacion)
+VALUES
+    (1, 'Juan Pérez', 1990, 'Masculino', 'Argentina', 'Buenos Aires', 'juan@gmail.com', 'juanperez', '123456', 'jugador', '2023-11-15 10:00:00'),
+    (2, 'Ana González', 1995, 'Femenino', 'México', 'Ciudad de México', 'ana@gmail.com', 'anagonzalez', '123456', 'jugador', '2023-12-20 11:30:00'),
+    (3, 'Carlos López', 1988, 'Masculino', 'España', 'Madrid', 'carlos@gmail.com', 'carloslopez', '123456', 'jugador', '2024-01-10 12:45:00'),
+    (4, 'Lucía Martínez', 2000, 'Femenino', 'Colombia', 'Bogotá', 'lucia@gmail.com', 'luciamartinez', '123456', 'jugador', '2024-02-05 14:00:00'),
+    (5, 'Pedro Sánchez', 1992, 'Masculino', 'Chile', 'Santiago', 'pedro@gmail.com', 'pedrosanchez', '123456', 'jugador', '2024-03-25 16:20:00'),
+    (6, 'Maria Silva', 2012, 'Femenino', 'Brasil', 'São Paulo', 'maria@example.com', 'mariasilva', 'pass123', 'jugador', '2024-09-22 14:05:00'),
+    (7, 'Kenji Tanaka', 2018, 'Masculino', 'Japón', 'Tokio', 'kenji@example.com', 'kenjitanaka', 'pass123', 'jugador', '2024-10-30 21:00:00'),
+    (8, 'Fatima Al-Fassi', 1996, 'Femenino', 'Marruecos', 'Rabat', 'fatima@example.com', 'fatimaalfassi', 'pass123', 'jugador', '2024-11-18 13:45:00');
 
--- Insertar categorías
-INSERT INTO categoria (nombre, color)
-VALUES ('Geografía', '#3498db'),
-       ('Matemáticas', '#e74c3c'),
-       ('Ciencia', '#2ecc71'),
-       ('Historia', '#f1c40f'),
-       ('Deportes', '#9b59b6');
+-- CATEGORÍAS
+INSERT INTO categoria (id, nombre) VALUES
+                                       (1, 'Geografía'),
+                                       (2, 'Historia'),
+                                       (3, 'Ciencia'),
+                                       (4, 'Arte'),
+                                       (5, 'Deportes');
 
--- Insertar dificultades
-INSERT INTO dificultad (descripcion)
-VALUES ('Fácil'),
-       ('Medio'),
-       ('Difícil');
+-- DIFICULTADES
+INSERT INTO dificultad (id, descripcion) VALUES
+                                       (1, 'Fácil'),
+                                       (2, 'Media'),
+                                       (3, 'Difícil');
 
--- Insertar preguntas y respuestas
-INSERT INTO pregunta (texto, id_categoria, id_creador, estado)
-VALUES ('¿Cuántos continentes hay en el mundo?', 1, 1, 'activa'),
-       ('¿Cuánto es 2 + 2?', 2, 2, 'activa'),
-       ('¿De qué color es el cielo en un día despejado?', 3, 3, 'activa'),
-       ('¿En qué año comenzó la Segunda Guerra Mundial?', 4, 4, 'activa'),
-       ('¿Cuántos jugadores hay en un equipo de fútbol?', 5, 5, 'activa');
+-- PREGUNTAS (3 por categoría)
+INSERT INTO pregunta (id, texto, id_categoria, id_creador, estado, fecha_creacion)
+VALUES
+    (1, '¿Cuál es la capital de Francia?', 1, 1, 'activa', NOW()),
+    (2, '¿En qué continente está Egipto?', 1, 1, 'activa', NOW()),
+    (3, '¿Qué país tiene más fronteras con otros países?', 1, 1, 'activa', NOW()),
+    (4, '¿Cuánto es 5 + 3?', 2, 1, 'activa', NOW()),
+    (5, '¿Cuál es la raíz cuadrada de 81?', 2, 1, 'activa', NOW()),
+    (6, '¿Cuántos lados tiene un hexágono?', 2, 1, 'activa', NOW()),
+    (7, '¿Cuál es el símbolo químico del oro?', 3, 1, 'activa', NOW()),
+    (8, '¿Qué planeta es conocido como el "Planeta Rojo"?', 3, 1, 'activa', NOW()),
+    (9, '¿Cuál es la fórmula química del agua?', 3, 1, 'activa', NOW()),
+    (10, '¿Quién fue el primer presidente de los Estados Unidos?', 4, 1, 'activa', NOW()),
+    (11, '¿En qué año cayó el Muro de Berlín?', 4, 1, 'activa', NOW()),
+    (12, '¿Qué civilización construyó Machu Picchu?', 4, 1, 'activa', NOW()),
+    (13, '¿Cada cuántos años se celebran los Juegos Olímpicos?', 5, 1, 'activa', NOW()),
+    (14, '¿Qué país ganó la primera Copa Mundial de Fútbol en 1930?', 5, 1, 'activa', NOW()),
+    (15, '¿Qué deporte practica Serena Williams?', 5, 1, 'activa', NOW());
 
--- Insertar respuestas correctas e incorrectas (Cada pregunta tiene 4 opciones)
+-- RESPUESTAS (4 por pregunta, 60 en total)
 INSERT INTO respuesta (id_pregunta, texto, es_correcta)
-VALUES (1, '5', 0),
-       (1, '6', 0),
-       (1, '7', 0),
-       (1, '7', 1),
-       (2, '3', 0),
-       (2, '4', 1),
-       (2, '5', 0),
-       (2, '6', 0),
-       (3, 'Rojo', 0),
-       (3, 'Azul', 1),
-       (3, 'Verde', 0),
-       (3, 'Amarillo', 0),
-       (4, '1929', 0),
-       (4, '1935', 0),
-       (4, '1939', 1),
-       (4, '1942', 0),
-       (5, '9', 0),
-       (5, '10', 0),
-       (5, '11', 1),
-       (5, '12', 0);
+VALUES
+-- P1
+(1, 'París', 1), (1, 'Berlín', 0), (1, 'Londres', 0), (1, 'Roma', 0),
+-- P2
+(2, 'África', 1), (2, 'Asia', 0), (2, 'Europa', 0), (2, 'Oceanía', 0),
+-- P3
+(3, 'China', 0), (3, 'Brasil', 0), (3, 'Rusia', 1), (3, 'India', 0),
+-- P4
+(4, '7', 0), (4, '8', 1), (4, '6', 0), (4, '9', 0),
+-- P5
+(5, '9', 1), (5, '8', 0), (5, '7', 0), (5, '10', 0),
+-- P6
+(6, '5', 0), (6, '6', 1), (6, '7', 0), (6, '8', 0),
+-- P7
+(7, 'Ag', 0), (7, 'Au', 1), (7, 'Fe', 0), (7, 'Cu', 0),
+-- P8
+(8, 'Marte', 1), (8, 'Venus', 0), (8, 'Júpiter', 0), (8, 'Saturno', 0),
+-- P9
+(9, 'H2O', 1), (9, 'CO2', 0), (9, 'NaCl', 0), (9, 'O2', 0),
+-- P10
+(10, 'George Washington', 1), (10, 'Thomas Jefferson', 0), (10, 'Abraham Lincoln', 0), (10, 'John Adams', 0),
+-- P11
+(11, '1985', 0), (11, '1987', 0), (11, '1989', 1), (11, '1991', 0),
+-- P12
+(12, 'Azteca', 0), (12, 'Maya', 0), (12, 'Inca', 1), (12, 'Egipcia', 0),
+-- P13
+(13, 'Cada 2', 0), (13, 'Cada 3', 0), (13, 'Cada 4', 1), (13, 'Cada 5', 0),
+-- P14
+(14, 'Argentina', 0), (14, 'Brasil', 0), (14, 'Uruguay', 1), (14, 'Italia', 0),
+-- P15
+(15, 'Baloncesto', 0), (15, 'Natación', 0), (15, 'Atletismo', 0), (15, 'Tenis', 1);
 
--- Insertar sugerencias de preguntas con estado
-INSERT INTO sugerencia_pregunta (id_usuario, texto, id_categoria, estado) VALUES
-                                                                              (1, '¿Cuánto es 5 + 3?', 2, 'pendiente'),
-                                                                              (2, '¿Cuál es la capital de España?', 1, 'pendiente'),
-                                                                              (3, '¿Cuántos planetas hay en el sistema solar?', 3, 'pendiente'),
-                                                                              (4, '¿Quién escribió "Romeo y Julieta"?', 4, 'pendiente'),
-                                                                              (5, '¿Qué deporte se juega con una pelota de tenis?', 5, 'pendiente');
+-- SUGERENCIAS
+INSERT INTO sugerencia_pregunta (id, id_usuario, texto, id_categoria, estado, fecha_sugerencia)
+VALUES
+    (1, 1, '¿Cuánto es 5 + 3?', 2, 'pendiente', '2025-01-10 15:00:00'),
+    (2, 2, '¿Cuál es la capital de España?', 1, 'pendiente', '2025-02-12 16:00:00'),
+    (3, 3, '¿Cuántos planetas hay en el sistema solar?', 3, 'pendiente', '2025-03-14 17:00:00'),
+    (4, 4, '¿Quién escribió "Romeo y Julieta"?', 4, 'pendiente', '2025-04-16 18:00:00'),
+    (5, 5, '¿Qué deporte se juega con una pelota de tenis?', 5, 'pendiente', '2025-05-18 19:00:00');
 
--- Insertar respuestas para cada pregunta sugerida
+-- RESPUESTAS DE LAS SUGERENCIAS
 INSERT INTO sugerencia_respuesta (id_sugerencia, texto, es_correcta) VALUES
--- Respuestas para "¿Cuánto es 5 + 3?"
-(1, '6', 0),
-(1, '7', 0),
-(1, '8', 1),
-(1, '9', 0),
+                                                                         (1, '6', 0), (1, '7', 0), (1, '8', 1), (1, '9', 0),
+                                                                         (2, 'Barcelona', 0), (2, 'Madrid', 1), (2, 'Valencia', 0), (2, 'Sevilla', 0),
+                                                                         (3, '7', 0), (3, '8', 1), (3, '9', 0), (3, '10', 0),
+                                                                         (4, 'Miguel de Cervantes', 0), (4, 'William Shakespeare', 1), (4, 'Borges', 0), (4, 'Vargas Llosa', 0),
+                                                                         (5, 'Fútbol', 0), (5, 'Baloncesto', 0), (5, 'Tenis', 1), (5, 'Voleibol', 0);
 
--- Respuestas para "¿Cuál es la capital de España?"
-(2, 'Barcelona', 0),
-(2, 'Madrid', 1),
-(2, 'Valencia', 0),
-(2, 'Sevilla', 0),
+-- PARTIDAS PARA GRÁFICOS
+INSERT INTO partida (id, id_usuario, fecha, puntaje, finalizada) VALUES
+                                                                     (1, 1, '2025-06-01 10:00:00', 300, 1),
+                                                                     (2, 2, '2025-06-02 11:00:00', 450, 1),
+                                                                     (3, 3, '2025-06-03 12:00:00', 520, 1),
+                                                                     (4, 4, '2025-06-04 13:00:00', 100, 1),
+                                                                     (5, 5, '2025-06-05 14:00:00', 200, 1),
+                                                                     (6, 6, '2025-06-06 15:00:00', 350, 1),
+                                                                     (7, 7, '2025-06-07 16:00:00', 400, 1),
+                                                                     (8, 8, '2025-06-08 17:00:00', 270, 1);
 
--- Respuestas para "¿Cuántos planetas hay en el sistema solar?"
-(3, '7', 0),
-(3, '8', 1),
-(3, '9', 0),
-(3, '10', 0),
-
--- Respuestas para "¿Quién escribió 'Romeo y Julieta'?"
-(4, 'Miguel de Cervantes', 0),
-(4, 'William Shakespeare', 1),
-(4, 'Jorge Luis Borges', 0),
-(4, 'Mario Vargas Llosa', 0),
-
--- Respuestas para "¿Qué deporte se juega con una pelota de tenis?"
-(5, 'Fútbol', 0),
-(5, 'Baloncesto', 0),
-(5, 'Tenis', 1),
-(5, 'Voleibol', 0);
+-- RESUMENES DE LAS PARTIDAS
+INSERT INTO resumen_partida (id_partida, id_usuario, cantidad_correctas, cantidad_intentos, puntaje, fecha_partida)
+SELECT id, id_usuario, (puntaje / 100), 5, puntaje, fecha
+FROM partida;
