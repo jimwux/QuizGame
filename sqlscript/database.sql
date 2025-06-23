@@ -291,7 +291,7 @@ VALUES
     ('Javier Rodriguez', 1989, 'Masculino', 'México', 'Guadalajara', 'javier@example.com', 'javierrodriguez', 'pass123', 'jugador', '2025-03-23 12:10:00'),
     ('Elena Petrova', 2017, 'Femenino', 'Rusia', 'Moscú', 'elena@example.com', 'elenapetrova', 'pass123', 'jugador', '2025-04-14 08:30:00'),
     ('Ahmed Khan', 1994, 'Masculino', 'India', 'Mumbai', 'ahmed@example.com', 'ahmedkhan', 'pass123', 'jugador', '2025-05-09 17:00:00'),
-    ('Sofia Rossi', 1998, 'Femenino', 'Italia', 'Roma', 'sofia@example.com', 'sofiarossi', 'pass123', 'jugador', '2025-06-01 19:40:00')
+    ('Sofia Rossi', 1998, 'Femenino', 'Italia', 'Roma', 'sofia@example.com', 'sofiarossi', 'pass123', 'jugador', '2025-06-01 19:40:00');
 
 
 -- MÁS PARTIDAS (con fechas actualizadas y más recientes)

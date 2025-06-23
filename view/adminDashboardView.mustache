@@ -28,20 +28,60 @@
             </div>
         {{/usuario}}
 
+        <form method="get" class="text-center mb-4">
+            <label for="filtro_fecha" class="me-2 fw-semibold">Filtrar por:</label>
+            <select name="filtro_fecha" id="filtro_fecha" onchange="this.form.submit()"
+                    class="form-select d-inline w-auto">
+                <option value="dia" {{#filtroDia}}selected{{/filtroDia}}>Hoy</option>
+                <option value="semana" {{#filtroSemana}}selected{{/filtroSemana}}>Últimos 7 días</option>
+                <option value="mes" {{#filtroMes}}selected{{/filtroMes}}>Último mes</option>
+                <option value="año" {{#filtroAño}}selected{{/filtroAño}}>Último año</option>
+                <option value="todos" {{#filtroTodos}}selected{{/filtroTodos}}>Todos</option>
+            </select>
+        </form>
+
+        <div class="col-12 mb-5">
+            <div class="bg-white border rounded-4 shadow-sm p-4">
+                <h5 class="fw-bold mb-3">Resumen de Métricas</h5>
+                <div class="table-responsive">
+                    <table class="table table-bordered table-hover mb-0">
+                        <thead class="table-light">
+                        <tr>
+                            <th>Métrica</th>
+                            <th class="text-center">Total</th>
+                            <th class="text-center">En el periodo seleccionado</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <td>Usuarios</td>
+                            <td class="text-center">{{resumen.usuarios.total}}</td>
+                            <td class="text-center">{{resumen.usuarios.filtrado}}</td>
+                        </tr>
+                        <tr>
+                            <td>Partidas</td>
+                            <td class="text-center">{{resumen.partidas.total}}</td>
+                            <td class="text-center">{{resumen.partidas.filtrado}}</td>
+                        </tr>
+                        <tr>
+                            <td>Preguntas Activas</td>
+                            <td class="text-center">{{resumen.preguntas_activas.total}}</td>
+                            <td class="text-center">{{resumen.preguntas_activas.filtrado}}</td>
+                        </tr>
+                        <tr>
+                            <td>Preguntas Creadas</td>
+                            <td class="text-center">{{resumen.preguntas_creadas.total}}</td>
+                            <td class="text-center">{{resumen.preguntas_creadas.filtrado}}</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+
         <!-- Gráficos -->
         <div class="row text-center gy-4">
-            <form method="get" class="text-center mb-4">
-                <label for="filtro_fecha" class="me-2 fw-semibold">Filtrar por:</label>
-                <select name="filtro_fecha" id="filtro_fecha" onchange="this.form.submit()"
-                        class="form-select d-inline w-auto">
-                    <option value="dia" {{#filtroDia}}selected{{/filtroDia}}>Hoy</option>
-                    <option value="semana" {{#filtroSemana}}selected{{/filtroSemana}}>Últimos 7 días</option>
-                    <option value="mes" {{#filtroMes}}selected{{/filtroMes}}>Último mes</option>
-                    <option value="año" {{#filtroAño}}selected{{/filtroAño}}>Último año</option>
-                    <option value="todos" {{#filtroTodos}}selected{{/filtroTodos}}>Todos</option>
-                </select>
-            </form>
-
             <div class="col-md-4">
                 <div class="bg-white border rounded-4 shadow-sm p-3">
                     <h5 class="fw-bold">Jugadores por País</h5>
@@ -57,27 +97,7 @@
                 <h5 class="fw-bold">Jugadores por Grupo Etario</h5>
                 <img src="/QuizGame/graph/usuariosPorGrupo?filtro_fecha={{filtroSeleccionado}}" class="img-fluid rounded">
             </div>
-        </div> <div class="col-md-4">
-            <div class="bg-white border rounded-4 shadow-sm p-3">
-                <h5 class="fw-bold">Comparativa de usuarios</h5>
-                <img src="/QuizGame/graph/cantidadDeUsuarios?filtro_fecha={{filtroSeleccionado}}" class="img-fluid rounded">
-            </div>
-        </div> <div class="col-md-4">
-            <div class="bg-white border rounded-4 shadow-sm p-3">
-                <h5 class="fw-bold">Comparativa de Partidas</h5>
-                <img src="/QuizGame/graph/cantidadDePartidas?filtro_fecha={{filtroSeleccionado}}" class="img-fluid rounded">
-            </div>
-        </div> <div class="col-md-4">
-            <div class="bg-white border rounded-4 shadow-sm p-3">
-                <h5 class="fw-bold">Comparativa Preguntas Activas</h5>
-                <img src="/QuizGame/graph/cantidadDePreguntas?filtro_fecha={{filtroSeleccionado}}" class="img-fluid rounded">
-            </div>
-        </div> <div class="col-md-4">
-            <div class="bg-white border rounded-4 shadow-sm p-3">
-                <h5 class="fw-bold">Comparativa Preguntas Creadas</h5>
-                <img src="/QuizGame/graph/cantidadDePreguntasCreadas?filtro_fecha={{filtroSeleccionado}}" class="img-fluid rounded">
-            </div>
-        </div> </div>
+        </div>
 
         <hr class="my-5">
 
@@ -119,7 +139,7 @@
         <div class="text-center mt-5 d-flex flex-column flex-md-row justify-content-center gap-3">
             <a href="/QuizGame/admin/exportarPDF?filtro_fecha={{filtroSeleccionado}}" target="_blank"
             class="btn btn-outline-dark px-4 py-3 rounded-4 shadow-sm fs-5 flex-grow-1">
-            <i class="fas fa-file-pdf fa-2x me-2"></i> Exportar Gráficos PDF
+            <i class="fas fa-file-pdf fa-2x me-2"></i> Exportar métricas PDF
             </a>
             <a href="/QuizGame/admin/exportarPDFDesempeno?filtro_fecha={{filtroSeleccionado}}" target="_blank"
             class="btn btn-outline-dark px-4 py-3 rounded-4 shadow-sm fs-5 flex-grow-1">
