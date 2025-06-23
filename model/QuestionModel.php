@@ -393,16 +393,17 @@ class QuestionModel
         try {
             $this->database->beginTransaction();
 
-            // Actualizar la pregunta en la tabla 'pregunta'
-            $sqlPregunta = "UPDATE pregunta SET texto = ?, id_categoria = ?, id_dificultad = ? WHERE id = ?";
+            // Actualizar la pregunta en la tabla
+            $sqlPregunta = "UPDATE pregunta SET texto = ?, id_categoria = ?, id_dificultad = ?, estado = ? WHERE id = ?";
             $this->database->execute($sqlPregunta, [
                 $datosPregunta["texto"],
                 $datosPregunta["id_categoria"],
-                $datosPregunta["id_dificultad"] ?? 2, // Se mantiene el valor por defecto si no se especifica
+                $datosPregunta["id_dificultad"] ?? 2, 
+                $datosPregunta["estado"],             
                 $idPregunta
             ]);
 
-            // Eliminar respuestas existentes para la pregunta (para luego reinsertar las nuevas)
+            // Eliminar respuestas existentes para la pregunta 
             $sqlDeleteRespuestas = "DELETE FROM respuesta WHERE id_pregunta = ?";
             $this->database->execute($sqlDeleteRespuestas, [$idPregunta]);
 
@@ -425,6 +426,7 @@ class QuestionModel
             return false;
         }
     }
+
     public function buscarPreguntasPorTexto($texto)
     {
         $sql = "
@@ -487,7 +489,7 @@ class QuestionModel
     public function obtenerPreguntaPorId($id)
     {
         // Obtener la pregunta
-        $sqlPregunta = "SELECT p.id, p.texto, p.id_categoria, p.id_dificultad, c.nombre AS nombre_categoria
+        $sqlPregunta = "SELECT p.id, p.texto, p.id_categoria, p.id_dificultad, p.estado, c.nombre AS nombre_categoria
                         FROM pregunta p
                         JOIN categoria c ON p.id_categoria = c.id
                         WHERE p.id = ?";
