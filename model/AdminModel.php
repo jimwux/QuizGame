@@ -72,5 +72,57 @@ class AdminModel
 
     }
 
+    public function obtenerCantidadUsuarios($filtroFecha)
+    {
+        $fechaInicio = $this->calcularRangoFecha($filtroFecha);
+        $sql = "SELECT
+                COUNT(*) AS total,
+                SUM(CASE WHEN fecha_creacion >= ? THEN 1 ELSE 0 END) AS filtrado
+            FROM usuarios
+            WHERE rol = 'jugador'";
+        $query = $this->database->getConnection()->prepare($sql);
+        $query->bind_param("s", $fechaInicio);
+        $query->execute();
+        return $query->get_result()->fetch_assoc();
+    }
 
+    public function obtenerCantidadPartidas($filtroFecha)
+    {
+        $fechaInicio = $this->calcularRangoFecha($filtroFecha);
+        $sql = "SELECT
+                COUNT(*) AS total,
+                SUM(CASE WHEN fecha >= ? THEN 1 ELSE 0 END) AS filtrado
+            FROM partida";
+        $query = $this->database->getConnection()->prepare($sql);
+        $query->bind_param("s", $fechaInicio);
+        $query->execute();
+        return $query->get_result()->fetch_assoc();
+    }
+
+    public function obtenerCantidadPreguntas($filtroFecha)
+    {
+        $fechaInicio = $this->calcularRangoFecha($filtroFecha);
+        $sql = "SELECT
+                COUNT(*) AS total,
+                SUM(CASE WHEN fecha_creacion >= ? THEN 1 ELSE 0 END) AS filtrado
+            FROM pregunta
+            WHERE estado like 'activa'";
+        $query = $this->database->getConnection()->prepare($sql);
+        $query->bind_param("s", $fechaInicio);
+        $query->execute();
+        return $query->get_result()->fetch_assoc();
+    }
+
+    public function obtenerCantidadPreguntasCreadas($filtroFecha)
+    {
+        $fechaInicio = $this->calcularRangoFecha($filtroFecha);
+        $sql = "SELECT
+                COUNT(*) AS total,
+                SUM(CASE WHEN fecha_creacion >= ? THEN 1 ELSE 0 END) AS filtrado
+            FROM pregunta";
+        $query = $this->database->getConnection()->prepare($sql);
+        $query->bind_param("s", $fechaInicio);
+        $query->execute();
+        return $query->get_result()->fetch_assoc();
+    }
 }
