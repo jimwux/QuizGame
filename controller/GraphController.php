@@ -30,6 +30,64 @@ class GraphController
         $this->generarGraficoBarra($datos, "Jugadores por grupo etario");
     }
 
+    public function cantidadDeUsuarios()
+    {
+        $filtro = $_GET['filtro_fecha'] ?? 'semana';
+        $datos = $this->model->obtenerCantidadUsuarios($filtro);
+
+        // se hace así para que haga un array de arrays y el gráfico pueda interpretarlo correctamente
+        // la "label" se llama "grupo_etario" porque estaba así
+        // habría que cambiar el array que crea el metodo de grupo etario
+        $datosParaGrafico = [
+            ['cantidad' => $datos['total'] ?? 0, 'grupo_etario' => 'Total'],
+            ['cantidad' => $datos['filtrado'] ?? 0, 'grupo_etario' => 'Periodo']
+        ];
+
+        $this->generarGraficoBarra($datosParaGrafico, "Comparativa de Usuarios");
+    }
+
+    public function cantidadDePartidas()
+    {
+        $filtro = $_GET['filtro_fecha'] ?? 'semana';
+        $datos = $this->model->obtenerCantidadPartidas($filtro);
+
+        // se hace así para que haga un array de arrays y el gráfico pueda interpretarlo correctamente
+        $datosParaGrafico = [
+            ['cantidad' => $datos['total'] ?? 0, 'grupo_etario' => 'Total'],
+            ['cantidad' => $datos['filtrado'] ?? 0, 'grupo_etario' => 'Periodo']
+        ];
+
+        $this->generarGraficoBarra($datosParaGrafico, "Comparativa de Partidas");
+    }
+
+    public function cantidadDePreguntas()
+    {
+        $filtro = $_GET['filtro_fecha'] ?? 'semana';
+        $datos = $this->model->obtenerCantidadPreguntas($filtro);
+
+        // se hace así para que haga un array de arrays y el gráfico pueda interpretarlo correctamente
+        $datosParaGrafico = [
+            ['cantidad' => $datos['total'] ?? 0, 'grupo_etario' => 'Total'],
+            ['cantidad' => $datos['filtrado'] ?? 0, 'grupo_etario' => 'Periodo']
+        ];
+
+        $this->generarGraficoBarra($datosParaGrafico, "Comparativa Preguntas Activas");
+    }
+
+    public function cantidadDePreguntasCreadas()
+    {
+        $filtro = $_GET['filtro_fecha'] ?? 'semana';
+        $datos = $this->model->obtenerCantidadPreguntasCreadas($filtro);
+
+        // se hace así para que haga un array de arrays y el gráfico pueda interpretarlo correctamente
+        $datosParaGrafico = [
+            ['cantidad' => $datos['total'] ?? 0, 'grupo_etario' => 'Total'],
+            ['cantidad' => $datos['filtrado'] ?? 0, 'grupo_etario' => 'Periodo']
+        ];
+
+        $this->generarGraficoBarra($datosParaGrafico, "Comparativa Preguntas Creadas");
+    }
+
     private function generarGraficoTorta($datos, $titulo, $clave)
     {
         require_once __DIR__ . '/../libs/jpgraph/src/jpgraph.php';
