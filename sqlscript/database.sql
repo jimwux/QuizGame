@@ -210,12 +210,13 @@ VALUES
     (8, 'Fatima Al-Fassi', 1996, 'Femenino', 'Marruecos', 'Rabat', 'fatima@example.com', 'fatimaalfassi', 'pass123', 'jugador', '2024-11-18 13:45:00');
 
 -- CATEGORÍAS
-INSERT INTO categoria (id, nombre) VALUES
-                                       (1, 'Geografía'),
-                                       (2, 'Historia'),
-                                       (3, 'Ciencia'),
-                                       (4, 'Arte'),
-                                       (5, 'Deportes');
+INSERT INTO categoria (id, nombre, color)
+VALUES
+    (1, 'Geografía', '#3498db'),    -- Azul
+    (2, 'Matemáticas', '#e74c3c'),  -- Rojo
+    (3, 'Ciencia', '#2ecc71'),      -- Verde
+    (4, 'Historia', '#f1c40f'),     -- Amarillo
+    (5, 'Deportes', '#9b59b6');
 
 -- DIFICULTADES
 INSERT INTO dificultad (id, descripcion) VALUES
