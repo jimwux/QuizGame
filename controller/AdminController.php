@@ -28,6 +28,8 @@ class AdminController
             'filtroTodos' => $filtro === 'todos',
         ];
 
+        $data['desempenoUsuarios'] = $this->model->obtenerProcentajeRespuestasCcorrectasPorUsuario($filtro);
+
         $this->view->render('adminDashboard', $data);
     }
 
@@ -159,6 +161,84 @@ class AdminController
         $dompdf->setPaper('A4', 'portrait');
         $dompdf->render();
         $dompdf->stream("reporte_usuarios.pdf", ["Attachment" => false]);
+    }
+
+    public function exportarPDFDesempeno()
+    {
+        $filtro = $_GET['filtro_fecha'] ?? 'semana';
+        $desempenoUsuarios = $this->model->obtenerProcentajeRespuestasCcorrectasPorUsuario($filtro);
+
+        $options = new Options();
+        $options->set('isRemoteEnabled', true);
+        $dompdf = new Dompdf($options);
+
+        $htmlTable = '<table style="width: 100%; border-collapse: collapse; margin-top: 20px;">
+                        <thead>
+                            <tr style="background-color: #f2f2f2;">
+                                <th style="border: 1px solid #ddd; padding: 8px; text-align: left;">Usuario</th>
+                                <th style="border: 1px solid #ddd; padding: 8px; text-align: left;">Correctas</th>
+                                <th style="border: 1px solid #ddd; padding: 8px; text-align: left;">Totales</th>
+                                <th style="border: 1px solid #ddd; padding: 8px; text-align: left;">% Aciertos</th>
+                            </tr>
+                        </thead>
+                        <tbody>';
+
+        if (empty($desempenoUsuarios)) {
+            $htmlTable .= '<tr><td colspan="4" style="border: 1px solid #ddd; padding: 8px; text-align: center;">No hay datos de desempeño para el filtro seleccionado.</td></tr>';
+        } else {
+            foreach ($desempenoUsuarios as $usuario) {
+                $htmlTable .= '<tr>
+                                <td style="border: 1px solid #ddd; padding: 8px;">' . htmlspecialchars($usuario['nombre_usuario']) . '</td>
+                                <td style="border: 1px solid #ddd; padding: 8px;">' . htmlspecialchars($usuario['respuestas_correctas']) . '</td>
+                                <td style="border: 1px solid #ddd; padding: 8px;">' . htmlspecialchars($usuario['total_respuestas']) . '</td>
+                                <td style="border: 1px solid #ddd; padding: 8px;">' . htmlspecialchars(number_format($usuario['porcentaje_aciertos'], 2)) . '%</td>
+                            </tr>';
+            }
+        }
+
+        $htmlTable .= '</tbody></table>';
+
+        $html = '
+            <html>
+            <head>
+                <style>
+                    body {
+                        font-family: Arial, sans-serif;
+                        margin: 20px;
+                    }
+                    h2 {
+                        text-align: center;
+                        margin-bottom: 30px;
+                    }
+                    table {
+                        width: 100%;
+                        border-collapse: collapse;
+                        margin-top: 20px;
+                    }
+                    th, td {
+                        border: 1px solid #ddd;
+                        padding: 8px;
+                        text-align: left;
+                    }
+                    th {
+                        background-color: #f2f2f2;
+                    }
+                    tr:nth-child(even) {
+                        background-color: #f9f9f9;
+                    }
+                </style>
+            </head>
+            <body>
+                <h2>Reporte de Desempeño de Usuarios (Filtro: ' . htmlspecialchars($filtro) . ')</h2>
+                ' . $htmlTable . '
+            </body>
+            </html>';
+
+
+        $dompdf->loadHtml($html);
+        $dompdf->setPaper('A4', 'portrait');
+        $dompdf->render();
+        $dompdf->stream("reporteDesempenoUsuarios.pdf", ["Attachment" => 0]);
     }
 
 }
