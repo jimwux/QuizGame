@@ -28,7 +28,8 @@ class GameController extends BaseController
         // Crea nueva partida
         $partidaId = $this->model->crearPartida($usuarioId);
         if (!$partidaId) {
-            $this->view->render("lobby", ["errors" => "Error al crear la partida"]);
+            $_SESSION["alerta"] = "Error al crear la partida";
+            $this->redirectTo('lobby');
             return;
         }
 
@@ -56,7 +57,8 @@ class GameController extends BaseController
         $categorias = $this->model->obtenerCategoriasDisponibles();
 
         if (empty($categorias)) {
-            $this->view->render('lobby', ['mensaje' => 'No hay categorías disponibles']);
+            $_SESSION["alerta"] = "No hay categorías disponibles";
+            $this->redirectTo('lobby');
             return;
         }
 
@@ -74,24 +76,11 @@ class GameController extends BaseController
     {
         $estado = SessionController::obtenerEstadoPartida();
         $usuarioId = $_SESSION['id'];
-        $partidaId = $estado['partida_id'] ?? null; // Obtiene el id de la partida que actualmente está en sesión
-
-        // Recalcula el tiempo si te fuiste a reportar una pregunta
-        if (isset($estado['pausa_timestamp']) && isset($estado['inicio_pregunta_timestamp'])) {
-            $inicio = $estado['inicio_pregunta_timestamp'];
-            $pausa = $estado['pausa_timestamp'];
-
-            // Sumamos el tiempo pausado al inicio
-            $duracionPausa = time() - $pausa;
-            $estado['inicio_pregunta_timestamp'] += $duracionPausa;
-
-            SessionController::actualizarEstadoPartida('inicio_pregunta_timestamp', $estado['inicio_pregunta_timestamp']);
-            SessionController::eliminarClaveEstadoPartida('pausa_timestamp');
-        }
-
+        $partidaId = $estado['partida_id'] ?? null;
 
         if (!$partidaId) {
-            $this->view->render('lobby', ['mensaje' => 'No hay partida activa.']);
+            $_SESSION["alerta"] = "No hay partida activa.";
+            $this->redirectTo('lobby');
             return;
         }
 

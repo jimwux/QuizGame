@@ -1,23 +1,23 @@
-<section class="container py-5">
-    <div class="row justify-content-center">
-        <div class="col-md-8">
-            <div class="card shadow rounded-4">
-                <div class="card-header bg-danger text-white">
-                    <h4 class="mb-0">Reportar Pregunta</h4>
-                </div>
-                <div class="card-body">
-                    <form method="POST" action="/QuizGame/question/enviarReporte">
-                        <input type="hidden" name="idPregunta" value="{{idPregunta}}">
-                        <div class="mb-3">
-                            <label for="motivo" class="form-label">Motivo del reporte:</label>
-                            <textarea name="motivo" id="motivo" class="form-control" rows="4" required></textarea>
-                        </div>
-                        <div class="d-flex justify-content-between">
-                            <a href="/QuizGame/game/mostrarPregunta" class="btn btn-secondary">Cancelar</a>
-                            <button type="submit" class="btn btn-danger">Enviar Reporte</button>
-                        </div>
-                    </form>
-                </div>
+<section class="container-fluid min-vh-100 d-flex align-items-center justify-content-center bg-light">
+    <div class="col-11 col-md-10 col-lg-6">
+        <div class="card shadow rounded-4">
+            <div class="card-header bg-danger text-white">
+                <h4 class="mb-0">Reportar Pregunta</h4>
+            </div>
+            <div class="card-body p-4">
+                <form method="POST" action="/QuizGame/question/enviarReporte" class="w-100">
+                    <input type="hidden" name="idPregunta" value="{{idPregunta}}">
+
+                    <div class="mb-4">
+                        <label for="motivo" class="form-label">Motivo del reporte:</label>
+                        <textarea name="motivo" id="motivo" class="form-control" rows="5" placeholder="Describí el problema con esta pregunta..." required></textarea>
+                    </div>
+
+                    <div class="d-flex flex-column flex-md-row justify-content-between gap-3">
+                        <a href="/QuizGame/game/mostrarPregunta" class="btn btn-outline-secondary btn-lg w-100">Cancelar</a>
+                        <button type="submit" class="btn btn-danger btn-lg w-100">Enviar Reporte</button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>

@@ -464,9 +464,6 @@ class QuestionController extends BaseController
     }
     public function reportar()#La vista del usuario desde donde formula el reporte
     {
-        
-        SessionController::actualizarEstadoPartida('pausa_timestamp', time());
-
         $idPregunta = $_GET['id'] ?? null;
         if (!$idPregunta) {
             $_SESSION['alerta'] = "Pregunta no encontrada";

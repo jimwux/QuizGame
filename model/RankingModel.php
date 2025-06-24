@@ -19,6 +19,7 @@ class RankingModel
             SELECT u.id, u.usuario, u.foto_perfil, u.pais, SUM(rp.puntaje) AS puntaje_total
             FROM usuarios u
             JOIN resumen_partida rp ON u.id = rp.id_usuario
+            WHERE u.rol = 'jugador'
             GROUP BY u.id, u.usuario, u.foto_perfil, u.pais
             ORDER BY puntaje_total DESC
         ";
