@@ -20,7 +20,6 @@
 
 body {
     font-family: 'Inter', sans-serif;
-    background-color: #f0f2f5; /* Fondo gris muy claro */
 }
 .card {
     border: none;
@@ -91,3 +90,4 @@ body {
 .fa-xmark:hover {
     color: #c82333;
 }
+

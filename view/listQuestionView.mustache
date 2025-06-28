@@ -1,5 +1,6 @@
-<section class="bg-light py-5">
-    <div class="container">
+<section class="bg-light py-5" style="
+    background: url('../../QuizGame/public/img/background.png')">
+    <div class="container mt-5">
         <div class="card shadow rounded-4">
             <div class="card-header bg-dark text-white text-center rounded-top-4 p-4">
                 <h3 class="mb-0">Listado de Preguntas</h3>
@@ -13,14 +14,22 @@
                     </div>
                 {{/alerta}}
 
-                <!-- Buscador -->
-                <form class="mb-4" method="GET" action="/QuizGame/question/all">
-                    <div class="input-group">
-                        <input type="text" name="buscar" class="form-control" placeholder="Buscar pregunta por texto..."
-                               value="{{textoBusqueda}}">
-                        <button class="btn btn-outline-secondary" type="submit">Buscar</button>
+                <div class="d-flex flex-row">
+                    <div class="text-left col-md-3">
+                        <a href="/QuizGame/question/create" class="btn btn-success px-4 col-md-11"><i class="fa-solid fa-plus me-2"></i> Crear Nueva Pregunta</a>
                     </div>
-                </form>
+
+                    <!-- Buscador -->
+                    <div  class="col-md-9">
+                        <form class="mb-4" method="GET" action="/QuizGame/question/all">
+                            <div class="input-group">
+                                <input type="text" name="buscar" class="form-control" placeholder="Buscar pregunta por texto..."
+                                       value="{{textoBusqueda}}">
+                                <button class="btn btn-outline-secondary" type="submit">Buscar</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
 
                 <div class="table-responsive">
                     <table class="table table-hover align-middle">
@@ -74,9 +83,6 @@
                     </table>
                 </div>
 
-                <div class="text-center mt-4">
-                    <a href="/QuizGame/question/create" class="btn btn-success px-4">Crear Nueva Pregunta</a>
-                </div>
 
             </div>
         </div>
