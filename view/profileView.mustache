@@ -1,10 +1,10 @@
-<section class="w3-light-grey d-flex justify-content-center align-items-center min-vh-100">
-
-<div class="container my-4 bg-white rounded shadow-sm p-4 mt-5">
+<section class="position-relative d-flex justify-content-center align-items-center min-vh-100" style="
+    background: url('../../QuizGame/public/img/background.png')">
+        <div class="container p-4 my-4 bg-white shadow-sm mt-5 border-0 rounded-4">
 
     {{#user}}
         <!-- Datos del perfil -->
-        <div class="row align-items-center mb-4 text-center text-md-start">
+        <div class="row align-items-center mb-4 text-center text-md-start p-4">
             <div class="col-12 col-md-4 mb-3 mb-md-0">
                 <p class="mb-1 fw-bold fs-5">Usuario: {{usuario}}</p>
                 <small class="fs-6">{{año_nacimiento}} - {{sexo}}</small>
@@ -17,7 +17,7 @@
             <!-- Imagen de perfil -->
             <div class="col-12 col-md-3 d-flex justify-content-center justify-content-md-end">
                 {{#qr_imagen}}
-                    <img src='/QuizGame/public/qrs/qr_{{usuario}}.png' alt='QR de {{usuario}}'>
+                    <img src='/QuizGame/public/qrs/qr_{{usuario}}.png' style="width: 128px; height: 128px; object-fit: cover;" class="pe-2" alt='QR de {{usuario}}'>
                 {{/qr_imagen}}
                 {{#foto_perfil}}
                     <img src="/QuizGame/public/uploads/{{foto_perfil}}" alt="Foto de perfil"
@@ -34,14 +34,14 @@
 
     <!-- Partidas jugadas -->
     {{#es_jugador}}
-        <h5 class="fw-bold mb-3 fs-4 text-center text-md-start">Partidas recientes</h5>
-        <div class="row">
-            <div class="col-md-6">
+        <h5 class="fw-bold mb-3 fs-4 text-center text-md-start ps-4">Partidas recientes</h5>
+        <div class="row p-4 pt-0">
+            <div class="col-md-6 d-flex flex-column justify-content-between gap-3">
                 {{#partidas}}
-                    <div class="card mb-3 shadow-sm">
+                    <div class="card shadow-sm d-flex flex-row justify-content-around rounded-3">
                         <div class="card-body d-flex align-items-center gap-3">
                             <div class="d-flex justify-content-center align-items-center mx-3" style="width: 50px; height: 50px;">
-                                <img src="/QuizGame/public/img/icono_preguntas.png" alt="partida" style="width: 100%; height: 100%; object-fit: contain;">
+                                <img src="../../QuizGame/public/img/icono_preguntas.png" alt="partida" style="width: 100%; height: 100%; object-fit: contain;">
                             </div>
                             <div class="d-flex flex-grow-1 justify-content-around fw-semibold">
                                 <div class="text-center">
