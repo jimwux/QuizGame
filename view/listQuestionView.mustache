@@ -1,6 +1,6 @@
-<section class="bg-light py-5" style="
-    background: url('../../QuizGame/public/img/background.png')">
-    <div class="container mt-5">
+<section class="bg-light py-5"
+         style="background: url('../../QuizGame/public/img/background.png')">
+    <div class="container mt-4">
         <div class="card shadow rounded-4">
             <div class="card-header bg-dark text-white text-center rounded-top-4 p-4">
                 <h3 class="mb-0">Listado de Preguntas</h3>
@@ -14,75 +14,86 @@
                     </div>
                 {{/alerta}}
 
-                <div class="d-flex flex-row">
-                    <div class="text-left col-md-3">
-                        <a href="/QuizGame/question/create" class="btn btn-success px-4 col-md-11"><i class="fa-solid fa-plus me-2"></i> Crear Nueva Pregunta</a>
+                <!-- FILA DE BUSCADOR + BOTÓN, responsive -->
+                <div class="row align-items-end g-2 mb-4">
+                    <div class="col-12 col-md-3 mb-2 mb-md-0">
+                        <a href="/QuizGame/question/create" class="btn btn-success w-100 px-3 py-2">
+                            <i class="fa-solid fa-plus me-2"></i> Crear Nueva Pregunta
+                        </a>
                     </div>
-
-                    <!-- Buscador -->
-                    <div  class="col-md-9">
-                        <form class="mb-4" method="GET" action="/QuizGame/question/all">
+                    <div class="col-12 col-md-9">
+                        <form method="GET" action="/QuizGame/question/all">
                             <div class="input-group">
-                                <input type="text" name="buscar" class="form-control" placeholder="Buscar pregunta por texto..."
-                                       value="{{textoBusqueda}}">
-                                <button class="btn btn-outline-secondary" type="submit">Buscar</button>
+                                <input type="text" name="buscar" class="form-control" placeholder="Buscar pregunta por texto..." value="{{textoBusqueda}}">
+                                <button class="btn btn-outline-secondary" type="submit">
+                                    <i class="fa fa-search"></i> <span class="d-none d-sm-inline">Buscar</span>
+                                </button>
                             </div>
                         </form>
                     </div>
                 </div>
 
+                <!-- AVISO de scroll solo en mobile -->
+                <div class="d-block d-lg-none text-center small text-secondary mb-2">
+                    <i class="fas fa-arrow-right"></i> Desliza la tabla &rarr;
+                </div>
+
                 <div class="table-responsive">
-                    <table class="table table-hover align-middle">
+                    <table class="table table-hover align-middle shadow-sm rounded-4 overflow-hidden">
                         <thead class="table-secondary">
-                            <tr>
-                                <th>ID</th>
-                                <th>Enunciado</th>
-                                <th>Categoría</th>
-                                <th>Dificultad</th>
-                                <th>Respuestas</th>
-                                <th>Estado</th>
-                                <th class="text-center">Acciones</th>
-                            </tr>
+                        <tr>
+                            <th>ID</th>
+                            <th>Enunciado</th>
+                            <th>Categoría</th>
+                            <th>Dificultad</th>
+                            <th>Respuestas</th>
+                            <th>Estado</th>
+                            <th class="text-center">Acciones</th>
+                        </tr>
                         </thead>
                         <tbody>
-                            {{#preguntas}}
-                                <tr>
-                                    <td>{{id_pregunta}}</td>
-                                    <td>{{texto_pregunta}}</td>
-                                    <td style="background-color: {{color_categoria}}; color: white;">{{nombre_categoria}}</td>
-                                    <td>{{nombre_dificultad}}</td>
-                                    <td>
-                                        <ul class="mb-0">
-                                            {{#respuestas}}
-                                                <li class="{{#es_correcta}}fw-bold text-success{{/es_correcta}}">
-                                                    {{texto}} {{#es_correcta}}(Correcta){{/es_correcta}}
-                                                </li>
-                                            {{/respuestas}}
-                                        </ul>
-                                    </td>
-                                    <td>{{estado_pregunta}}</td>
-                                    <td class="text-center">
-                                        <a href="/QuizGame/question/edit?id={{id_pregunta}}" class="btn btn-sm btn-outline-primary me-1">Editar</a>
-                                        <a href="/QuizGame/question/delete?id={{id_pregunta}}" class="btn btn-sm btn-outline-danger" onclick="return confirm('¿Estás seguro de que quieres eliminar esta pregunta?');">Eliminar</a>
-                                    </td>
-                                </tr>
-                            {{/preguntas}}
-                            {{^preguntas}}
-                                <tr>
-                                    <td colspan="7" class="text-center text-muted">
-                                        {{#textoBusqueda}}
-                                            No se encontraron preguntas relacionadas con la búsqueda: "<strong>{{textoBusqueda}}</strong>"
-                                        {{/textoBusqueda}}
-                                        {{^textoBusqueda}}
-                                            No hay preguntas activas para mostrar
-                                        {{/textoBusqueda}}
-                                    </td>
-                                </tr>
-                            {{/preguntas}}
+                        {{#preguntas}}
+                            <tr>
+                                <td><span class="badge bg-dark text-white py-2 px-3">{{id_pregunta}}</span></td>
+                                <td class="text-break py-3">{{texto_pregunta}}</td>
+                                <td style="background-color: {{color_categoria}}; color: white;">{{nombre_categoria}}</td>
+                                <td>{{nombre_dificultad}}</td>
+                                <td>
+                                    <ul class="mb-0 ps-3">
+                                        {{#respuestas}}
+                                            <li class="{{#es_correcta}}fw-bold text-success{{/es_correcta}}">
+                                                {{texto}} {{#es_correcta}}(Correcta){{/es_correcta}}
+                                            </li>
+                                        {{/respuestas}}
+                                    </ul>
+                                </td>
+                                <td>{{estado_pregunta}}</td>
+                                <td class="text-center">
+                                    <a href="/QuizGame/question/edit?id={{id_pregunta}}" class="btn btn-outline-primary btn-sm mb-1">
+                                    <i class="fa fa-edit"></i> <span class="d-none d-sm-inline">Editar</span>
+                                    </a>
+                                    <a href="/QuizGame/question/delete?id={{id_pregunta}}" class="btn btn-outline-danger btn-sm"
+                                    onclick="return confirm('¿Estás seguro de que quieres eliminar esta pregunta?');">
+                                    <i class="fa fa-trash"></i> <span class="d-none d-sm-inline">Eliminar</span>
+                                    </a>
+                                </td>
+                            </tr>
+                        {{/preguntas}}
+                        {{^preguntas}}
+                            <tr>
+                                <td colspan="7" class="text-center text-muted p-4">
+                                    {{#textoBusqueda}}
+                                        No se encontraron preguntas relacionadas con la búsqueda: "<strong>{{textoBusqueda}}</strong>"
+                                    {{/textoBusqueda}}
+                                    {{^textoBusqueda}}
+                                        No hay preguntas activas para mostrar
+                                    {{/textoBusqueda}}
+                                </td>
+                            </tr>
+                        {{/preguntas}}
                         </tbody>
                     </table>
                 </div>
-
 
             </div>
         </div>

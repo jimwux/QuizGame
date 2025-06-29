@@ -20,6 +20,20 @@ class RegisterController extends BaseController
         $this->view->render("register", []);
     }
 
+    public function validateEmail()
+    {
+        $email = $_POST['email'] ?? '';
+        $exists = $this->model->emailExists($email);
+        echo json_encode(['available' => !$exists]);
+    }
+
+    public function validateUsername()
+    {
+        $username = $_POST['username'] ?? '';
+        $exists = $this->model->usernameExists($username);
+        echo json_encode(['available' => !$exists]);
+    }
+
     public function processRegisterForm()
     {
         $errors = [];

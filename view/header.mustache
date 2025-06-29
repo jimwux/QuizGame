@@ -3,7 +3,7 @@
 <title>QuizGame</title>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<link rel="stylesheet" href="../public/css/styles.css">
+<link rel="stylesheet" href="/QuizGame/public/css/styles.css">
 <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato">
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet"/>
@@ -16,14 +16,14 @@
 <body>
 
 <!-- Navbar -->
-<div class="w3-top">
+<div class="w3-top text-white">
     <div class="w3-bar w3-card" style="background-color: #302d2d">
 
         <!-- Marca (izquierda) -->
         <a href="/QuizGame/lobby/show" class="w3-bar-item w3-button w3-padding-large text-white">QuizGame</a>
 
         <!-- Botón menú responsive (oculto en pantallas grandes) -->
-        <a class="w3-bar-item w3-button w3-padding-large w3-hide-medium w3-hide-large w3-right" href="javascript:void(0)" onclick="myFunction()" title="Toggle Navigation Menu">
+        <a class="w3-bar-item w3-button w3-padding-large w3-hide-medium w3-hide-large w3-right" href="javascript:void(0)" onclick="navResponsive()" title="Toggle Navigation Menu">
             <i class="fa fa-bars"></i>
         </a>
 
@@ -42,6 +42,27 @@
     </div>
 </div>
 
+<!-- Menú responsive oculto (se muestra solo en mobile) -->
+<div id="navDemo" class="w3-bar-block w3-card w3-hide w3-hide-large w3-hide-medium" style="background-color: #302d2d">
+    {{#nombre}}
+        <a href="/QuizGame/profile/show" class="w3-bar-item w3-button w3-padding-large text-white">Hola, {{nombre}}</a>
+        <a href="/QuizGame/login/logout" class="w3-bar-item w3-button w3-padding-large text-white">Cerrar sesión</a>
+    {{/nombre}}
 
+    {{^nombre}}
+        <a href="/QuizGame/login/show" class="w3-bar-item w3-button w3-padding-large text-white">Iniciar sesión</a>
+    {{/nombre}}
+</div>
+
+<script>
+    function navResponsive() {
+        var x = document.getElementById("navDemo");
+        if (x.className.indexOf("w3-show") == -1) {
+            x.className += " w3-show";
+        } else {
+            x.className = x.className.replace(" w3-show", "");
+        }
+    }
+</script>
 <!-- Page content -->
 <div class="w3-content" style="max-width:2000px">

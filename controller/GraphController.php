@@ -1,6 +1,6 @@
 <?php
 
-class GraphController
+class GraphController extends BaseController
 {
     private $model;
 

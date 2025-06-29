@@ -25,23 +25,31 @@ class ProfileController extends BaseController
                 $data["partidas"] = $this->model->getGamesResultByUsername($nombreUsuario);
             }
 
-               $urlPerfil = "http://localhost/QuizGame/profile?username=$nombreUsuario";
-             //  $rutaQR = "public/qrs/qr_$nombreUsuario.png";
-                $rutaQR = __DIR__ . '/../public/qrs/qr_'.$nombreUsuario.'.png';
-            // Generar QR
-               QRGenerator::generarQR($urlPerfil, $rutaQR);
-               $data["qr_imagen"] = $rutaQR;
-
+            $data = $this->sanitizeNulls($data);
             $this->view->render("profile", $data);
 
         }else{
             $this->showError($this->view,'El perfil solicitado no existe.', 'El perfil que busca no existe o ha sido borrado.');
-            }}
+            }
+    }
+
         public function getUsuarioPorVista()
     {
         return (!empty($_GET['username']) ? $_GET['username'] : $_SESSION["username"]);
     }
 
+    public function generateQR () {
+        if (isset($_GET['username'])) {
+            $nombreUsuario = $_GET['username'];
+            $urlPerfil = "http://localhost/QuizGame/profile?username=" . urlencode($nombreUsuario);
 
+            header('Content-Type: image/png');
+            QRGenerator::generarQR($urlPerfil, false);
+            exit;
+        } else {
+            http_response_code(400);
+            echo "Falta el parámetro username";
+        }
+    }
 
 }

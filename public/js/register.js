@@ -72,6 +72,88 @@ window.addEventListener('load', () => {
     map.invalidateSize();
 });
 
+// Validación AJAX para email y usuario
+const emailInput = document.getElementById('email');
+const usernameInput = document.getElementById('username');
+const emailFeedback = document.getElementById('emailFeedback');
+const usernameFeedback = document.getElementById('usernameFeedback');
+
+emailInput.addEventListener('keyup', () => {
+    const email = emailInput.value.trim();
+
+    // Validación por expresión regular
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+        emailFeedback.textContent = 'Formato de email inválido';
+        emailFeedback.classList.remove('text-success');
+        emailFeedback.classList.add('text-danger');
+        return;
+    }
+
+    // Validación AJAX si pasa la expresión regular
+    fetch('/QuizGame/register/validateEmail', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        body: `email=${encodeURIComponent(email)}`
+    })
+        .then(res => res.json())
+        .then(data => {
+            if (data.available) {
+                emailFeedback.textContent = 'Disponible';
+                emailFeedback.classList.remove('text-danger');
+                emailFeedback.classList.add('text-success');
+            } else {
+                emailFeedback.textContent = 'No disponible';
+                emailFeedback.classList.remove('text-success');
+                emailFeedback.classList.add('text-danger');
+            }
+        });
+});
+
+usernameInput.addEventListener('keyup', () => {
+    const username = usernameInput.value.trim();
+
+    // Validar longitud mínima
+    if (username.length < 6) {
+        usernameFeedback.textContent = 'Debe tener al menos 6 caracteres';
+        usernameFeedback.classList.remove('text-success');
+        usernameFeedback.classList.add('text-danger');
+        return;
+    }
+
+    // Validación con expresión regular (solo letras, números, guiones y puntos)
+    const usernameRegex = /^[a-zA-Z0-9.-]+$/;
+    if (!usernameRegex.test(username)) {
+        usernameFeedback.textContent = 'Solo se permiten letras, números, guiones y puntos';
+        usernameFeedback.classList.remove('text-success');
+        usernameFeedback.classList.add('text-danger');
+        return;
+    }
+
+    // Validación AJAX si pasa la expresión regular
+    fetch('/QuizGame/register/validateUsername', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        body: `username=${encodeURIComponent(username)}`
+    })
+        .then(res => res.json())
+        .then(data => {
+            if (data.available) {
+                usernameFeedback.textContent = 'Disponible';
+                usernameFeedback.classList.remove('text-danger');
+                usernameFeedback.classList.add('text-success');
+            } else {
+                usernameFeedback.textContent = 'No disponible';
+                usernameFeedback.classList.remove('text-success');
+                usernameFeedback.classList.add('text-danger');
+            }
+        });
+});
+
 
 const submitBtn = form.querySelector('button[type="submit"]');
 

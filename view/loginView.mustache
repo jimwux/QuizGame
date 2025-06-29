@@ -1,37 +1,36 @@
-<div class="d-flex justify-content-center align-items-center vh-100 bg-light">
-    <div class="card p-4 shadow-lg border-0" style="max-width: 22rem; width: 100%;">
-        <h2 class="text-center mb-4">Iniciar sesión</h2>
+<div class="d-flex justify-content-center align-items-center vh-100"
+     style="background: url('../../QuizGame/public/img/background.png'); background-size: cover;">
+    <div class="p-0 mx-4 shadow-lg border-0 w-100" style="max-width: 500px;">
 
-        {{#errors}}
-            <div class="alert alert-danger py-2 px-3 mb-3" role="alert">{{.}}</div>
-        {{/errors}}
+        <!-- Contenedor de imagen con fondo semitransparente -->
+        <div class="w-100 d-flex justify-content-center align-items-center p-5"
+             style="background-color: rgba(0, 0, 0, 0.3);">
+            <img src="../../QuizGame/public/img/QuizGame.png" alt="Logo"
+                 class="img-fluid" style="width: 100%;">
+        </div>
 
-        <form action="/QuizGame/login/processLogin" method="POST">
-            <div class="mb-3">
-                <label for="username" class="form-label">Nombre de usuario</label>
-                <input
-                        type="text"
-                        class="form-control"
-                        id="username"
-                        name="username"
-                        placeholder="Ingresa tu usuario"
-                >
+        <div class="bg-white p-4">
+            <h2 class="text-center mb-4">Iniciar sesión</h2>
+
+            {{#errors}}
+                <div class="alert alert-danger py-2 px-3 mb-3" role="alert">{{.}}</div>
+            {{/errors}}
+
+            <form action="/QuizGame/login/processLogin" method="POST" autocomplete="off">
+                <div class="mb-3">
+                    <label for="username" class="form-label">Nombre de usuario</label>
+                    <input type="text" class="form-control" id="username" name="username" placeholder="Ingresa tu usuario" required>
+                </div>
+                <div class="mb-4">
+                    <label for="password" class="form-label">Contraseña</label>
+                    <input type="password" class="form-control" id="password" name="password" placeholder="Ingresa tu contraseña" required>
+                </div>
+                <button type="submit" class="btn btn-primary w-100 mb-2">Iniciar Sesión</button>
+            </form>
+
+            <div class="text-center mt-3">
+                <a href="/QuizGame/register" class="text-decoration-none text-primary">¿No tenés cuenta? Registrate acá</a>
             </div>
-            <div class="mb-4">
-                <label for="password" class="form-label">Contraseña</label>
-                <input
-                        type="password"
-                        class="form-control"
-                        id="password"
-                        name="password"
-                        placeholder="Ingresa tu contraseña"
-                >
-            </div>
-            <button type="submit" class="btn btn-primary w-100 mb-2">Iniciar Sesión</button>
-        </form>
-
-        <div class="text-center mt-3">
-            <a href="/QuizGame/register" class="text-decoration-none text-primary">¿No tenés cuenta? Registrate acá</a>
         </div>
     </div>
 </div>
