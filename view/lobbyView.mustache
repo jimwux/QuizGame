@@ -1,114 +1,110 @@
-<section style="
-    background: url('../../QuizGame/public/img/background.png')">
+<section style="background: url('../../QuizGame/public/img/background.png')">
 
-<div class="container min-vh-100 d-flex flex-column justify-content-center align-items-center py-4">
+    <div class="container min-vh-100 d-flex flex-column justify-content-center align-items-center py-4">
 
-    {{#alerta}}
-        <div class="row w-100 mb-3">
-            <div class="col-12">
-                <div class="alert alert-success alert-dismissible fade show text-center fw-semibold fs-5 w-100" role="alert" id="alerta">
-                    {{alerta}}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+        {{#alerta}}
+            <div class="row w-100 mb-3">
+                <div class="col-12">
+                    <div class="alert alert-success alert-dismissible fade show text-center fw-semibold fs-5 w-100" role="alert" id="alerta">
+                        {{alerta}}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+                    </div>
                 </div>
             </div>
+        {{/alerta}}
+
+        <div class="row rounded-3 d-flex align-items-center justify-content-center mb-4 w-100 mt-5"
+             style="height: 230px; position: relative; background-color: rgba(0, 0, 0, 0.2);">
+            <img src="../../QuizGame/public/img/QuizGame.png"
+                 alt="Logo"
+                 class="logo-dashboard-img"
+                 style="max-height: 70%; object-fit: contain;">
         </div>
-    {{/alerta}}
 
-    <div class="rounded-3 d-flex align-items-center justify-content-center mb-4 w-100"
-         style="height: 250px; position: relative; background-color: rgba(0, 0, 0, 0.2);">
-        <img src="../../QuizGame/public/img/QuizGame.png" alt="Logo" style="max-width: 100%; max-height: 100%; object-fit: contain;">
-    </div>
 
-    <main class="row w-100">
-        <!-- Partidas -->
-        <h2 class="mb-3">Tus últimas partidas</h2>
+        <!-- El título SIEMPRE arriba -->
+        <h2 class="mb-3 w-100">Tus últimas partidas</h2>
 
-        <section class="col-lg-8 d-flex flex-column justify-content-between">
-            {{#partidas}}
-                <div class="card border-0 shadow-sm d-flex flex-row justify-content-around rounded-3">
-                    <div class="card-body d-flex align-items-center gap-3">
-                        <div
-                                class="d-flex justify-content-center align-items-center mx-3"
-                                style="width: 50px; height: 50px;"
-                        >
-                            <img src="../../QuizGame/public/img/icono_preguntas.png" alt="partida" style="width: 100%; height: 100%; object-fit: contain;">
-                        </div>
-                        <div class="d-flex flex-grow-1 justify-content-around fw-semibold">
-                            <div class="text-center">
-                                <div class="text-muted" style="font-weight: normal;">Preguntas correctas</div>
-                                <div>{{cantidad_correctas}}</div>
+        <main class="row w-100">
+            <!-- Botones (arriba en mobile, derecha en desktop) -->
+            <aside class="col-12 col-lg-4 order-1 order-lg-2 mb-4 mb-lg-0">
+                <div class="row g-3">
+                    <div class="col-12 col-md-6 d-flex">
+                        <a href="/QuizGame/ranking"
+                           class="btn btn-light border-0 d-flex flex-row flex-lg-column justify-content-center align-items-center gap-2 w-100 fw-bold shadow-sm rounded-3 boton-dashboard">
+                            <i class="fas fa-ranking-star icono-boton-dashboard"></i>
+                            <span class="texto-boton-dashboard">Ranking</span>
+                        </a>
+                    </div>
+                    <div class="col-12 col-md-6 d-flex">
+                        <a href="/QuizGame/question/formularioSugerirPregunta"
+                           class="btn btn-light border-0 d-flex flex-row flex-lg-column justify-content-center align-items-center gap-2 w-100 fw-bold shadow-sm rounded-3 boton-dashboard">
+                            <i class="fas fa-circle-question icono-boton-dashboard"></i>
+                            <span class="texto-boton-dashboard">Sugerir pregunta</span>
+                        </a>
+                    </div>
+                    <div class="col-12 d-flex">
+                        <a href="/QuizGame/game/iniciarPartida"
+                           class="btn btn-secondary border-0 d-flex flex-row flex-lg-column justify-content-center align-items-center gap-2 w-100 fw-bold shadow-sm rounded-3 boton-dashboard">
+                            <i class="fas fa-gamepad icono-boton-dashboard"></i>
+                            <span class="texto-boton-dashboard">Crear nueva partida</span>
+                        </a>
+                    </div>
+                </div>
+            </aside>
+
+
+            <!-- Partidas (abajo en mobile, izquierda en desktop) -->
+            <section class="col-12 col-lg-8 order-2 order-lg-1 d-flex flex-column justify-content-between">
+                {{#partidas}}
+                    <div class="card border-0 shadow-sm d-flex flex-row justify-content-around rounded-3 g-3 mb-3 mb-lg-0">
+                        <div class="card-body d-flex align-items-center g-3">
+                            <div class="d-flex justify-content-center align-items-center mx-3" style="width: 50px; height: 50px;">
+                                <img src="../../QuizGame/public/img/icono_preguntas.png" alt="partida" style="width: 100%; height: 100%; object-fit: contain;">
                             </div>
-                            <div class="text-center">
-                                <div class="text-muted" style="font-weight: normal;">Puntaje obtenido</div>
-                                <div>{{puntaje}} pts</div>
-                            </div>
-                            <div class="text-center">
-                                <div class="text-muted" style="font-weight: normal;">Destacado en</div>
-                                <div>
-                                    {{#nombre_categoria}}
-                                        <span class="badge text-capitalize" style="background-color: {{color_categoria}}; font-size: 1rem;">
-                                            {{nombre_categoria}}
-                                        </span>
-                                    {{/nombre_categoria}}
-                                    {{^nombre_categoria}}
-                                        <span class="badge bg-secondary text-capitalize" style="font-size: 1rem;">
-                                          Sin categoría destacada
-                                        </span>
-                                    {{/nombre_categoria}}
+                            <div class="d-flex flex-grow-1 justify-content-around fw-semibold">
+                                <div class="text-center">
+                                    <div class="text-muted" style="font-weight: normal;">Preguntas correctas</div>
+                                    <div>{{cantidad_correctas}}</div>
+                                </div>
+                                <div class="text-center">
+                                    <div class="text-muted" style="font-weight: normal;">Puntaje obtenido</div>
+                                    <div>{{puntaje}} pts</div>
+                                </div>
+                                <div class="text-center">
+                                    <div class="text-muted" style="font-weight: normal;">Destacado en</div>
+                                    <div>
+                                        {{#nombre_categoria}}
+                                            <span class="badge text-capitalize" style="background-color: {{color_categoria}}; font-size: 1rem;">
+                                                {{nombre_categoria}}
+                                            </span>
+                                        {{/nombre_categoria}}
+                                        {{^nombre_categoria}}
+                                            <span class="badge bg-secondary text-capitalize" style="font-size: 1rem;">
+                                      Sin categoría destacada
+                                    </span>
+                                        {{/nombre_categoria}}
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div>
-            {{/partidas}}
+                {{/partidas}}
 
-            {{#errors}}More actions
-                <div class="alert alert-danger">
-                    <ul class="list-unstyled mb-0">
-                        {{#.}}
-                            <li>{{.}}</li>
-                        {{/.}}
-                    </ul>
-                </div>
-            {{/errors}}
-       </section>
-
-        <!-- Botones -->
-        <aside class="col-lg-4">
-            <div class="row g-3">
-                <div class="col-md-6 d-flex">
-                    <a href="/QuizGame/ranking"
-                            class="btn btn-light border-0 d-flex flex-column justify-content-center align-items-center gap-2 w-100 fw-bold shadow-sm rounded-3"
-                            style="height: 180px;"
-                    >
-                        <i class="fas fa-ranking-star fa-2x fs-1"></i>
-                        <span>Ranking</span>
-                    </a>
-                </div>
-                <div class="col-md-6 d-flex">
-                    <a href="/QuizGame/question/formularioSugerirPregunta"
-                            class="btn btn-light border-0 d-flex flex-column justify-content-center align-items-center gap-2 w-100 fw-bold shadow-sm rounded-3"
-                            style="height: 180px;"
-                    >
-                        <i class="fas fa-circle-question fa-2x fs-1"></i>
-                        <span>Sugerir pregunta</span>
-                    </a>
-                </div>
-                <div class="col-12 d-flex">
-                    <a href="/QuizGame/game/iniciarPartida"
-                            class="btn btn-secondary border-0 d-flex flex-column justify-content-center align-items-center gap-2 w-100 fw-bold shadow-sm rounded-3 fs-4"
-                            style="height: 180px;"
-                    >
-                        <i class="fas fa-gamepad fa-3x"></i>
-                        <span>Crear nueva partida</span>
-                    </a>
-                </div>
-            </div>
-        </aside>
-
-    </main>
-</div>
+                {{#errors}}
+                    <div class="alert alert-danger">
+                        <ul class="list-unstyled mb-0">
+                            {{#.}}
+                                <li>{{.}}</li>
+                            {{/.}}
+                        </ul>
+                    </div>
+                {{/errors}}
+            </section>
+        </main>
+    </div>
 </section>
+
 <script>
     setTimeout(() => {
         const alerta = document.getElementById("alerta");

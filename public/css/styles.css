@@ -91,3 +91,97 @@ body {
     color: #c82333;
 }
 
+.w3-top {
+    z-index: 1051 !important;
+    position: fixed;
+}
+
+.boton-dashboard {
+    height: 48px;
+    font-size: 1rem;
+    padding: 0.3rem 0.8rem;
+}
+.icono-boton-dashboard {
+    font-size: 1.5rem;
+}
+.texto-boton-dashboard {
+    font-size: 1rem;
+}
+
+/* Desktop: 180px alto, íconos y texto más grande, columna */
+@media (min-width: 992px) {
+    .boton-dashboard {
+        height: 180px;
+        font-size: 1.25rem;
+        padding: 0.3rem 1rem;
+    }
+    .icono-boton-dashboard {
+        font-size: 2.2rem;
+    }
+    .texto-boton-dashboard {
+        font-size: 1.2rem;
+    }
+}
+
+img.logo-dashboard-img {
+    max-width: 70% !important;
+    width: auto !important;
+    height: auto;
+    display: block;
+    margin: 0 auto;
+}
+
+@media (min-width: 992px) {
+    img.logo-dashboard-img {
+        max-width: 50% !important;
+    }
+}
+
+@media (min-width: 992px) {
+    .min-vh-100-lg {
+        min-height: 100vh !important;
+    }
+}
+
+/* Badge de porcentaje: apenas más grande que normal */
+.tabla-desempeno-usuarios .badge-porcentaje {
+    font-size: 1.08rem;
+    padding: 0.55em 1em;
+    font-weight: 600;
+}
+
+.tabla-desempeno-usuarios th,
+.tabla-desempeno-usuarios td {
+    padding: 0.6rem 1.25rem;
+    vertical-align: middle;
+}
+
+@media (min-width: 768px) {
+    #map-profile {
+        min-height: 100%;
+        height: 100%;
+    }
+}
+
+.img-profile-qr,
+.img-profile-foto {
+    width: 72px;
+    height: 72px;
+    object-fit: cover;
+}
+
+@media (min-width: 576px) {
+    .img-profile-qr,
+    .img-profile-foto {
+        width: 96px;
+        height: 96px;
+    }
+}
+
+@media (min-width: 992px) {
+    .img-profile-qr,
+    .img-profile-foto {
+        width: 128px;
+        height: 128px;
+    }
+}

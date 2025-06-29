@@ -2,7 +2,7 @@
 require_once __DIR__ . '/../libs/dompdf/autoload.inc.php';
 use Dompdf\Dompdf;
 use Dompdf\Options;
-class AdminController
+class AdminController extends BaseController
 {
     private $model;
     private $view;

@@ -18,5 +18,15 @@ class BaseController
         $view->render("error", $error);
     }
 
+    protected function sanitizeNulls($data) {
+        if (is_array($data)) {
+            foreach ($data as $k => $v) {
+                $data[$k] = $this->sanitizeNulls($v);
+            }
+            return $data;
+        } else {
+            return is_null($data) ? '' : $data;
+        }
+    }
 
 }

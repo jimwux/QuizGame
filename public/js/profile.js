@@ -1,10 +1,10 @@
 document.addEventListener("DOMContentLoaded", function () {
-    const mapDiv = document.getElementById("map");
+    const mapDiv = document.getElementById("map-profile");
     const lat = parseFloat(mapDiv.dataset.lat);
     const lng = parseFloat(mapDiv.dataset.lng);
 
     if (!isNaN(lat) && !isNaN(lng)) {
-        const map = L.map('map').setView([lat, lng], 10);
+        const map = L.map('map-profile').setView([lat, lng], 10);
 
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             maxZoom: 19,
