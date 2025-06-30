@@ -15,10 +15,9 @@
                     <small class="fs-6">{{ciudad}}, {{pais}}</small>
                 </div>
                 <div class="col-12 col-md-3 d-flex justify-content-center justify-content-md-end">
-                    {{#qr_imagen}}
+
                         <img src='/QuizGame/profile/generateQR?username={{usuario}}' style="width: 128px; height: 128px; object-fit: cover;" class="pe-2" alt='QR de {{usuario}}'>
-                    {{/qr_imagen}}
-                    {{#foto_perfil}}
+                      {{#foto_perfil}}
                         <img src="/QuizGame/public/uploads/{{foto_perfil}}" alt="Foto de perfil"
                              class="rounded-circle img-fluid"
                              style="width: 128px; height: 128px; object-fit: cover;">

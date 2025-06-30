@@ -108,7 +108,7 @@ class QuestionController extends BaseController
 
     public function formularioSugerirPregunta()
     {
-        $categorias = $this->model->obtenerCategorias(); // Ya lo usás en otras vistas
+        $categorias = $this->model->obtenerCategorias();
         $this->view->render("suggestQuestion", ["categorias" => $categorias]);
     }
 
