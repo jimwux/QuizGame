@@ -107,7 +107,7 @@ class RegisterController extends BaseController
         $sendEmailResult = $this->mailer->enviarCorreoActivacion($_POST['email'], $_POST['username'], $token);
 
         if ($sendEmailResult !== true) {
-            $errors[] = $sendEmailResult;
+            $errors[] = "No se pudo enviar el correo electrónico";
             $this->view->render("register", [
                 'errors' => $errors,
             ]);

@@ -63,7 +63,7 @@
 
     // Validar acceso a rutas exclusivas para jugadores
     if (in_array($acceso, array_map('strtolower', $rutasJugador)) && $rol !== 'jugador') {
-        header("Location: {$basePath}profile/show");
+        header("Location: {$basePath}lobby/show");
         exit;
     }
 

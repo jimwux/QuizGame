@@ -12,7 +12,7 @@ class AdminModel
     private function calcularRangoFecha($filtro) {
         switch ($filtro) {
             case 'dia':
-                return date('Y-m-d 00:00:00');
+                return date('Y-m-d 00:00:00', strtotime('-24 hours'));
             case 'semana':
                 return date('Y-m-d 00:00:00', strtotime('-7 days'));
             case 'mes':
@@ -98,7 +98,7 @@ class AdminModel
         $query->execute();
         return $query->get_result()->fetch_assoc();
     }
-    public function obtenerProcentajeRespuestasCcorrectasPorUsuario($filtroFecha){
+    public function obtenerProcentajeRespuestasCorrectasPorUsuario($filtroFecha){
         $fechaInicio = $this->calcularRangoFecha($filtroFecha);
 
         $sql = "SELECT

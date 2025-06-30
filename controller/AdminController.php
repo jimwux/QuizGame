@@ -25,10 +25,10 @@ class AdminController extends BaseController
             'filtroSemana' => $filtro === 'semana',
             'filtroMes' => $filtro === 'mes',
             'filtroAño' => $filtro === 'año',
-            'filtroTodos' => $filtro === 'todos',
+            'filtroTodos' => $filtro === 'todos'
         ];
 
-        $data['desempenoUsuarios'] = $this->model->obtenerProcentajeRespuestasCcorrectasPorUsuario($filtro);
+        $data['desempenoUsuarios'] = $this->model->obtenerProcentajeRespuestasCorrectasPorUsuario($filtro);
 
         $data['resumen'] = [
             'usuarios' => $this->model->obtenerCantidadUsuarios($filtro),
@@ -230,7 +230,7 @@ class AdminController extends BaseController
     public function exportarPDFDesempeno()
     {
         $filtro = $_GET['filtro_fecha'] ?? 'semana';
-        $desempenoUsuarios = $this->model->obtenerProcentajeRespuestasCcorrectasPorUsuario($filtro);
+        $desempenoUsuarios = $this->model->obtenerProcentajeRespuestasCorrectasPorUsuario($filtro);
 
         $options = new Options();
         $options->set('isRemoteEnabled', true);

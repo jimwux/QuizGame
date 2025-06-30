@@ -121,7 +121,7 @@ class UserModel
         }
 
         if (!$password) {
-            $errorsInputsEmptys[] = "El password es obligatorio";
+            $errorsInputsEmptys[] = "La password es obligatoria";
         }
 
         if (!empty($errorsInputsEmptys)) {

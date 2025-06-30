@@ -87,7 +87,7 @@ class GameController extends BaseController
         // Se trae la categoría aleatoria que guardamos anteriormente en sesión
         $categoriaId = $estado['categoria_actual'] ?? null;
         if (!$categoriaId) {
-            $this->redirectTo('seleccionarCategoria');
+            $this->redirectTo('game/seleccionarCategoria');
         }
 
         // Si hay una pregunta en curso no respondida, volver a mostrarla
