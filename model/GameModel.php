@@ -28,15 +28,19 @@ class GameModel
         $this->database->execute($sql, [$puntaje, $partidaId]);
     }
 
-    public function registrarRespuestaEnPartida($partidaId, $preguntaId, $respuestaId, $esCorrecta): void
+    public function registrarRespuestaEnPartida($partidaId, $preguntaId, $esCorrecta): void
     {
-        $sql = "INSERT INTO partida_pregunta (id_partida, id_pregunta, id_respuesta, respondida_correctamente, estado_pregunta)
-            VALUES (?, ?, ?, ?, 'respondida')
+        $sql = "INSERT INTO partida_pregunta (id_partida, id_pregunta, respondida_correctamente, estado_pregunta)
+            VALUES (?, ?, ?, 'respondida')
             ON DUPLICATE KEY UPDATE
-                id_respuesta = VALUES(id_respuesta),
                 respondida_correctamente = VALUES(respondida_correctamente),
                 estado_pregunta = 'respondida'";
-        $this->database->execute($sql, [$partidaId, $preguntaId, $respuestaId, $esCorrecta ? 1 : 0]);
+
+        $this->database->execute($sql, [
+            $partidaId,
+            $preguntaId,
+            $esCorrecta ? 1 : 0
+        ]);
     }
 
     /**
@@ -223,17 +227,17 @@ class GameModel
         return $resultado[0] ?? null;
     }
 
-    public function marcarPreguntaComoRespondidaPorUsuario($usuarioId, $preguntaId, $respuestaId, $esCorrecta): void
+    public function marcarPreguntaComoRespondidaPorUsuario($usuarioId, $preguntaId, $esCorrecta): void
     {
         // 1. Insertar en historial (registro permanente)
-        $sqlHistorial = "INSERT INTO historial_respuestas (id_usuario, id_pregunta, id_respuesta, es_correcta)
-                     VALUES (?, ?, ?, ?)";
-        $this->database->execute($sqlHistorial, [$usuarioId, $preguntaId, $respuestaId, $esCorrecta]);
+        $sqlHistorial = "INSERT INTO historial_respuestas (id_usuario, id_pregunta, es_correcta)
+                     VALUES (?, ?, ?)";
+        $this->database->execute($sqlHistorial, [$usuarioId, $preguntaId, $esCorrecta]);
 
         // 2. Insertar en pregunta_usuario (registro temporal para control de preguntas no repetidas)
-        $sql = "INSERT INTO pregunta_usuario (id_usuario, id_pregunta, id_respuesta, es_correcta)
-                VALUES (?, ?, ?, ?)";
-        $this->database->execute($sql, [$usuarioId, $preguntaId, $respuestaId, $esCorrecta]);
+        $sql = "INSERT INTO pregunta_usuario (id_usuario, id_pregunta, es_correcta)
+                VALUES (?, ?, ?)";
+        $this->database->execute($sql, [$usuarioId, $preguntaId, $esCorrecta]);
 
         // 3. Actualizar métricas de la pregunta
         $this->database->execute(
