@@ -92,13 +92,11 @@ CREATE TABLE partida_pregunta
     id                       INT AUTO_INCREMENT PRIMARY KEY,
     id_partida               INT NOT NULL,
     id_pregunta              INT NOT NULL,
-    id_respuesta             INT,
     respondida_correctamente BOOLEAN,
     estado_pregunta          ENUM('mostrada', 'respondida', 'actual') DEFAULT NULL, -- Nuevo estado
     orden_pregunta           INT,
     FOREIGN KEY (id_partida) REFERENCES partida (id),
     FOREIGN KEY (id_pregunta) REFERENCES pregunta (id),
-    FOREIGN KEY (id_respuesta) REFERENCES respuesta (id),
     UNIQUE KEY (id_partida, id_pregunta)                                            -- AGREGAR ESTA LÍNEA
 );
 
@@ -179,12 +177,10 @@ CREATE TABLE historial_respuestas (
      id           INT AUTO_INCREMENT PRIMARY KEY,
      id_usuario   INT NOT NULL,
      id_pregunta  INT NOT NULL,
-     id_respuesta INT,
      es_correcta  BOOLEAN NOT NULL,
      fecha        DATETIME DEFAULT CURRENT_TIMESTAMP,
      FOREIGN KEY (id_usuario) REFERENCES usuarios (id),
-     FOREIGN KEY (id_pregunta) REFERENCES pregunta (id),
-     FOREIGN KEY (id_respuesta) REFERENCES respuesta (id)
+     FOREIGN KEY (id_pregunta) REFERENCES pregunta (id)
 );
 
 

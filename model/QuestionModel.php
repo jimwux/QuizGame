@@ -390,7 +390,7 @@ class QuestionModel
 
     public function editarPregunta($idPregunta, $datosPregunta, $respuestas)
     {
-        try {
+        #try {
             $this->database->beginTransaction();
 
             // Actualizar la pregunta en la tabla
@@ -420,11 +420,11 @@ class QuestionModel
             $this->database->commit();
             return true;
 
-        } catch (Exception $e) {
-            $this->database->rollBack();
-            error_log("Error al editar pregunta: " . $e->getMessage());
-            return false;
-        }
+        #} catch (Exception $e) {
+        #    $this->database->rollBack();
+        #    error_log("Error al editar pregunta: " . $e->getMessage());
+        #    return false;
+        #}
     }
 
     public function buscarPreguntasPorTexto($texto)
