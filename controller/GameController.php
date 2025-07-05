@@ -141,8 +141,10 @@ class GameController extends BaseController
 
         // Valida si existe una pregunta en curso
         $preguntaId = $estado['pregunta_actual_id'];
-        if (!$preguntaId) {
-            $this->view->render('error', ['mensaje' => 'No hay pregunta activa.']);
+        $preguntaIdPost = $_POST['idQuestion'] ?? null;
+
+        if (!$preguntaId || $preguntaId != $preguntaIdPost) {
+            $this->view->render('error', ['mensaje' => 'La pregunta no coincide con la sesión actual.']);
             return;
         }
 
@@ -153,13 +155,15 @@ class GameController extends BaseController
         $pregunta = $this->model->obtenerPreguntaPorId($preguntaId);
         $dificultad = $pregunta['id_dificultad'];  // Asumiendo que 'id_dificultad' es un número que representa la dificultad
 
-        // Comprueba si la respuesta seleccionada es correcta
+        // Comprueba si la respuesta seleccionada es correcta. Si no respondió, es incorrecta también.
         $respuestaElegida = $_POST['respuesta'] ?? null;
-        $correcta = $this->model->validarRespuesta($preguntaId, $respuestaElegida);
+        $correcta = ($respuestaElegida !== null)
+            ? $this->model->validarRespuesta($preguntaId, $respuestaElegida)
+            : false;
 
         // Registrar la respuesta en la tabla correspondiente
         $partidaId = $estado['partida_id'];
-        $this->model->registrarRespuestaEnPartida($partidaId, $preguntaId, $respuestaElegida, $correcta);
+        $this->model->registrarRespuestaEnPartida($partidaId, $preguntaId, $correcta);
 
         // Multiplicamos la dificultad por el tiempo restante (tiempo en segundos)
         $puntaje = $dificultad * $tiempoRestante;
@@ -178,7 +182,6 @@ class GameController extends BaseController
         $this->model->marcarPreguntaComoRespondidaPorUsuario(
             $usuarioId,
             $preguntaId,
-            $respuestaElegida,
             $correcta ? 1 : 0
         );
 
