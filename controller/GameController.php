@@ -144,7 +144,8 @@ class GameController extends BaseController
         $preguntaIdPost = $_POST['idQuestion'] ?? null;
 
         if (!$preguntaId || $preguntaId != $preguntaIdPost) {
-            $this->view->render('error', ['mensaje' => 'La pregunta no coincide con la sesión actual.']);
+            $_SESSION["alerta"] = "ERROR. Usted no está respondiendo la pregunta deseada";
+            $this->redirectTo('lobby');
             return;
         }
 
