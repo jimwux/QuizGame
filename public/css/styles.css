@@ -185,3 +185,11 @@ img.logo-dashboard-img {
         height: 128px;
     }
 }
+
+.tarjetas-partidas > .card {
+    margin-bottom: 1.2rem;
+}
+
+.tarjetas-partidas > .card:last-child {
+    margin-bottom: 0 !important;
+}
