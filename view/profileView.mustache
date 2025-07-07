@@ -1,111 +1,74 @@
-<section class="position-relative d-flex justify-content-center align-items-center min-vh-100"
-         style="background: url('../../QuizGame/public/img/background.png')">
-    <div class="container p-2 p-md-4 my-4 bg-white shadow-sm mt-5 border-0 rounded-4">
+<style>
+    .profile-image, .profile-qr {
+        width: 80px; height: 80px; object-fit: cover;
+    }
+    @media (min-width: 768px) {
+        .profile-image, .profile-qr {
+            width: 128px; height: 128px;
+        }
+    }
+</style>
 
-        {{#user}}
-            <!-- Datos del perfil -->
-            <div class="row align-items-center mb-4 text-center text-md-start p-2 p-md-4 gy-3">
-                <div class="col-12 col-md-4 mb-2 mb-md-0">
+<section class="py-5 min-vh-100" style="background: url('../../QuizGame/public/img/background.png'); background-size: cover; background-position: center;">
+    <div class="container my-4">
+        <div class="bg-white bg-opacity-75 shadow-lg rounded-4 p-3 p-md-4">
+            {{#user}}
+            <div class="row align-items-center mb-4 text-center text-md-start gy-3">
+                <div class="col-12 col-md-4">
                     <p class="mb-1 fw-bold fs-5">Usuario: {{usuario}}</p>
-                    <small class="fs-6">{{año_nacimiento}} - {{sexo}}</small>
+                    <small class="fs-6 text-muted">{{año_nacimiento}} - {{sexo}}</small>
                 </div>
-                <div class="col-12 col-md-5 mb-2 mb-md-0">
+                <div class="col-12 col-md-5">
                     <p class="fw-bold mb-1 fs-5">{{nombre_completo}}</p>
-                    <p class="mb-1 fs-6">{{mail}}</p>
-                    <small class="fs-6">{{ciudad}}, {{pais}}</small>
+                    <p class="mb-1 fs-6 text-muted">{{mail}}</p>
+                    <small class="fs-6 text-muted">{{ciudad}}, {{pais}}</small>
                 </div>
-                <div class="col-12 col-md-3 d-flex justify-content-center justify-content-md-end">
-
-                        <img src='/QuizGame/profile/generateQR?username={{usuario}}' style="width: 128px; height: 128px; object-fit: cover;" class="pe-2" alt='QR de {{usuario}}'>
-                      {{#foto_perfil}}
-                        <img src="/QuizGame/public/uploads/{{foto_perfil}}" alt="Foto de perfil"
-                             class="rounded-circle img-fluid"
-                             style="width: 128px; height: 128px; object-fit: cover;">
+                <div class="col-12 col-md-3 d-flex justify-content-center justify-content-md-end align-items-center gap-3">
+                    <img src='/QuizGame/profile/generateQR?username={{usuario}}' class="profile-qr" alt='QR de {{usuario}}'>
+                    {{#foto_perfil}}
+                        <img src="/QuizGame/public/uploads/{{foto_perfil}}" alt="Foto de perfil" class="rounded-circle profile-image">
                     {{/foto_perfil}}
                     {{^foto_perfil}}
-                        <i class="fa fa-user-circle text-secondary" style="font-size: 128px;"></i>
+                        <i class="fa fa-user-circle text-secondary profile-image" style="font-size: 128px;"></i>
                     {{/foto_perfil}}
                 </div>
             </div>
-        {{/user}}
+            {{/user}}
 
-        {{#es_jugador}}
-            <h5 class="fw-bold mb-3 fs-4 text-center text-md-start ps-md-4">Partidas recientes</h5>
-            <div class="row p-2 p-md-4 pt-0">
-                <!-- Partidas -->
-                <div class="col-12 col-md-6 d-flex flex-column justify-content-between gap-3">
-                    {{#partidas}}
-                        <div class="card shadow-sm d-flex flex-row justify-content-around rounded-3 mb-2 m-lg-0">
-                            <div class="card-body d-flex align-items-center gap-3">
-                                <div class="d-flex justify-content-center align-items-center mx-3" style="width: 50px; height: 50px;">
-                                    <img src="../../QuizGame/public/img/icono_preguntas.png" alt="partida" style="width: 100%; height: 100%; object-fit: contain;">
-                                </div>
-                                <div class="d-flex flex-grow-1 justify-content-around fw-semibold">
-                                    <div class="text-center">
-                                        <div class="text-muted">Preguntas correctas</div>
-                                        <div>{{cantidad_correctas}}</div>
-                                    </div>
-                                    <div class="text-center">
-                                        <div class="text-muted">Puntaje obtenido</div>
-                                        <div>{{puntaje}} pts</div>
-                                    </div>
-                                    <div class="text-center">
-                                        <div class="text-muted">Destacado en</div>
-                                        <div>
-                                            {{#nombre_categoria}}
-                                                <span class="badge text-capitalize" style="background-color: {{color_categoria}}; font-size: 1rem;">
-                                                    {{nombre_categoria}}
-                                                </span>
-                                            {{/nombre_categoria}}
-                                            {{^nombre_categoria}}
-                                                <span class="badge bg-secondary text-capitalize" style="font-size: 1rem;">
-                                              Sin categoría destacada
-                                            </span>
-                                            {{/nombre_categoria}}
+            <div class="row gy-4">
+                {{#es_jugador}}
+                <div class="col-12 col-lg-6">
+                    <h5 class="fw-bold mb-3 fs-4">Partidas recientes</h5>
+                    <div class="d-grid gap-3">
+                        {{#partidas}}
+                            <div class="card shadow-sm">
+                                <div class="card-body p-3">
+                                    <div class="row align-items-center text-center gy-2">
+                                        <div class="col-12 col-sm-3 col-md-2"><img src="../../QuizGame/public/img/icono_preguntas.png" alt="partida" style="height: 40px;"></div>
+                                        <div class="col-4 col-sm-3 col-md-3"><div class="text-muted small">Correctas</div><div class="fw-bold">{{cantidad_correctas}}</div></div>
+                                        <div class="col-4 col-sm-3 col-md-3"><div class="text-muted small">Puntaje</div><div class="fw-bold">{{puntaje}}</div></div>
+                                        <div class="col-4 col-sm-3 col-md-4"><div class="text-muted small">Destacado</div>
+                                            {{#nombre_categoria}}<span class="badge text-capitalize" style="background-color: {{color_categoria}};">{{nombre_categoria}}</span>{{/nombre_categoria}}
+                                            {{^nombre_categoria}}<span class="badge bg-secondary">N/A</span>{{/nombre_categoria}}
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                    {{/partidas}}
+                        {{/partidas}}
+                        {{^partidas}}<div class="alert alert-info">No tenés partidas recientes.</div>{{/partidas}}
+                    </div>
                 </div>
-                <!-- Mapa -->
-                <div class="col-12 col-md-6 mt-3 mt-md-0 d-flex">
+                {{/es_jugador}}
+                <div class="col-12 {{#es_jugador}}col-lg-6{{/es_jugador}}{{^es_jugador}}col-lg-12{{/es_jugador}}">
+                    {{#es_jugador}}<h5 class="fw-bold mb-3 fs-4">Tu ubicación</h5>{{/es_jugador}}
                     {{#user}}
-                        <div class="col-12 mt-md-0 d-flex">
-                            <div id="map-profile"
-                                 data-lat="{{latitud}}"
-                                 data-lng="{{longitud}}"
-                                 class="w-100 rounded-4"
-                                 style="min-height: 250px; width: 100%">
-                            </div>
-                        </div>
+                        <div id="map-profile" data-lat="{{latitud}}" data-lng="{{longitud}}" class="w-100 rounded-4 shadow-sm" style="min-height: 300px;"></div>
                     {{/user}}
                 </div>
             </div>
-        {{/es_jugador}}
-
-        {{^es_jugador}}
-            <div class="row">
-                <div class="col-12">
-                    {{#user}}
-                        <div id="map-profile"
-                             data-lat="{{latitud}}"
-                             data-lng="{{longitud}}"
-                             class="w-100 rounded-4"
-                             style="min-height: 250px; height: 300px;">
-                        </div>
-                    {{/user}}
-                </div>
-            </div>
-        {{/es_jugador}}
-
+        </div>
     </div>
 </section>
 
-
-<!-- Leaflet CSS y JS -->
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-
-<!-- Script del mapa -->
 <script src="/QuizGame/public/js/profile.js" defer></script>

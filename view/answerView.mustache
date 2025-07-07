@@ -1,39 +1,38 @@
 <section>
-    <div class="d-flex flex-column min-vh-100 position-relative pt-reorganized-xxl"
+    <div class="d-flex flex-column min-vh-100 position-relative"
          style="background-color: {{category.color}};">
 
         <div class="position-absolute top-0 start-0 w-100 h-100"
              style="background-image: url('../../QuizGame/public/img/question-background.png'); background-size: cover; background-position: center; opacity: 0.5;">
         </div>
 
-
-        <div class="container d-flex flex-grow-1 align-items-center justify-content-center py-4">
+        <div class="container d-flex flex-grow-1 align-items-center justify-content-center py-4 p-3">
             <div class="row w-100 justify-content-center">
-                <div class="col-lg-8 col-md-10">
+                <div class="col-12 col-md-10 col-lg-8">
                     <div class="card shadow-lg d-flex flex-column rounded-4">
-                        <div class="card-header d-flex justify-content-between align-items-center py-3 bg-transparent border-bottom">
+                        <div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-2 py-3 bg-transparent border-bottom">
                             <h5 class="mb-0 fw-bold text-dark fs-6">Resultado de tu respuesta 🎯</h5>
-                            <span class="badge fs-5 p-3 rounded-pill fw-bold"
+                            <span class="badge fs-6 p-2 fs-sm-5 p-sm-3 rounded-pill fw-bold"
                                   style="background-color: {{category.color}}; color: white;">
                                 {{category.nombre}}
                             </span>
                         </div>
 
-                        <div class="card-body p-4 p-md-5 d-flex flex-column justify-content-center flex-grow-1">
-                            <p class="question-text text-center lead mb-4 fw-bold fs-1">
+                        <div class="card-body p-3 p-md-5 text-center d-flex flex-column justify-content-center flex-grow-1">
+                            <p class="question-text text-center lead mb-4 fw-bold fs-4 fs-md-2 fs-lg-1">
                                 {{question.texto}}
                             </p>
 
                             <div class="row g-3 justify-content-center">
                                 {{#answers}}
-                                    <div class="col-md-6">
+                                    <div class="col-12 col-md-6">
                                         <button
                                                 type="button"
-                                                class="btn btn-lg w-100 text-start
+                                                class="btn btn-lg w-100 text-wrap text-start
                                                 {{#esSeleccionadaYCorrecta}}btn-success{{/esSeleccionadaYCorrecta}}
-                                                    {{#esSeleccionadaYIncorrecta}}btn-danger{{/esSeleccionadaYIncorrecta}}
-                                                    {{#esCorrectaNoSeleccionada}}btn-success{{/esCorrectaNoSeleccionada}}
-                                                    {{^esSeleccionadaYCorrecta}}{{^esSeleccionadaYIncorrecta}}{{^esCorrectaNoSeleccionada}}btn-outline-primary{{/esCorrectaNoSeleccionada}}{{/esSeleccionadaYIncorrecta}}{{/esSeleccionadaYCorrecta}}"
+                                                {{#esSeleccionadaYIncorrecta}}btn-danger{{/esSeleccionadaYIncorrecta}}
+                                                {{#esCorrectaNoSeleccionada}}btn-success{{/esCorrectaNoSeleccionada}}
+                                                {{^esSeleccionadaYCorrecta}}{{^esSeleccionadaYIncorrecta}}{{^esCorrectaNoSeleccionada}}btn-outline-primary{{/esCorrectaNoSeleccionada}}{{/esSeleccionadaYIncorrecta}}{{/esSeleccionadaYCorrecta}}"
                                                 disabled
                                         >
                                             {{texto}}
@@ -49,28 +48,28 @@
 
                             <p class="text-center fs-6">Puntaje actual: <strong>{{puntaje}}</strong></p>
 
-                            {{#partidaFinalizada}}
-                                <form method="GET" action="/QuizGame/lobby">
-                                    <button type="submit" class="btn btn-danger mt-4">Volver al lobby</button>
-                                </form>
-                            {{/partidaFinalizada}}
-
-                            {{^partidaFinalizada}}
-                                <form method="POST" action="/QuizGame/game/seleccionarCategoria">
-                                    <button type="submit" class="btn btn-primary mt-4">Siguiente pregunta</button>
-                                </form>
-                            {{/partidaFinalizada}}
+                            <div class="d-grid gap-2 col-8 mx-auto mt-4">
+                                {{#partidaFinalizada}}
+                                    <form method="GET" action="/QuizGame/lobby">
+                                        <button type="submit" class="btn btn-danger w-100">Volver al lobby</button>
+                                    </form>
+                                {{/partidaFinalizada}}
+                                {{^partidaFinalizada}}
+                                    <form method="POST" action="/QuizGame/game/seleccionarCategoria">
+                                        <button type="submit" class="btn btn-primary w-100">Siguiente pregunta</button>
+                                    </form>
+                                {{/partidaFinalizada}}
+                            </div>
 
                         </div>
                     </div>
+                     <div class="text-center mt-3">
+                        <a href="/QuizGame/question/reportar?id={{question.id}}" class="btn btn-sm btn-danger shadow-sm">
+                           <i class="bi bi-flag-fill"></i> Reportar Pregunta
+                        </a>
+                    </div>
                 </div>
-            </div>
-            <div class="position-absolute bottom-0 end-0 mb-4 me-4 d-none d-lg-block">
-                <a href="/QuizGame/question/reportar?id={{question.id}}" class="btn btn-danger shadow-sm">
-                Reportar Pregunta <i class="bi bi-flag-fill"></i>
-                </a>
             </div>
         </div>
     </div>
-
 </section>

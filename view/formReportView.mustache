@@ -1,15 +1,16 @@
-<section class="d-flex flex-column justify-content-center align-items-center vh-100" style="
-    background: url('../../QuizGame/public/img/background.png')">
-    <div class="col-md-8 text-center">
-        <div class="card shadow">
-            <div class="card-header bg-dark text-white">
-                <h3 class="mb-0">Estado del Reporte</h3>
-            </div>
-            <div class="card-body p-5">
-                <p class="fs-4">{{mensaje}}</p>
-                <a href="{{url_partida}}" class="btn btn-primary btn-lg mt-4 px-5">
-                    Continuar Partida
-                </a>
+<section class="d-flex flex-column justify-content-center align-items-center min-vh-100 p-3" style="background: url('../../QuizGame/public/img/background.png'); background-size: cover; background-position: center;">
+    <div class="row justify-content-center w-100">
+        <div class="col-11 col-md-8 col-lg-6 text-center">
+            <div class="card shadow-lg">
+                <div class="card-header bg-dark text-white p-3">
+                    <h3 class="mb-0 fs-4">Estado del Reporte</h3>
+                </div>
+                <div class="card-body p-4 p-md-5">
+                    <p class="fs-5 fs-md-4">{{mensaje}}</p>
+                    <a href="{{url_partida}}" class="btn btn-primary btn-lg mt-4 px-5 w-100 w-sm-auto">
+                        Continuar Partida
+                    </a>
+                </div>
             </div>
         </div>
     </div>

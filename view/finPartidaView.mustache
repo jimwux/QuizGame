@@ -1,24 +1,23 @@
-<section class="d-flex flex-column justify-content-center align-items-center vh-100" style="
-    background: url('../../QuizGame/public/img/background.png')">
-    <h1 class="text-center text-white mt-5">¡Tiempo agotado! La partida ha terminado.</h1>
+<section class="d-flex flex-column justify-content-center align-items-center vh-100 p-3" style="background: url('../../QuizGame/public/img/background.png'); background-size: cover; background-position: center;">
+
+    <h1 class="text-center text-white z-1 fs-3 fs-md-1">¡La partida ha terminado!</h1>
 
     {{#partida}}
-        <div class="container mt-4">
+        <div class="container mt-4 z-1">
             <div class="row justify-content-center">
 
-                <div class="col-md-6 mt-4 mt-md-0">
-                    <div class="card bg-dark text-white shadow-sm">
-                        <div class="card-body text-center">
-                            <h3 class="card-title mb-3">Puntaje total:</h3>
-                            <p class="lead">{{puntaje}}</p>
+                <div class="col-11 col-sm-8 col-md-6">
+                    <div class="card bg-dark text-white shadow-lg">
+                        <div class="card-body text-center p-4">
+                            <h3 class="card-title mb-3 fs-4">Puntaje total:</h3>
+                            <p class="lead display-4 fw-bold">{{puntaje}}</p>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Botón Volver al inicio -->
             <div class="d-flex justify-content-center mt-5">
-                <a href="/QuizGame/lobby" class="btn btn-danger btn-lg px-5 py-3">Volver al inicio</a>
+                <a href="/QuizGame/lobby" class="btn btn-danger btn-lg px-4 py-2 px-md-5 py-md-3">Volver al Lobby</a>
             </div>
         </div>
     {{/partida}}

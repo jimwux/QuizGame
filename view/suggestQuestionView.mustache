@@ -1,93 +1,49 @@
-<section class="d-flex flex-column justify-content-center align-items-center min-vh-100-lg mt-5 m-lg-0" style="
-    background: url('../../QuizGame/public/img/background.png')">
-    <div class="container mt-5">
-        <div class="row justify-content-center">
-            <div class="col-md-11 col-lg-10">
-                <div class="card shadow rounded-4">
-                    <div class="card-header bg-danger text-white text-center rounded-top-4 p-4">
-                        <h3 class="mb-0">Sugerir una nueva pregunta</h3>
-                    </div>
-                    <div class="card-body bg-white rounded-bottom-4 p-5">
+<section class="py-5 d-flex justify-content-center align-items-center min-vh-100" style="background: url('../../QuizGame/public/img/background.png'); background-size: cover; background-position: center;">
+  <div class="container my-4">
+    <div class="row justify-content-center">
+      <div class="col-11 col-lg-10">
+        <div class="card shadow-lg rounded-4">
+          <div class="card-header bg-success text-white text-center rounded-top-4 p-3">
+            <h3 class="mb-0 fs-4">Sugerir una Nueva Pregunta</h3>
+          </div>
+          <div class="card-body bg-white rounded-bottom-4 p-3 p-lg-5">
+            {{#errores}}
+            <div class="alert alert-danger"><ul class="mb-0 list-unstyled">{{#.}}<li>{{{.}}}</li>{{/.}}</ul></div>
+            {{/errores}}
 
-                        {{#errores}}
-                            <div class="alert alert-danger">
-                                <ul class="mb-0 list-unstyled">
-                                    {{#.}}
-                                        <li>{{{.}}}</li>
-                                    {{/.}}
-                                </ul>
-                            </div>
-                        {{/errores}}
-
-                        <form action="/QuizGame/question/enviarSugerencia" method="POST" class="needs-validation fs-5" novalidate>
-
-                            <!-- Enunciado -->
-                            <div class="mb-4">
-                                <label for="texto" class="form-label">Enunciado de la pregunta</label>
-                                <textarea name="texto" class="form-control" rows="3" required>{{formulario.texto}}</textarea>
-                            </div>
-
-                            <!-- Opciones -->
-                            <div class="mb-4">
-                                <label class="form-label">Opciones</label>
-                                <div class="row g-3">
-                                    <div class="col-md-6">
-                                        <input type="text" name="opcionA" value="{{formulario.opcionA}}" class="form-control" placeholder="Opción A" required>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <input type="text" name="opcionB" value="{{formulario.opcionB}}" class="form-control" placeholder="Opción B" required>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <input type="text" name="opcionC" value="{{formulario.opcionC}}" class="form-control" placeholder="Opción C" required>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <input type="text" name="opcionD" value="{{formulario.opcionD}}" class="form-control" placeholder="Opción D" required>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Correcta -->
-                            <div class="mb-4">
-                                <label class="form-label d-block">¿Cuál es la opción correcta?</label>
-                                <div class="form-check form-check-inline">
-                                    <input type="radio" name="correcta" value="A" class="form-check-input" {{#formulario.checkedA}}checked{{/formulario.checkedA}}>
-                                    <label class="form-check-label">A</label>
-                                </div>
-                                <div class="form-check form-check-inline">
-                                    <input type="radio" name="correcta" value="B" class="form-check-input" {{#formulario.checkedB}}checked{{/formulario.checkedB}}>
-                                    <label class="form-check-label">B</label>
-                                </div>
-                                <div class="form-check form-check-inline">
-                                    <input type="radio" name="correcta" value="C" class="form-check-input" {{#formulario.checkedC}}checked{{/formulario.checkedC}}>
-                                    <label class="form-check-label">C</label>
-                                </div>
-                                <div class="form-check form-check-inline">
-                                    <input type="radio" name="correcta" value="D" class="form-check-input" {{#formulario.checkedD}}checked{{/formulario.checkedD}}>
-                                    <label class="form-check-label">D</label>
-                                </div>
-                            </div>
-
-                            <!-- Categoría -->
-                            <div class="mb-4">
-                                <label for="categoria" class="form-label">Categoría</label>
-                                <select name="categoria" class="form-select" required>
-                                    <option value="" disabled {{^formulario.categoria}}selected{{/formulario.categoria}}>Seleccioná una categoría</option>
-                                    {{#categorias}}
-                                        <option value="{{id}}" {{#selected}}selected{{/selected}}>{{nombre}}</option>
-                                    {{/categorias}}
-                                </select>
-                            </div>
-
-                            <!-- Botón -->
-                            <div class="text-center">
-                                <button type="submit" class="btn btn-success px-4 py-2">Enviar sugerencia</button>
-                            </div>
-
-                        </form>
-
-                    </div>
+            <form action="/QuizGame/question/enviarSugerencia" method="POST" class="needs-validation fs-6 fs-md-5" novalidate>
+              <div class="mb-4">
+                <label for="texto" class="form-label fw-bold">Enunciado de la pregunta</label>
+                <textarea name="texto" class="form-control" rows="3" required>{{formulario.texto}}</textarea>
+              </div>
+              <div class="mb-4">
+                <label class="form-label fw-bold">Opciones</label>
+                <div class="row g-3">
+                  <div class="col-md-6"><input type="text" name="opcionA" value="{{formulario.opcionA}}" class="form-control" placeholder="Opción A" required></div>
+                  <div class="col-md-6"><input type="text" name="opcionB" value="{{formulario.opcionB}}" class="form-control" placeholder="Opción B" required></div>
+                  <div class="col-md-6"><input type="text" name="opcionC" value="{{formulario.opcionC}}" class="form-control" placeholder="Opción C" required></div>
+                  <div class="col-md-6"><input type="text" name="opcionD" value="{{formulario.opcionD}}" class="form-control" placeholder="Opción D" required></div>
                 </div>
-            </div>
+              </div>
+              <div class="mb-4">
+                <label class="form-label d-block fw-bold">¿Cuál es la opción correcta?</label>
+                <div class="form-check form-check-inline"><input type="radio" name="correcta" value="A" class="form-check-input" {{#formulario.checkedA}}checked{{/formulario.checkedA}} required><label class="form-check-label">A</label></div>
+                <div class="form-check form-check-inline"><input type="radio" name="correcta" value="B" class="form-check-input" {{#formulario.checkedB}}checked{{/formulario.checkedB}} required><label class="form-check-label">B</label></div>
+                <div class="form-check form-check-inline"><input type="radio" name="correcta" value="C" class="form-check-input" {{#formulario.checkedC}}checked{{/formulario.checkedC}} required><label class="form-check-label">C</label></div>
+                <div class="form-check form-check-inline"><input type="radio" name="correcta" value="D" class="form-check-input" {{#formulario.checkedD}}checked{{/formulario.checkedD}} required><label class="form-check-label">D</label></div>
+              </div>
+              <div class="mb-4">
+                <label for="categoria" class="form-label fw-bold">Categoría</label>
+                <select name="categoria" class="form-select" required>
+                  <option value="" disabled {{^formulario.categoria}}selected{{/formulario.categoria}}>Seleccioná una categoría</option>
+                  {{#categorias}}<option value="{{id}}" {{#selected}}selected{{/selected}}>{{nombre}}</option>{{/categorias}}
+                </select>
+              </div>
+              <div class="text-center d-grid d-sm-block"><button type="submit" class="btn btn-success px-4 py-2">Enviar sugerencia</button></div>
+            </form>
+          </div>
         </div>
+      </div>
     </div>
+  </div>
 </section>

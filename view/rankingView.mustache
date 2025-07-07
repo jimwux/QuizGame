@@ -1,33 +1,32 @@
-<section class="d-flex flex-column justify-content-center align-items-center vh-100" style="
-    background: url('../../QuizGame/public/img/background.png')">
-  <div class="container">
-    <h1 class="mb-5 fw-bold text-center">🏆 Ranking de Usuarios</h1>
+<section class="d-flex flex-column justify-content-center align-items-center min-vh-100 p-3" style="background: url('../../QuizGame/public/img/background.png'); background-size: cover; background-position: center;">
+  <div class="container-lg z-1">
+    <h1 class="mb-4 fw-bold text-center text-white display-5">🏆 Ranking de Usuarios</h1>
 
     <div class="table-responsive shadow rounded-4 bg-white">
       <table class="table table-hover align-middle mb-0">
         <thead class="table-warning text-center">
-          <tr class="p-4">
-            <th class="p-3" scope="col" style="width: 10%;">Posición</th>
-            <th class="p-3" scope="col" style="width: 55%;">Usuario</th>
-            <th class="p-3" scope="col" style="width: 35%;">Puntaje Total</th>
+          <tr>
+            <th class="p-3 fs-5" scope="col">Posición</th>
+            <th class="p-3 fs-5" scope="col">Usuario</th>
+            <th class="p-3 fs-5" scope="col">Puntaje Total</th>
           </tr>
         </thead>
         <tbody>
           {{#ranking}}
           <tr class="text-center">
-            <td class="fw-bold fs-5 p-3">{{posicion}}</td>
-            <td class="fw-semibold fs-5 text-secondary p-3">
-              <a href="/QuizGame/profile?username={{usuario}}" class="text-decoration-none text-primary fw-semibold">
+            <td class="fw-bold fs-5 fs-md-4 p-3">{{posicion}}</td>
+            <td class="p-3">
+              <a href="/QuizGame/profile?username={{usuario}}" class="text-decoration-none text-primary fw-semibold fs-6 fs-md-5">
                 {{usuario}}
               </a>
             </td>
-            <td class="fw-semibold fs-5 text-secondary p-3">{{puntaje_total}}</td>
+            <td class="fw-semibold fs-5 fs-md-4 text-secondary p-3">{{puntaje_total}}</td>
           </tr>
           {{/ranking}}
           {{^ranking}}
           <tr>
             <td colspan="3" class="text-center text-muted fst-italic py-4">
-              No hay datos disponibles.
+              Aún no hay datos en el ranking para mostrar.
             </td>
           </tr>
           {{/ranking}}

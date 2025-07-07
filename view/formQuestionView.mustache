@@ -1,13 +1,12 @@
-<section class="d-flex flex-column justify-content-center align-items-center min-vh-100-lg mt-5 m-lg-0" style="
-    background: url('../../QuizGame/public/img/background.png')">
+<section class="d-flex flex-column justify-content-center align-items-center min-vh-100 py-5" style="background: url('../../QuizGame/public/img/background.png'); background-size: cover; background-position: center;">
     <div class="container my-4">
         <div class="row justify-content-center">
-            <div class="col-md-11 col-lg-10">
-                <div class="card shadow rounded-4">
-                    <div class="card-header bg-info text-white text-center rounded-top-4 p-4">
-                        <h3 class="mb-0">{{boton}} Pregunta</h3>
+            <div class="col-11 col-lg-10">
+                <div class="card shadow-lg rounded-4">
+                    <div class="card-header bg-info text-white text-center rounded-top-4 p-3">
+                        <h3 class="mb-0 fs-4">{{boton}} Pregunta</h3>
                     </div>
-                    <div class="card-body bg-white rounded-bottom-4 p-5">
+                    <div class="card-body bg-white rounded-bottom-4 p-3 p-lg-5">
 
                         {{#errores}}
                             <div class="alert alert-danger">
@@ -19,20 +18,19 @@
                             </div>
                         {{/errores}}
 
-                        <form method="POST" action="{{accion}}" class="fs-5">
+                        <form method="POST" action="{{accion}}" class="fs-6 fs-md-5">
 
                             {{#pregunta.id}}
                                 <input type="hidden" name="id_pregunta" value="{{pregunta.id}}">
                             {{/pregunta.id}}
 
                             <div class="mb-4">
-                                <label for="texto" class="form-label">Enunciado de la pregunta</label>
+                                <label for="texto" class="form-label fw-bold">Enunciado de la pregunta</label>
                                 <textarea name="texto" id="texto" class="form-control" rows="3" required>{{pregunta.texto}}{{formulario.texto}}</textarea>
                             </div>
 
-                            <!-- Opciones -->
                             <div class="mb-4">
-                                <label class="form-label">Opciones</label>
+                                <label class="form-label fw-bold">Opciones</label>
                                 <div class="row g-3">
                                     <div class="col-md-6">
                                         <input type="text" name="opcionA" value="{{pregunta.opcionA}}{{formulario.opcionA}}" class="form-control" placeholder="Opción A" required>
@@ -49,9 +47,8 @@
                                 </div>
                             </div>
 
-                            <!-- Correcta -->
                             <div class="mb-4">
-                                <label class="form-label d-block">¿Cuál es la opción correcta?</label>
+                                <label class="form-label d-block fw-bold">¿Cuál es la opción correcta?</label>
                                 <div class="form-check form-check-inline">
                                     <input type="radio" name="correcta" value="A" class="form-check-input" {{#pregunta.checkedA}}checked{{/pregunta.checkedA}} {{#formulario.checkedA}}checked{{/formulario.checkedA}} required>
                                     <label class="form-check-label">A</label>
@@ -70,32 +67,33 @@
                                 </div>
                             </div>
 
-                            <!-- Categoría -->
-                            <div class="mb-4">
-                                <label for="categoria" class="form-label">Categoría</label>
-                                <select name="categoria" id="categoria" class="form-select" required>
-                                    <option value="">Seleccione una categoría</option>
-                                    {{#categorias}}
-                                        <option value="{{id}}" {{#selected}}selected{{/selected}}>{{nombre}}</option>
-                                    {{/categorias}}
-                                </select>
+                            <div class="row">
+                                <div class="col-md-6 mb-4">
+                                    <label for="categoria" class="form-label fw-bold">Categoría</label>
+                                    <select name="categoria" id="categoria" class="form-select" required>
+                                        <option value="">Seleccione una categoría</option>
+                                        {{#categorias}}
+                                            <option value="{{id}}" {{#selected}}selected{{/selected}}>{{nombre}}</option>
+                                        {{/categorias}}
+                                    </select>
+                                </div>
+                                <div class="col-md-6 mb-4">
+                                     <label class="form-label d-block fw-bold">Estado de la Pregunta</label>
+                                    <div class="form-check form-check-inline">
+                                        <input type="radio" name="estado" value="activa" class="form-check-input"
+                                            {{#pregunta.estado_activa}}checked{{/pregunta.estado_activa}}>
+                                        <label class="form-check-label">Activa</label>
+                                    </div>
+                                    <div class="form-check form-check-inline">
+                                        <input type="radio" name="estado" value="inactiva" class="form-check-input"
+                                            {{^pregunta.estado_activa}}checked{{/pregunta.estado_activa}}>
+                                        <label class="form-check-label">Inactiva</label>
+                                    </div>
+                                </div>
                             </div>
 
-
-                            <!-- Estado -->
-                            <div class="form-check form-check-inline">
-                                <input type="radio" name="estado" value="activa" class="form-check-input"
-                                    {{#pregunta.estado_activa}}checked{{/pregunta.estado_activa}}>
-                                <label class="form-check-label">Pregunta activa</label>
-                            </div>
-
-                            <div class="form-check form-check-inline">
-                                <input type="radio" name="estado" value="inactiva" class="form-check-input"
-                                    {{^pregunta.estado_activa}}checked{{/pregunta.estado_activa}}>
-                                <label class="form-check-label">Pregunta inactiva</label>
-                            </div>
-
-                            <div class="text-center">
+                            <div class="text-center mt-3">
+                                <a href="/QuizGame/question/all" class="btn btn-secondary px-4 py-2">Cancelar</a>
                                 <button type="submit" class="btn btn-primary px-4 py-2">{{boton}}</button>
                             </div>
 

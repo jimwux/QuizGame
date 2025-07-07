@@ -1,25 +1,22 @@
-<section class="d-flex flex-column justify-content-center align-items-center vh-100" style="
-    background: url('../../QuizGame/public/img/background.png')">
-    <div class="col-11 col-md-10 col-lg-6">
-        <div class="card shadow rounded-4">
-            <div class="card-header bg-danger text-white">
-                <h4 class="mb-0">Reportar Pregunta</h4>
-            </div>
-            <div class="card-body p-4">
-                <form method="POST" action="/QuizGame/question/enviarReporte" class="w-100">
-                    <input type="hidden" name="idPregunta" value="{{idPregunta}}">
-
-                    <div class="mb-4">
-                        <label for="motivo" class="form-label">Motivo del reporte:</label>
-                        <textarea name="motivo" id="motivo" class="form-control" rows="5" placeholder="Describí el problema con esta pregunta..." required></textarea>
-                    </div>
-
-                    <div class="d-flex flex-column flex-md-row justify-content-between gap-3">
-                        <a href="/QuizGame/game/mostrarPregunta" class="btn btn-outline-secondary btn-lg w-100">Cancelar</a>
-                        <button type="submit" class="btn btn-danger btn-lg w-100">Enviar Reporte</button>
-                    </div>
-                </form>
-            </div>
-        </div>
+<section class="d-flex flex-column justify-content-center align-items-center min-vh-100 p-3" style="background: url('../../QuizGame/public/img/background.png'); background-size: cover; background-position: center;">
+  <div class="col-11 col-md-10 col-lg-6">
+    <div class="card shadow-lg rounded-4">
+      <div class="card-header bg-danger text-white p-3">
+        <h4 class="mb-0 fs-5">Reportar Pregunta</h4>
+      </div>
+      <div class="card-body p-4">
+        <form method="POST" action="/QuizGame/question/enviarReporte" class="w-100">
+          <input type="hidden" name="idPregunta" value="{{idPregunta}}">
+          <div class="mb-4">
+            <label for="motivo" class="form-label">Motivo del reporte:</label>
+            <textarea name="motivo" id="motivo" class="form-control" rows="5" placeholder="Describí el problema con esta pregunta..." required></textarea>
+          </div>
+          <div class="d-grid gap-2 d-sm-flex justify-content-sm-end">
+            <a href="javascript:history.back()" class="btn btn-outline-secondary">Cancelar</a>
+            <button type="submit" class="btn btn-danger">Enviar Reporte</button>
+          </div>
+        </form>
+      </div>
     </div>
+  </div>
 </section>
