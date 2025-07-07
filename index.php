@@ -8,7 +8,6 @@
 
     // Cargar configuración
     $config = parse_ini_file("configuration/config.ini", true);
-    $basePath = $config["app"]["base_path"];
 
     require_once("Configuration.php");
     $configuration = new Configuration();
@@ -23,6 +22,7 @@
     }
 
     // Validaciones de acceso
+    require_once("core/AccesoValidator.php");
     $validator = new AccesoValidator($config);
     $validator->validar($controller, $method);
 
